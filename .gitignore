@@ -1,0 +1,32 @@
+# Python virtual environments
+venv/
+flask/venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.so
+
+
+# Git backups and merge files
+*.orig
+
+# macOS system files
+.DS_Store
+
+# VSCode settings (optional)
+.vscode/
+
+# Node modules (if applicable)
+node_modules/
+
+# Large data/model files (optional — adjust as needed)
+*.pt
+*.ckpt
+*.whl
+*.tar
+*.tar.gz
+*.zip
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
