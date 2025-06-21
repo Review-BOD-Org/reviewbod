@@ -74,6 +74,8 @@ Route::post('/get_template', [Dash::class, 'get_template'])->name("user.get_temp
  Route::get('/teams', [Dash::class, 'teams'])->name("user.teams");
  Route::get('/settings', [Dash::class, 'settings'])->name("user.settings");
 
+
+ Route::post('/save_config_metrics', [Dash::class, 'save_config_metrics'])->name("metrics.save");
  Route::get('/chats', [Dash::class, 'chat_data'])->name('user.chat_data');
     Route::post('/chats/create', [Dash::class, 'createChat'])->name('user.create_chat'); 
     Route::get('/chats/load-more', [Dash::class, 'loadMoreMessages'])->name('user.loadMore');

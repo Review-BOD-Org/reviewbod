@@ -234,9 +234,10 @@ db = SQLDatabase.from_uri(
 
 # Enhanced LLM setup
 llm = ChatOpenAI(
-    temperature=0.2,
+    temperature=0.5,
     model="gpt-4o",
 )
+
 
 def clean_sql(raw_sql: str) -> str:
     """Enhanced SQL cleaning with validation"""
@@ -647,12 +648,15 @@ def determine_optimal_chart_type(data, column_types):
 sql_optimization_prompt = PromptTemplate.from_template("""
 Based on the database schema, description, sample SQL query, and owner_id, write a SINGLE, VALID SQL query.
 
-CRITICAL SQL REQUIREMENTS:
+CRITICAL SQL REQUIREMENTS: 
+- please your labels should be meaningful and descriptive, i mean what you're fetching or querying should be meaningful
+- do not generate column name on your own , only use the one from schema!!!!
 - Return ONLY ONE complete SELECT statement
 - Start with SELECT, end with semicolon
 - NO explanatory text before or after the SQL
 - NO multiple queries or statements
 - Must be syntactically correct MySQL
+
 
 CURRENT DATE CONTEXT:
 - Today's date is: {current_date}
@@ -666,6 +670,7 @@ DATE FILTERING EXAMPLES:
 - Last 30 days: WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
 
 SQL SYNTAX RULES:
+- use only column given in the schema, do not generate or form new columns on your own!!!!
 - Always use proper JOIN syntax: LEFT JOIN table ON condition
 - Group by all non-aggregate columns in SELECT
 - Use proper column aliases
@@ -704,10 +709,12 @@ sql_optimization_chain = LLMChain(llm=llm, prompt=sql_optimization_prompt)
 # Replace your template_analyzer_prompt with this enhanced version:
 
 template_analyzer_prompt = PromptTemplate.from_template("""
-You are a JSON generator that creates Google Charts configuration templates. You must return ONLY valid JSON with no extra text, explanations, or formatting.
+You are a JSON generator that creates Google Charts configuration templates and you give 100% accurate responses. You must return ONLY valid JSON with no extra text, explanations, or formatting.
+
 
 IMPORTANT: Analyze the data structure and content to determine the BEST chart type automatically.
  -  Max 3 template you're allowed to generate
+ - please your labels should be meaningful and descriptive
 CHART TYPE SELECTION RULES:
 - LineChart: For time series data (dates/timestamps with numeric values), trends over time
 - BarChart: For categorical comparisons, counts, rankings, comparing discrete categories  

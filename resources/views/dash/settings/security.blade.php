@@ -1,59 +1,50 @@
      @include('dash.layouts.partials.head')
      <div class="p-5">
 
-        <div class="border rounded-md">
+        <div class="border rounded-md ">
+ 
 
-     <div class="p-4 flex items-center border-b">
-    <h2 class="text-lg font-medium ">Personal Information</h2>
+          
+            <div class="p-4 flex items-center border-b">
+    <h2 class="text-lg font-medium ">Update Password</h2>
      </div>
-
-         <form id="personalInfoForm" class="space-y-6 p-5">
+         <form id="passwordUpdateForm" class="space-y-6 p-5">
              @csrf
 
              <!-- Alert for success/error messages -->
-             <div id="personalFormAlert" class="hidden mb-4 p-4 rounded-md"></div>
+             <div id="passwordFormAlert" class="hidden mb-4 p-4 rounded-md"></div>
 
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <!-- Name -->
+             <div class="space-y-4">
+                 <!-- Current Password -->
                  <div>
-                     <label class="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                     <input type="text" name="name" value="{{ auth()->user()->name }}"
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Your full name">
-                 </div>
-
-                 <!-- Email -->
-                 <div>
-                     <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                     <input type="email" name="email" value="{{ auth()->user()->email }}"
+                     <label class="block text-sm font-medium text-gray-500 mb-1">Current Password</label>
+                     <input type="password" name="current_password"
                          class="w-full px-3 py-2 border border-gray-300 rounded-md"
-                         placeholder="your.email@example.com">
+                         placeholder="Enter your current password">
                  </div>
 
-                 <!-- Phone -->
+                 <!-- New Password -->
                  <div>
-                     <label class="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
-                     <input type="tel" name="phone" value="{{ auth()->user()->phone }}"
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="(123) 456-7890">
+                     <label class="block text-sm font-medium text-gray-500 mb-1">New Password</label>
+                     <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                         placeholder="Enter new password">
                  </div>
 
-                 <!-- Company Name -->
+                 <!-- Confirm New Password -->
                  <div>
-                     <label class="block text-sm font-medium text-gray-500 mb-1">Company Name</label>
-                     <input type="text" name="company_name" value="{{ auth()->user()->company_name }}"
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Your company name">
+                     <label class="block text-sm font-medium text-gray-500 mb-1">Confirm New Password</label>
+                     <input type="password" name="password_confirmation"
+                         class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Confirm new password">
                  </div>
              </div>
 
              <div class="mt-6">
-                 <button id="savePersonalInfo" type="submit"
+                 <button id="updatePassword" type="submit"
                      class="px-4 py-2 bg-[#4F46E5] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                     Update Personal Information
+                     Update Password
                  </button>
              </div>
          </form>
- 
-
-       
         </div>
 
 

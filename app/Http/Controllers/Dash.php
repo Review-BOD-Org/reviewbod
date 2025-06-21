@@ -1818,7 +1818,8 @@ public function settings(){
     $users = DB::table("linear_users")->where(["userid" => auth()->id()])->get();
     $slack =  DB::table("linked")->where(["userid"=>auth()->id(),"type"=>"slack"])->first();
     $notifications = DB::table("notification_channel")->where(["userid"=>auth()->id()])->get();
-    return view("dash.settings",compact("users","slack","notifications"));
+    $metrics_category = DB::table("metrics_category")->get();
+    return view("dash.settings",compact("users","slack","notifications","metrics_category"));
 }
 
 public function new_user(Request $request){
@@ -2340,4 +2341,81 @@ public function checkAndUpdateChatTitle($chatId)
         ], 500);
     }
 }
+
+public function reaction(Request $request)
+{
+   
+    $userId = Auth::id();
+    $chatId = $request->input('id'); 
+    $reaction = $request->input('type');
+
+    
+    // Insert or update the reaction
+    DB::table('chat_messages')->where(["id"=>$chatId])->update(
+        ['reaction'=>$reaction]
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Reaction added successfully.'
+    ]);
+}
+
+public function save_config_metrics(Request $request){
+
+    if($request->update){
+        $json = json_decode($request->input("metrics"),true);
+        foreach($json as $j){
+  DB::table("user_metrics")->where([
+            "userid"=>Auth::id(),
+            "metric_id"=>$j['id']
+        ])->update([
+            "weight"=>$j['weight'],
+            "percentage"=>$j['percentage']
+        ]);
+        }
+      
+
+         return response()->json([
+        'success' => true,
+        'message' => 'Metrics configuration saved successfully.'
+    ]);
+    }
+    $data = DB::table("metrics_type")->where("id",$request->input("metric_id"))->first();
+    $checkuser = DB::table("user_metrics")->where([
+        "userid"=>Auth::id(),
+        "metric_id"=>$request->metric_id
+    ])->first();
+
+    if($checkuser){
+            DB::table("user_metrics")->where([
+        "userid"=>Auth::id(),
+        "metric_id"=>$request->metric_id
+    ])->delete();
+       return response()->json([
+        'success' => true,
+        'message' => 'Metrics configuration saved successfully.'
+    ]);
+    }
+
+  if($request->selected){
+      DB::table("user_metrics")->insert([
+        "title"=>$data->title,
+        "description"=>$data->description  , 
+        "category"=>$data->category,
+            "metric_id"=>$request->metric_id,
+        'userid'=>Auth::id(), 
+    ]);
+  }else{
+    DB::table("user_metrics")->where([
+        "userid"=>Auth::id(),
+        "metric_id"=>$request->metric_id
+    ])->delete();
+  }
+    return response()->json([
+        'success' => true,
+        'message' => 'Metrics configuration saved successfully.'
+    ]);
+  }
+
 }

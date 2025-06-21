@@ -4,111 +4,96 @@
 @section('page-title', 'Settings')
 
 @section('content')
-<div class="container mx-auto px-4 py-6 bg-white h-screen">
-    <!-- Tab Navigation -->
-    <div class="border-b border-gray-200 mb-6">
-        <ul class="flex -mb-px" id="tabNav">
-            <li class="mr-1">
-                <a href="#" class="inline-block py-4 px-4 border-b-2 border-[#1E3A8A] font-medium text-sm text-[#1E3A8A] tab-item" data-tab="personal">Personal</a>
-            </li>
-            <li class="mr-1">
-                <a href="#" class="inline-block py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm tab-item" data-tab="general">General</a>
-            </li>
-            <li class="mr-1">
-                <a href="#" class="inline-block py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm tab-item" data-tab="company">Notifications</a>
-            </li>
-            <li class="mr-1">
-                <a href="#" class="inline-block py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm tab-item" data-tab="invitations">Invitations</a>
-            </li>
-            <li class="mr-1">
-                <a href="#" class="inline-block py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm tab-item" data-tab="subscription">Subscription</a>
-            </li>
-        </ul>
+<style>
+body{
+    font-family: arial !important;
+}
+    </style>
+    <div class="    bg-white h-screen">
+        <div class="flex">
+            <div class="w-1/4    border-r h-screen">
+              <div class="p-5 border-b border-gray-200 mb-4"> 
+  <h2 class="text-[30px] font-semibold mb-4">Settings</h2>
+              </div>
+
+                <ul class="space-y-2 p-5">
+                    <li><a href="{{ route('user.settings',['type'=>'']) }}" class="p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="16" height="18" viewBox="0 0 16 18" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M0.608656 16.3074C0.502269 16.7077 0.740548 17.1185 1.14087 17.2248C1.54118 17.3312 1.95195 17.0929 2.05834 16.6926L0.608656 16.3074ZM13.942 16.6926C14.0484 17.0929 14.4591 17.3312 14.8595 17.2248C15.2598 17.1185 15.4981 16.7077 15.3917 16.3074L13.942 16.6926ZM1.3335 16.5L2.05834 16.6926C2.73354 14.1519 5.12642 12.25 8.00016 12.25V11.5V10.75C4.45901 10.75 1.46175 13.0973 0.608656 16.3074L1.3335 16.5ZM8.00016 11.5V12.25C10.8739 12.25 13.2668 14.1519 13.942 16.6926L14.6668 16.5L15.3917 16.3074C14.5386 13.0973 11.5413 10.75 8.00016 10.75V11.5ZM11.3335 4.83333H10.5835C10.5835 6.26007 9.4269 7.41667 8.00016 7.41667V8.16667V8.91667C10.2553 8.91667 12.0835 7.0885 12.0835 4.83333H11.3335ZM8.00016 8.16667V7.41667C6.57343 7.41667 5.41683 6.26007 5.41683 4.83333H4.66683H3.91683C3.91683 7.0885 5.745 8.91667 8.00016 8.91667V8.16667ZM4.66683 4.83333H5.41683C5.41683 3.4066 6.57343 2.25 8.00016 2.25V1.5V0.75C5.745 0.75 3.91683 2.57817 3.91683 4.83333H4.66683ZM8.00016 1.5V2.25C9.4269 2.25 10.5835 3.4066 10.5835 4.83333H11.3335H12.0835C12.0835 2.57817 10.2553 0.75 8.00016 0.75V1.5Z"
+                                        fill="#4B5563" />
+                                </svg>
+                            </i> Personal Information</a></li>
+                    <li><a href="{{ route('user.settings',['type'=>'metric']) }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1.6665 17.5L18.3332 17.5M2.49984 3.66667C2.49984 3.35725 2.61822 3.0605 2.82893 2.84171C3.03965 2.62292 3.32544 2.5 3.62343 2.5H16.3762C16.6742 2.5 16.96 2.62292 17.1707 2.84171C17.3815 3.0605 17.4998 3.35725 17.4998 3.66667V13C17.4998 13.3094 17.3815 13.6062 17.1707 13.825C16.96 14.0438 16.6742 14.1667 16.3762 14.1667H3.62343C3.32544 14.1667 3.03965 14.0438 2.82893 13.825C2.61822 13.6062 2.49984 13.3094 2.49984 13V3.66667Z"
+                                        stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+
+                            </i> Metric Selection</a></li>
+                    <li><a href="{{ route('user.settings',['type'=>'security']) }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M5.83333 9.16602V5.83268C5.83333 4.72761 6.27232 3.66781 7.05372 2.8864C7.83512 2.105 8.89493 1.66602 10 1.66602C11.1051 1.66602 12.1649 2.105 12.9463 2.8864C13.7277 3.66781 14.1667 4.72761 14.1667 5.83268V9.16602M4.16667 9.16602H15.8333C16.7538 9.16602 17.5 9.91221 17.5 10.8327V16.666C17.5 17.5865 16.7538 18.3327 15.8333 18.3327H4.16667C3.24619 18.3327 2.5 17.5865 2.5 16.666V10.8327C2.5 9.91221 3.24619 9.16602 4.16667 9.16602Z"
+                                        stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </i>Security</a></li>
+                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class="">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1.6665 17.5L18.3332 17.5M2.49984 3.66667C2.49984 3.35725 2.61822 3.0605 2.82893 2.84171C3.03965 2.62292 3.32544 2.5 3.62343 2.5H16.3762C16.6742 2.5 16.96 2.62292 17.1707 2.84171C17.3815 3.0605 17.4998 3.35725 17.4998 3.66667V13C17.4998 13.3094 17.3815 13.6062 17.1707 13.825C16.96 14.0438 16.6742 14.1667 16.3762 14.1667H3.62343C3.32544 14.1667 3.03965 14.0438 2.82893 13.825C2.61822 13.6062 2.49984 13.3094 2.49984 13V3.66667Z"
+                                        stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+
+                            </i>Integrations</a></li>
+                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M2.5 14.2493C2.08579 14.2493 1.75 14.5851 1.75 14.9993C1.75 15.4136 2.08579 15.7493 2.5 15.7493V14.2493ZM17.5 15.7493C17.9142 15.7493 18.25 15.4136 18.25 14.9993C18.25 14.5851 17.9142 14.2493 17.5 14.2493V15.7493ZM8.33333 17.5827C7.91912 17.5827 7.58333 17.9185 7.58333 18.3327C7.58333 18.7469 7.91912 19.0827 8.33333 19.0827V17.5827ZM11.6667 19.0827C12.0809 19.0827 12.4167 18.7469 12.4167 18.3327C12.4167 17.9185 12.0809 17.5827 11.6667 17.5827V19.0827ZM2.5 14.9993V15.7493H17.5V14.9993V14.2493H2.5V14.9993ZM8.33333 18.3327V19.0827H11.6667V18.3327V17.5827H8.33333V18.3327ZM4.16667 7.49935H4.91667C4.91667 4.6919 7.19255 2.41602 10 2.41602V1.66602V0.916016C6.36413 0.916016 3.41667 3.86347 3.41667 7.49935H4.16667ZM10 1.66602V2.41602C12.8074 2.41602 15.0833 4.6919 15.0833 7.49935H15.8333H16.5833C16.5833 3.86347 13.6359 0.916016 10 0.916016V1.66602ZM4.16667 7.49935H3.41667V14.9993H4.16667H4.91667V7.49935H4.16667ZM15.8333 7.49935H15.0833V14.9993H15.8333H16.5833V7.49935H15.8333Z"
+                                        fill="#4B5563" />
+                                </svg>
+                            </i> Notifications</a></li>
+                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12.4998 7.41602C12.9141 7.41602 13.2498 7.08023 13.2498 6.66602C13.2498 6.2518 12.9141 5.91602 12.4998 5.91602V7.41602ZM10.7984 9.99935L10.7984 9.24935H10.7984V9.99935ZM10.7984 13.3327L10.7984 14.0827H10.7984L10.7984 13.3327ZM7.49984 12.5827C7.08562 12.5827 6.74984 12.9185 6.74984 13.3327C6.74984 13.7469 7.08562 14.0827 7.49984 14.0827V12.5827ZM9.24984 6.66602V7.41602H10.7498V6.66602H9.24984ZM10.7498 4.99935C10.7498 4.58514 10.4141 4.24935 9.99984 4.24935C9.58562 4.24935 9.24984 4.58514 9.24984 4.99935H10.7498ZM10.7498 13.3327V12.5827H9.24984V13.3327H10.7498ZM9.24984 14.9993C9.24984 15.4136 9.58562 15.7493 9.99984 15.7493C10.4141 15.7493 10.7498 15.4136 10.7498 14.9993H9.24984ZM18.3332 9.99935H17.5832C17.5832 14.1875 14.188 17.5827 9.99984 17.5827V18.3327V19.0827C15.0164 19.0827 19.0832 15.0159 19.0832 9.99935H18.3332ZM9.99984 18.3327V17.5827C5.81168 17.5827 2.4165 14.1875 2.4165 9.99935H1.6665H0.916504C0.916504 15.0159 4.98325 19.0827 9.99984 19.0827V18.3327ZM1.6665 9.99935H2.4165C2.4165 5.81119 5.81168 2.41602 9.99984 2.41602V1.66602V0.916016C4.98325 0.916016 0.916504 4.98276 0.916504 9.99935H1.6665ZM9.99984 1.66602V2.41602C14.188 2.41602 17.5832 5.81119 17.5832 9.99935H18.3332H19.0832C19.0832 4.98276 15.0164 0.916016 9.99984 0.916016V1.66602ZM9.20123 6.66602V5.91602C8.55601 5.91602 7.93418 6.16695 7.47333 6.6184L7.99816 7.15417L8.523 7.68994C8.70029 7.51627 8.94397 7.41602 9.20123 7.41602V6.66602ZM7.99816 7.15417L7.47333 6.6184C7.01195 7.07037 6.74984 7.68669 6.74984 8.33268H7.49984H8.24984C8.24984 8.09462 8.34623 7.8631 8.523 7.68994L7.99816 7.15417ZM7.49984 8.33268H6.74984C6.74984 8.97867 7.01195 9.595 7.47333 10.047L7.99816 9.51119L8.523 8.97542C8.34623 8.80227 8.24984 8.57075 8.24984 8.33268H7.49984ZM7.99816 9.51119L7.47333 10.047C7.93418 10.4984 8.55601 10.7493 9.20123 10.7493V9.99935V9.24935C8.94397 9.24935 8.70029 9.14909 8.523 8.97542L7.99816 9.51119ZM9.20123 9.99935V10.7493H10.7984V9.99935V9.24935H9.20123V9.99935ZM10.7984 9.99935L10.7984 10.7493C11.0557 10.7493 11.2994 10.8496 11.4767 11.0233L12.0015 10.4875L12.5263 9.95174C12.0655 9.50028 11.4437 9.24935 10.7984 9.24935L10.7984 9.99935ZM12.0015 10.4875L11.4767 11.0233C11.6534 11.1964 11.7498 11.4279 11.7498 11.666H12.4998H13.2498C13.2498 11.02 12.9877 10.4037 12.5263 9.95174L12.0015 10.4875ZM12.4998 11.666H11.7498C11.7498 11.9041 11.6534 12.1356 11.4767 12.3088L12.0015 12.8445L12.5263 13.3803C12.9877 12.9283 13.2498 12.312 13.2498 11.666H12.4998ZM12.0015 12.8445L11.4767 12.3088C11.2994 12.4824 11.0557 12.5827 10.7984 12.5827L10.7984 13.3327L10.7984 14.0827C11.4437 14.0827 12.0655 13.8317 12.5263 13.3803L12.0015 12.8445ZM10.7984 13.3327V12.5827H7.49984V13.3327V14.0827H10.7984V13.3327ZM9.99984 6.66602H10.7498V4.99935H9.99984H9.24984V6.66602H9.99984ZM9.99984 13.3327H9.24984V14.9993H9.99984H10.7498V13.3327H9.99984ZM12.4998 6.66602V5.91602H9.20123V6.66602V7.41602H12.4998V6.66602Z"
+                                        fill="#4B5563" />
+                                </svg>
+                            </i> Billing & Subscription</a></li>
+                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                                class=""><svg width="18" height="20" viewBox="0 0 18 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M1.5 4.99935H3.16667M3.16667 4.99935H16.5M3.16667 4.99935V16.666C3.16667 17.108 3.34226 17.532 3.65482 17.8445C3.96738 18.1571 4.39131 18.3327 4.83333 18.3327H13.1667C13.6087 18.3327 14.0326 18.1571 14.3452 17.8445C14.6577 17.532 14.8333 17.108 14.8333 16.666V4.99935M5.66667 4.99935V3.33268C5.66667 2.89065 5.84226 2.46673 6.15482 2.15417C6.46738 1.84161 6.89131 1.66602 7.33333 1.66602H10.6667C11.1087 1.66602 11.5326 1.84161 11.8452 2.15417C12.1577 2.46673 12.3333 2.89065 12.3333 3.33268V4.99935"
+                                        stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </i> Delete Account</a></li>
+
+                </ul>
+            </div>
+
+            <div class="w-full">
+               @if(request()->type == '')
+                @include("dash.settings.personal")
+                @elseif(request()->type == 'metric')
+                     @include("dash.settings.metric")
+                @elseif(request()->type == 'security')
+                     @include("dash.settings.security")
+                     @endif
+            </div>
+
+        </div>
     </div>
-
-    <!-- Tab Content Areas -->
-    <div class="tab-content-container">
-        <!-- Personal Tab Content -->
-        <div id="personal" class="tab-content block">
-            @include("dash.settings.personal")
-        </div>
-
-        <!-- General Tab Content -->
-        <div id="general" class="tab-content hidden">
-             @include("dash.settings.general")
-        </div>
-  <!-- Company Tab Content -->
-        <div id="company" class="tab-content hidden">
-            <h2 class="text-lg font-medium mb-4">Notification Channel</h2>
-            @include("dash.settings.notification")
-        </div> 
-
-        <!-- Invitations Tab Content -->
-        <div id="invitations" class="tab-content hidden"> 
-            @include("dash.settings.invitation")
-        </div>
-
-        <!-- Subscription Tab Content -->
-        <div id="subscription" class="tab-content hidden"> 
-            @include("dash.settings.sub")
-        </div>
-    </div>
-</div>
-
-<!-- JavaScript for Tab Functionality -->
-<script>
- document.addEventListener('DOMContentLoaded', function() {
-    const tabItems = document.querySelectorAll('.tab-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    // Function to activate a tab
-    function activateTab(tabElement) {
-        const tabToActivate = tabElement.getAttribute('data-tab');
-        
-        // Reset all tabs
-        tabItems.forEach(tab => {
-            tab.classList.remove('border-b-2', 'border-[#1E3A8A]', 'text-[#1E3A8A]');
-            tab.classList.add('text-gray-500');
-        });
-        
-        // Activate selected tab
-        tabElement.classList.remove('text-gray-500');
-        tabElement.classList.add('border-b-2', 'border-[#1E3A8A]', 'text-[#1E3A8A]');
-        
-        // Hide all content
-        tabContents.forEach(content => {
-            content.classList.add('hidden');
-            content.classList.remove('block');
-        });
-        
-        // Show relevant content
-        document.getElementById(tabToActivate).classList.remove('hidden');
-        document.getElementById(tabToActivate).classList.add('block');
-    }
-    
-    // Set up click events for all tabs
-    tabItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            activateTab(this);
-        });
-    });
-});
-
-    function delete_linked(id) {
-        if (confirm("Are you sure you want to delete this linked app?")) {
-            $.post('{{ route('customers.delete_linked') }}', {
-                id: id,
-                _token: '{{ csrf_token() }}'
-            }, function(response) {
-     
-                    toastr.success("Linked app deleted successfully.");
-                     $("#linked_" + id).remove();
-                
-            }).fail(function(xhr) {
-                toastr.error(xhr.responseJSON.message);
-            });
-        }
-    }
-</script>
 @endsection

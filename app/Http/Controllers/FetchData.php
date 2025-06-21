@@ -49,6 +49,7 @@ class FetchData extends Controller
                 dueDate
                 createdAt
                 priority
+                estimate
                 state {
                     name
                 }
@@ -239,7 +240,7 @@ class FetchData extends Controller
                     "status" => $i['state']['name'] ?? null,
                     "priority" => $i['priority'] ?? null,
                     "labels" => json_encode($i['labels']['nodes'] ?? []),
-                    "estimate" => $estimate,
+                    "estimate" => $i['estimate'] ?? $estimate  ,
                     "due_date" => $dueDate,
                     'owner_id' => $data->userid,
                     "source" => "linear",

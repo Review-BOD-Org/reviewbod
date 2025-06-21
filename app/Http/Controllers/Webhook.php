@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Crypt;
-use Carbon\Carbon;
+use Carbon;
 use Log;
 
 class Webhook extends Controller
@@ -111,7 +111,7 @@ class Webhook extends Controller
                             "status"         => $data['state']['name'] ?? null,
                             "priority"       => $data['priority'] ?? null,
                             "labels"         => json_encode($data['labels'] ?? []),
-                            "estimate"       => $estimate,
+                            "estimate"       => $data['estimate']   ?? $estimate,
                             "due_date"       => $dueDate,
                             "source"         => "linear",
                             "last_synced_at" => now(),
@@ -163,7 +163,7 @@ class Webhook extends Controller
                             'status'         => $data['state']['name'] ?? null,
                             'priority'       => $data['priority'] ?? null,
                             'labels'         => json_encode($data['labels'] ?? []),
-                            'estimate'       => $estimate,
+                        "estimate"       => $data['estimate']   ?? $estimate,
                             'due_date'       => $dueDate,
                             'user_id'        => $assignedUserId,
                             'last_synced_at' => now(),

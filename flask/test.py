@@ -29,6 +29,33 @@ class PrintToLogger:
     def flush(self):
         pass
 
+
+def ensure_sqlalchemy_connection():
+    """Refresh SQLAlchemy connection pool"""
+    global db
+    try:
+        # Test the connection
+        db.run("SELECT 1")
+    except Exception as e:
+        logger.info(f"SQLAlchemy connection failed, recreating: {str(e)}")
+        # Recreate the SQLAlchemy database connection
+        db = SQLDatabase.from_uri(
+            "mysql+pymysql://root:50465550@127.0.0.1:3306/db?pool_pre_ping=True&pool_recycle=3600",
+            include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics"]
+        )
+
+def ensure_connection():
+    global conn
+    try:
+        conn.ping(reconnect=True)
+    except:
+        conn = pymysql.connect(
+            host='localhost',
+            user='root', 
+            password='50465550',
+            database='db',
+        )
+        
 sys.stdout = PrintToLogger()
 
 logging.basicConfig(
@@ -59,7 +86,7 @@ os.environ["OPENAI_API_KEY"] = "sk-proj-H_YvpLOudqgr6sl_jgsUrg95W9T11I9JzS9BiplT
 
 db = SQLDatabase.from_uri(
     "mysql+pymysql://root:50465550@127.0.0.1:3306/db",
-    include_tables=["tasks", "projects", "teams", "platform_users", "linked"]
+    include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics"]
 )
 conn = pymysql.connect(
     host='localhost',
@@ -69,6 +96,7 @@ conn = pymysql.connect(
 )
 
 def get_chat_history(chat_id, db_conn):
+    ensure_connection()
     cursor = db_conn.cursor(pymysql.cursors.DictCursor)
     query = """
         SELECT sender_type, message, reaction
@@ -81,13 +109,35 @@ def get_chat_history(chat_id, db_conn):
     cursor.execute(query, (chat_id,))
     rows = list(cursor.fetchall())
     rows.reverse()
+
     history = ""
     for row in rows:
         prefix = "user:" if row["sender_type"] == "user" else "assistant:"
-        history += f"{prefix} {row['message'].strip()}\n"
+        message = row["message"].strip()
+        reaction = row["reaction"]
+        if reaction:
+            message += f" [user reaction to message: {reaction}]"
+        history += f"{prefix} {message}\n"
+
     return history.strip()
 
+def get_user_metrics(owner_id, db_conn):
+    """Fetch user-defined metrics for analysis"""
+    ensure_connection()
+    cursor = db_conn.cursor(pymysql.cursors.DictCursor)
+    query = """
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    """
+    logger.info(f"Fetching user metrics for owner_id {owner_id}:\n{query}")
+    cursor.execute(query, (owner_id,))
+    results = cursor.fetchall()
+    return results if results else []
+
 def save_message_to_db(chat_id, user_id, owner_id, sender_type, message, db_conn):
+    ensure_connection()
     cursor = db_conn.cursor()
     query = """
         INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
@@ -98,6 +148,7 @@ def save_message_to_db(chat_id, user_id, owner_id, sender_type, message, db_conn
     db_conn.commit()
 
 def get_workspace_types(owner_id, db_conn):
+    ensure_connection()
     cursor = db_conn.cursor(pymysql.cursors.DictCursor)
     query = """
         SELECT type
@@ -112,7 +163,7 @@ def get_workspace_types(owner_id, db_conn):
 # Enhanced LLM setup with function calling capabilities
 llm = ChatOpenAI(
     temperature=0.4,
-    model="gpt-4o",
+    model="gpt-4.1-nano",
     streaming=True
 )
 
@@ -124,6 +175,7 @@ And your name is reviewbot
 
 
 CONVERSATION queries:
+- never you mention anything about sql to a response
 - Greetings: hi, hello, hey, good morning, how are you
 - General chat: thanks, goodbye, see you later
 - General questions about the assistant: what can you do, who are you
@@ -185,18 +237,38 @@ Return only the SQL query:
 """)
 sql_chain = LLMChain(llm=llm, prompt=sql_prompt)
 
-# Replace this section in your response_template:
-
+# Updated response template with user metrics integration
 response_template = PromptTemplate.from_template("""
-You are a helpful data analyst assistant. Respond naturally based on the type of query.
+You are a helpful data analyst assistant, and you give accurate responses. Respond naturally based on the type of query.
 NEVER AND EVER YOU GIVE SQL OUT FOR USER, DONT TRY IT NEVER , NO MATTER WHAT THE USER ASK, THIS IS FOR MY SAFETY PLS
+##MORE IMPORTANT!!!!!
+ - mostly add template with anything data related so make it informative
+ - Do not display template for empty data
+ - avoid asking user for data , example 'Once you provide the data, I’ll help you get a detailed...' dont do that
+ - dont ask the user if you want to create a template, just create it, this should happen if you have data to show
+The only available workspace currently are {workspace_types}
+
+## USER-DEFINED METRICS & FORMULAS
+The user has defined these custom metrics for analysis:
+{user_metrics}
+
+When analyzing data, incorporate these user-defined metrics by:
+- Using the title and description to understand what each metric measures
+- Applying the weight (importance factor) when calculating scores
+- Using the percentage values in your calculations and comparisons
+- Categorizing insights based on the metric categories
+- Referencing these metrics in your analysis and recommendations
 
 ## IMPORTANT
+ - mostly mix template with anything data related so make it informative
+ - always provide templates for tasks related stuff or project related
  - avoid giving duplicate template id base on chat history, if it look duplicate, change the id to random long uuid
  -  key to what user requested for, if its for table give for table, if its for chart, give for chart!, dont self generate whats not instructed!
  -  Max 3 template you're allowed to generate
  -  do not give a template for empty data, only give template if you have data to show
  -  most projects are not linked to tasks so explain for the user when you fetch projects and its empty
+ - When user metrics are available, use them to calculate custom scores and provide metric-based insights
+ - Apply user-defined formulas using the weight and percentage values from their metrics
 ## CONVERSATION QUERIES (greetings, casual chat, thanks, etc.)
 For casual conversation, respond naturally and briefly
 
@@ -221,7 +293,8 @@ TEMPLATE TYPES AVAILABLE:
 - give clean response , total response should be 10 paragraph mixed with templates 
 - mostly provide kpi of tasks analysis 
 - Note that you analyze data base on kpis of users quick completion rate and if the user is lacking behind, stuff like that
-- Start with a clear summary of findings
+- Apply user-defined metrics and formulas when available - calculate custom scores using their weight and percentage values
+- Start with a clear summary of findings (include metric-based insights if applicable)
 - end with recommendations of 4 paragraph
 - Provide detailed analysis with actionable insights
 - Include specific recommendations
@@ -233,9 +306,10 @@ TEMPLATE TYPES AVAILABLE:
 - IF NO DATA AT ALL: Brief professional explanation
 
 ### ANALYSIS STRUCTURE
-1. **Key Findings** (brief summary with main insights)
-2. **Data Analysis** (detailed breakdown with templates as needed)
-3. **Recommendations** (specific actionable steps)
+1. **Key Findings** (brief summary with main insights including user metrics if applicable)
+2. **Data Analysis** (detailed breakdown with templates as needed, apply user formulas)
+3. **Custom Metric Analysis** (if user metrics are available, show calculated scores)
+4. **Recommendations** (specific actionable steps based on data and user-defined metrics)
 
 Query type based on results: {db_results}
 Your chat history: {history}
@@ -259,6 +333,7 @@ def clean_sql(raw_sql: str, uppercase_keywords: bool = True) -> str:
 
 
 def create_new_chat(user_id, user_query, db_conn):
+    ensure_connection()
     """Create a new chat and generate title/description based on user query"""
     chat_uuid = str(uuid.uuid4())
     
@@ -403,9 +478,19 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
 
     
     workspace_types = get_workspace_types(user_id, conn)
+    user_metrics = get_user_metrics(user_id, conn)
+    
+    # Format user metrics for the AI prompt
+    metrics_text = ""
+    if user_metrics:
+        for metric in user_metrics:
+            metrics_text += f"• {metric['title']}: {metric['description']} (Category: {metric['category']}, Weight: {metric['weight']}, Percentage: {metric['percentage']}%)\n"
+    else:
+        metrics_text = "No custom metrics defined by user."
     
     logger.info(f"Processing query for user_id {user_id}: {query}")
     logger.info(f"Generated unique_id_with_template: {unique_id_with_template}")
+    logger.info(f"User metrics loaded: {len(user_metrics)} metrics")
     
     # Intent classification
     try:
@@ -424,6 +509,8 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
     
     if intent == "sql":
         try:            
+            ensure_connection()
+            ensure_sqlalchemy_connection()
             schema_info = db.get_table_info()
             schema_str = json.dumps(schema_info, indent=2)
             logger.info(f"Database schema: {schema_str}")
@@ -480,6 +567,7 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
             query=query,
             db_results=db_results or "No data available.",
             workspace_types=workspace_types,
+            user_metrics=metrics_text,
             unique_id_with_template=unique_id_with_template  # Pass to AI
         )
         
@@ -535,10 +623,11 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
     
     # Final save with complete response
     update_streaming_message(message_id, full_response, conn)
-    await websocket.send_json({"type": "stream_end"})
+    await websocket.send_json({"type": "stream_end",'message_id':message_id})
 
 # 1. Modify your insert_streaming_message function to accept unique_id_with_template
 def insert_streaming_message(chat_id, user_id, owner_id, sender_type, message, unique_id_with_template, db_conn):
+    ensure_connection()
     """Insert initial message with unique_id_with_template and return message_id for updates"""
     cursor = db_conn.cursor()
     query = """
@@ -553,6 +642,7 @@ def insert_streaming_message(chat_id, user_id, owner_id, sender_type, message, u
 
 
 def update_streaming_message(message_id, message, db_conn):
+    ensure_connection()
     """Update existing message with new content"""
     cursor = db_conn.cursor()
     query = """

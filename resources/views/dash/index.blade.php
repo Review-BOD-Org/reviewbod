@@ -5,6 +5,11 @@
 
 @section('content')
     <style>
+        .text-reviewbod-yellow{
+            color:#CB964F !important;
+            fill: #CB964F; /* or any color */
+
+        }
         #chat_data>div {
             padding: 0px !important;
         }
@@ -179,35 +184,7 @@
             </div>
         </div>
         <div style="max-width:75%;min-width:75%" class="w-[75%] flex flex-col h-full min-w-0">
-            <div class="bg-white px-6 py-3 border-b border-black-200 flex items-center justify-between flex-shrink-0">
-                <h1 class="text-lg font-medium text-gray-900"></h1>
-                <div class="flex items-center">
-                    <div class="relative">
-                        <button onclick="toggleDropdown('userMenu')"
-                            class="flex items-center border rounded-full p-1 text-gray-700 text-sm font-medium hover:text-gray-900">
-                            <div
-                                class="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold">
-                                {{ Auth::user()->name[0] }}
-                            </div>
-                            <span class="ml-2">{{ Auth::user()->name }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-gray-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <div id="userMenu"
-                            class="dropdown-content absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
-                            <a href="{{ route('user.settings') }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account Settings</a>
-                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Theme
-                                Preferences</a>
-                            <div class="border-t border-gray-100 my-1"></div>
-                            <a href="{{ route('user.logout') }}"
-                                class="block px-4 py-2 text-sm text-pink-600 hover:bg-gray-100">Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           @include('dash.layouts.partials.head')
             <div class="flex flex-col flex-grow relative min-h-0 overflow-hidden w-[85%] mx-auto" id="chats">
                 <div class="flex-1 overflow-y-auto overflow-x-hidden px-6 py-4 space-y-4"
                     style="max-height: calc(100vh - 160px);" id="chatContainer">
@@ -484,7 +461,7 @@
         selectChat(chatId);
     }
     document.addEventListener('DOMContentLoaded', async () => {
-
+        initstream()
         $('#searchdata').on('input', function() {
             let searchTerm = $(this).val().trim().toLowerCase();
 
@@ -542,16 +519,8 @@
     let isInsideTemplate = false;
     let contentBeforeTemplate = '';
     let storedTemplates = new Map(); // Store templates by their ID
-
-    const ws = new WebSocket('wss://api.reviewbod.com/ws');
-
-    ws.onopen = () => {
-        console.log('Connected to WebSocket');
-        document.getElementById('status').textContent = 'Connected';
-        document.getElementById('status').style.color = 'green';
-    };
-
-
+  
+    let ws;
 
 
 
@@ -697,7 +666,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('button#newchat').addEventListener('click', createNewChat);
 
-        loadSidebarChatsOnly()
+        // loadSidebarChatsOnly()
         initializeGoogleCharts().catch(error => {
             console.error('Failed to initialize Google Charts:', error);
         });
@@ -726,173 +695,149 @@
         $(".active-chat").removeClass("active-chat")
     }
 
-    function renderChart(res, containerId) {
-        console.log(`Attempting to render chart for container ${containerId} with template:`, res);
+ function renderChart(res, containerId) {
+    console.log(`Attempting to render chart for container ${containerId} with template:`, res);
 
-        // Validate inputs
-        if (!res || res.template_type !== 'chart' || !res.structure) {
-            console.error(`Invalid chart response for ${containerId}:`, res);
-            return showChartError(containerId, 'Invalid chart data or template type');
+    // Validate inputs
+    if (!res || res.template_type !== 'chart' || !res.structure) {
+        console.error(`Invalid chart response for ${containerId}:`, res);
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, 'Invalid chart data received');
+        } else {
+            showChartError(containerId, 'Invalid chart data or template type');
+        }
+        return;
+    }
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container with ID ${containerId} not found in DOM`);
+        return;
+    }
+
+    try {
+        const { chartType, options, columns, chart_data, column_types } = res.structure;
+
+        // Validate required fields
+        if (!chartType) {
+            throw new Error('Chart type not specified');
+        }
+        if (!chart_data || !Array.isArray(chart_data) || chart_data.length === 0) {
+            throw new Error('No chart data available');
+        }
+        if (!columns || !Array.isArray(columns) || columns.length !== 2) {
+            throw new Error(`Invalid columns configuration: exactly 2 columns required, got ${columns ? columns.length : 'none'}`);
+        }
+        if (!column_types || typeof column_types !== 'object') {
+            throw new Error('Invalid column_types configuration');
         }
 
-        const container = document.getElementById(containerId);
-        if (!container) {
-            console.error(`Container with ID ${containerId} not found in DOM`);
-            return showChartError(containerId, `Container with ID ${containerId} not found`);
+        // Rest of your existing chart rendering code...
+        console.log(`Processing chart data for ${containerId}:`, { chartType, dataLength: chart_data.length });
+
+        container.innerHTML = "";
+        container.className = "";
+
+        const data = new google.visualization.DataTable();
+
+        columns.forEach(column => {
+            if (!column.type || !column.label || !column.data) {
+                throw new Error(`Invalid column configuration: ${JSON.stringify(column)}`);
+            }
+            data.addColumn(column.type, column.label);
+        });
+
+        const rows = chart_data.map((row, index) => {
+            try {
+                return columns.map(column => {
+                    const value = row[column.data];
+                    const targetType = column_types[column.data] || column.type;
+
+                    if (value === null || value === undefined || value === '') {
+                        return targetType === 'number' ? 0 : '';
+                    }
+
+                    if (targetType === 'number') {
+                        const numValue = parseFloat(value);
+                        return isNaN(numValue) ? 0 : numValue;
+                    } else if (targetType === 'date') {
+                        const dateValue = new Date(value);
+                        return isNaN(dateValue.getTime()) ? null : dateValue;
+                    } else {
+                        return String(value);
+                    }
+                });
+            } catch (rowError) {
+                console.warn(`Error processing row ${index} in ${containerId}:`, rowError, row);
+                return null;
+            }
+        }).filter(row => row !== null);
+
+        if (rows.length === 0) {
+            throw new Error('No valid data rows after processing');
         }
 
-        try {
-            const {
-                chartType,
-                options,
-                columns,
-                chart_data,
-                column_types
-            } = res.structure;
+        data.addRows(rows);
 
-            // Validate required fields
-            if (!chartType) {
-                throw new Error('Chart type not specified');
+        const defaultOptions = {
+            title: 'Chart',
+            width: '100%',
+            height: 400,
+            backgroundColor: 'transparent',
+            titleTextStyle: { fontSize: 16, bold: true },
+            legend: { position: 'bottom', alignment: 'center' },
+            animation: { startup: true, duration: 1000, easing: 'out' },
+            hAxis: { title: columns[0].label || 'X Axis' },
+            vAxis: { title: columns[1].label || 'Y Axis' }
+        };
+
+        const finalOptions = Object.assign({}, defaultOptions, options || {});
+
+        const chartTypes = {
+            'LineChart': google.visualization.LineChart,
+            'BarChart': google.visualization.BarChart,
+            'ColumnChart': google.visualization.ColumnChart,
+            'PieChart': google.visualization.PieChart,
+            'ScatterChart': google.visualization.ScatterChart,
+            'AreaChart': google.visualization.AreaChart,
+            'ComboChart': google.visualization.ComboChart,
+            'Histogram': google.visualization.Histogram
+        };
+
+        const ChartClass = chartTypes[chartType] || google.visualization.ColumnChart;
+        const chart = new ChartClass(container);
+
+        chart.draw(data, finalOptions);
+
+        const resizeHandler = () => {
+            try {
+                chart.draw(data, finalOptions);
+            } catch (resizeError) {
+                console.warn(`Error during chart resize for ${containerId}:`, resizeError);
             }
-            if (!chart_data || !Array.isArray(chart_data) || chart_data.length === 0) {
-                throw new Error('No chart data available');
-            }
-            if (!columns || !Array.isArray(columns) || columns.length !== 2) {
-                throw new Error(
-                    `Invalid columns configuration: exactly 2 columns required, got ${columns ? columns.length : 'none'}`
-                );
-            }
-            if (!column_types || typeof column_types !== 'object') {
-                throw new Error('Invalid column_types configuration');
-            }
+        };
 
-            console.log(`Processing chart data for ${containerId}:`, {
-                chartType,
-                dataLength: chart_data.length
-            });
+        if (container._chartResizeListener) {
+            window.removeEventListener('resize', container._chartResizeListener);
+        }
 
-            // Clear container and reset classes
-            container.innerHTML = "";
-            container.className = "";
+        container._chartResizeListener = resizeHandler;
+        window.addEventListener('resize', resizeHandler);
 
-            // Create DataTable
-            const data = new google.visualization.DataTable();
+        console.log(`Chart ${chartType} rendered successfully in ${containerId}`);
 
-            // Add columns
-            columns.forEach(column => {
-                if (!column.type || !column.label || !column.data) {
-                    throw new Error(`Invalid column configuration: ${JSON.stringify(column)}`);
-                }
-                data.addColumn(column.type, column.label);
-            });
-
-            // Process chart_data into rows
-            const rows = chart_data.map((row, index) => {
-                try {
-                    return columns.map(column => {
-                        const value = row[column.data];
-                        const targetType = column_types[column.data] || column.type;
-
-                        if (value === null || value === undefined || value === '') {
-                            return targetType === 'number' ? 0 : '';
-                        }
-
-                        if (targetType === 'number') {
-                            const numValue = parseFloat(value);
-                            return isNaN(numValue) ? 0 : numValue;
-                        } else if (targetType === 'date') {
-                            const dateValue = new Date(value);
-                            return isNaN(dateValue.getTime()) ? null : dateValue;
-                        } else {
-                            return String(value);
-                        }
-                    });
-                } catch (rowError) {
-                    console.warn(`Error processing row ${index} in ${containerId}:`, rowError, row);
-                    return null;
-                }
-            }).filter(row => row !== null);
-
-            if (rows.length === 0) {
-                throw new Error('No valid data rows after processing');
-            }
-
-            data.addRows(rows);
-
-            // Set default options
-            const defaultOptions = {
-                title: 'Chart',
-                width: '100%',
-                height: 400,
-                backgroundColor: 'transparent',
-                titleTextStyle: {
-                    fontSize: 16,
-                    bold: true
-                },
-                legend: {
-                    position: 'bottom',
-                    alignment: 'center'
-                },
-                animation: {
-                    startup: true,
-                    duration: 1000,
-                    easing: 'out'
-                },
-                hAxis: {
-                    title: columns[0].label || 'X Axis'
-                },
-                vAxis: {
-                    title: columns[1].label || 'Y Axis'
-                }
-            };
-
-            // Merge with provided options
-            const finalOptions = Object.assign({}, defaultOptions, options || {});
-
-            // Create chart
-            const chartTypes = {
-                'LineChart': google.visualization.LineChart,
-                'BarChart': google.visualization.BarChart,
-                'ColumnChart': google.visualization.ColumnChart,
-                'PieChart': google.visualization.PieChart,
-                'ScatterChart': google.visualization.ScatterChart,
-                'AreaChart': google.visualization.AreaChart,
-                'ComboChart': google.visualization.ComboChart,
-                'Histogram': google.visualization.Histogram
-            };
-            console.log("chartTypechartTypechartTypechartType", chartType)
-
-            const ChartClass = chartTypes[chartType] || google.visualization.ColumnChart;
-            const chart = new ChartClass(container);
-
-            // Draw the chart
-            chart.draw(data, finalOptions);
-
-            // Add resize handler
-            const resizeHandler = () => {
-                try {
-                    chart.draw(data, finalOptions);
-                } catch (resizeError) {
-                    console.warn(`Error during chart resize for ${containerId}:`, resizeError);
-                }
-            };
-
-            // Remove existing resize listener
-            if (container._chartResizeListener) {
-                window.removeEventListener('resize', container._chartResizeListener);
-            }
-
-            // Add new resize listener
-            container._chartResizeListener = resizeHandler;
-            window.addEventListener('resize', resizeHandler);
-
-            console.log(`Chart ${chartType} rendered successfully in ${containerId}`);
-
-        } catch (error) {
-            console.error(`Error rendering chart for ${containerId}:`, error);
+    } catch (error) {
+        console.error(`Error rendering chart for ${containerId}:`, error);
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, `Chart error: ${error.message}`);
+        } else {
             showChartError(containerId, error.message);
         }
     }
+}
+   
     // Helper function to show chart errors consistently
     function showChartError(containerId, errorMessage) {
         console.log("containerId", containerId)
@@ -913,69 +858,73 @@
         }
     }
 
-    function renderTable(res, containerId) {
-          console.log("invalid table 1")
-        if (!res || res.template_type !== 'table' || !res.structure) {
-            return `<code>${res.message}</code>`;
+ // Update the renderTable function to handle errors better
+function renderTable(res, containerId) {
+    if (!res || res.template_type !== 'table' || !res.structure) {
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, 'Invalid table data received');
         }
+        return;
+    }
 
-        const container = document.getElementById(containerId);
-        if (!container) {
-            // alert()
-            console.log("invalid table 2")
-            return;
-        }
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.log("Container not found for table");
+        return;
+    }
 
+    try {
         console.log("Rendering table with structure:", res.structure);
 
-        const {
-            columns,
-            data
-        } = res.structure;
+        const { columns, data } = res.structure;
         const tableId = `table-${res.id}`;
         console.log(`Rendering table ${tableId} with ${data.length} rows and ${columns.length} columns`);
 
         const tableHTML = `
-        <div class="bg-white">
-            <table id="${tableId}" class="min-w-full divide-y divide-gray-200 table-auto">
-                <thead class="bg-gray-50">
-                    <tr>
-                        ${columns.map(col => `
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                ${col.title}
-                            </th>
-                        `).join('')}
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    ${data.map(row => `
-                        <tr class="hover:bg-gray-50">
+            <div class="bg-white">
+                <table id="${tableId}" class="min-w-full divide-y divide-gray-200 table-auto">
+                    <thead class="bg-gray-50">
+                        <tr>
                             ${columns.map(col => `
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    ${row[col.data] || 'No Data'}
-                                </td>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ${col.title}
+                                </th>
                             `).join('')}
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${data.map(row => `
+                            <tr class="hover:bg-gray-50">
+                                ${columns.map(col => `
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        ${row[col.data] || 'No Data'}
+                                    </td>
+                                `).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
 
         container.innerHTML = tableHTML;
-        //removce all class
-          $(`#${containerId}`).removeClass('template-placeholder'); 
-             container.className = "";
+        $(`#${containerId}`).removeClass('template-placeholder'); 
         container.className = "overflow-x-auto";
-      
 
-        // Initialize DataTable if jQuery and DataTables are available
         if (typeof $ !== 'undefined' && $.fn.DataTable) {
             $(`#${tableId}`).DataTable({
                 responsive: true,
             });
         }
+    } catch (error) {
+        console.error('Error rendering table:', error);
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, `Table error: ${error.message}`);
+        }
     }
+}
 
     // Safe render function for charts
 
@@ -1055,47 +1004,84 @@
     }
 
     // Updated main function
-    function gettemplate(temp) {
-        const pathParts = window.location.pathname.split('/');
-        const chatIdFromPath = pathParts[pathParts.length - 1];
-        $.post('{{ route('user.get_template') }}', {
-            'des': temp.description,
-            'id': temp.id,
-            'sql': temp.sql,
-            'chat_id': chatIdFromPath,
-            '_token': '{{ csrf_token() }}'
-        }).done((res) => {
-            console.log('Template response:', res);
-
-            // Double-check that container still exists before rendering
-            const container = document.getElementById(temp.id);
-            if (!container) {
-                console.warn(`Container ${temp.id} no longer exists, skipping render`);
-                return;
-            }
-
-            if (res.template_type == 'table') {
-                console.log("Rendering table");
-                renderTable(res, temp.id);
-            } else if (res.template_type == 'chart') {
-                console.log("Rendering chart-------");
-
-                forceRenderChart(res, temp.id);
-
-            }
-        }).fail((error) => {
-            console.error('Error fetching template:', error);
-            const container = document.getElementById(temp.id);
-            if (container) {
-                container.innerHTML = `
-                <div class="p-4 text-red-600 border border-red-200 rounded bg-red-50">
-                    <p class="font-semibold">Error loading template</p>
-                    <p class="text-sm mt-1">Please try again later</p>
-                </div>
-            `;
-            }
-        });
+    // Replace the existing gettemplate function with this updated version
+function gettemplate(temp) {
+    const pathParts = window.location.pathname.split('/');
+    const chatIdFromPath = pathParts[pathParts.length - 1];
+    
+    // Show loading state
+    const container = document.getElementById(temp.id);
+    if (container) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 20px; height: 20px; background: #ddd; border-radius: 50%;"></div>
+                <span style="color: #666;">Generating template...</span>
+            </div>
+        `;
     }
+    
+    $.post('{{ route('user.get_template') }}', {
+        'des': temp.description,
+        'id': temp.id,
+        'sql': temp.sql,
+        'chat_id': chatIdFromPath,
+        '_token': '{{ csrf_token() }}'
+    }).done((res) => {
+        console.log('Template response:', res);
+        if(res.error) {
+            showTemplateError(temp.id, temp, res.error);
+            return;
+        }
+
+        // Double-check that container still exists before rendering
+        const container = document.getElementById(temp.id);
+        if (!container) {
+            console.warn(`Container ${temp.id} no longer exists, skipping render`);
+            return;
+        }
+
+        if (res.template_type == 'table') {
+            console.log("Rendering table");
+            renderTable(res, temp.id);
+        } else if (res.template_type == 'chart') {
+            console.log("Rendering chart-------");
+            forceRenderChart(res, temp.id);
+        }
+    }).fail((error) => {
+        console.error('Error fetching template:', error);
+        showTemplateError(temp.id, temp, 'Failed to load template. Please try again.');
+    });
+}
+
+// Add this new function to show template errors with regenerate button
+function showTemplateError(containerId, templateData, errorMessage) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `
+            <div class="p-4 border border-red-200 rounded bg-red-50">
+                <div class="flex items-center mb-3">
+                    <svg class="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <p class="font-semibold text-red-800">Something went wrong</p>
+                </div>
+               
+                <button 
+                    onclick="regenerateTemplate('${containerId}', ${JSON.stringify(templateData).replace(/"/g, '&quot;')})" 
+                    class="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors">
+                    Regenerate Template
+                </button>
+            </div>
+        `;
+        container.className = "";
+    }
+}
+
+// Add this new function to handle template regeneration
+function regenerateTemplate(containerId, templateData) {
+    console.log('Regenerating template:', templateData);
+    gettemplate(templateData);
+}
 
     // Utility function to manually trigger chart rendering (useful for debugging)
     function forceRenderChart(res, containerId) {
@@ -1232,6 +1218,57 @@ function autoScroll() {
     });
 }
 
+function updateSendButton(state) {
+    const sendButton = $("#sendButton");
+    console.log("curstate",state)
+    if (state == 'streaming') {
+        sendButton.html(`<i class="fa fa-stop-circle text-white" style="font-size:30px"></i>`);
+    } else if (state == 'ready') {
+        sendButton.html(`
+            <svg width="30" height="32" viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0.5" y="0.5" width="29" height="31" rx="7.5" stroke="white" />
+                <path d="M23.2562 16.5168L10.6167 16.5168M9.56359 9.11278L22.8189 15.5396C23.6352 15.9354 23.6352 17.0983 22.8189 17.494L9.56359 23.9209C8.65552 24.3612 7.69032 23.4329 8.09482 22.5084L10.5257 16.9521C10.6471 16.6746 10.6471 16.359 10.5257 16.0815L8.09482 10.5253C7.69032 9.60073 8.65551 8.6725 9.56359 9.11278Z" stroke="white" stroke-linecap="round" />
+            </svg>
+        `);
+    }
+}
+let isStreaming = false;
+let currentStreamId = null;
+function stopStream() {
+    if (ws.readyState === WebSocket.OPEN && isStreaming) {
+        // Close the WebSocket connection to stop streaming
+        ws.close();
+        
+        // Reset streaming state
+        isStreaming = false;
+        currentStreamId = null;
+        updateSendButton('ready');
+        
+        // Clear any accumulated data from the stopped stream
+        accumulatedMarkdown = '';
+        processedTemplates.clear();
+        templatePlaceholders.clear();
+   
+        // Reconnect after a short delay
+        setTimeout(() => {
+            var id = getRandomId()
+            initstream();
+        }, 100);
+    }
+}
+
+function initstream(){
+// Add variables to track streaming state
+
+  id = getRandomId()
+     ws = new WebSocket('wss://api.reviewbod.com/ws');
+
+    ws.onopen = () => {
+        console.log('Connected to WebSocket');
+        document.getElementById('status').textContent = 'Connected';
+        document.getElementById('status').style.color = 'green';
+    };
+
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('Received:', data);
@@ -1240,6 +1277,12 @@ function autoScroll() {
 
         switch (data.type) {
             case 'stream_token':
+
+            if (!isStreaming) {
+                isStreaming = true;
+                currentStreamId = id;
+                updateSendButton('streaming');
+            }
                 accumulatedMarkdown += data.token;
 
                 // Only process new content that hasn't been processed yet
@@ -1267,7 +1310,10 @@ function autoScroll() {
                 break;
 
             case 'error':
-                responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
+                //responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
+                isStreaming = false;
+            currentStreamId = null;
+            updateSendButton('ready');
                 break;
             case 'new_chat_created':
 
@@ -1344,6 +1390,7 @@ function autoScroll() {
                 break;
 
             case 'stream_end':
+         
                 // Reset the accumulated markdown for the next message
                 accumulatedMarkdown = '';
                 // Clear processed templates for the next message
@@ -1351,16 +1398,23 @@ function autoScroll() {
                 // Clear template placeholders for the next message
                 templatePlaceholders.clear();
                 // Generate new ID for next message
-              
+              console.log("msgidjskfsd",data)
+              var msgid = data.message_id
               $(`#msg-${id}`).append(`
     <div class="flex gap-3 justify-end text-xl">
-        <i id="copy-${id}" class="bi bi-clipboard cursor-pointer" onclick="performAction('${id}', 'copy')"></i>
-        <i id="like-${id}" class="bi bi-hand-thumbs-up cursor-pointer" onclick="performAction('${id}', 'like')"></i>
-        <i id="unlike-${id}" class="bi bi-hand-thumbs-down cursor-pointer" onclick="performAction('${id}', 'unlike')"></i>
-        <i id="bookmark-${id}" class="bi bi-bookmark cursor-pointer" onclick="performAction('${id}', 'bookmark')"></i>
+        <i id="copy-${id}" class="bi bi-clipboard cursor-pointer" onclick="performAction('${id}','${msgid}', 'copy',1)"></i>
+        <i id="like-${id}" class="bi bi-hand-thumbs-up cursor-pointer" onclick="performAction('${id}','${msgid}', 'like',1)"></i>
+        <i id="dislike-${id}" class="bi bi-hand-thumbs-down cursor-pointer" onclick="performAction('${id}','${msgid}', 'dislike',1)"></i>
+        <i id="bookmark-${id}" class="bi bi-bookmark cursor-pointer" onclick="performAction('${id}','${msgid}', 'bookmark',1)"></i>
     </div>
 `);
+
+isStreaming = false;
+            currentStreamId = null;
+            updateSendButton('ready');
+ 
                   id = getRandomId();
+                  
                 break;
             default:
                 responseDiv.innerHTML += `<p>${JSON.stringify(data, null, 2)}</p>`;
@@ -1369,10 +1423,12 @@ function autoScroll() {
 
 
 
+ 
     ws.onclose = (data) => {
         console.log('Disconnected:', data);
         document.getElementById('status').textContent = 'Disconnected';
         document.getElementById('status').style.color = 'red';
+     
     };
 
     ws.onerror = (error) => {
@@ -1380,6 +1436,7 @@ function autoScroll() {
         document.getElementById('status').textContent = 'Connection Error';
         document.getElementById('status').style.color = 'red';
     };
+}
 
     function getCurrentTimestamp() {
         const now = new Date();
@@ -1495,47 +1552,7 @@ function autoScroll() {
                 });
             }
 
-            chatListContainer.innerHTML = '';
-
-            if (data.chats && data.chats.length > 0) {
-                data.chats.forEach(chat => {
-                    const chatItem = document.createElement('div');
-                    chatItem.className = 'flex px-2 w-full gap-3 cursor-pointer chat-item';
-                    chatItem.dataset.chatId = chat.uuid;
-                    chatItem.innerHTML = `
-                    <div class="flex w-full flex-col cursor-pointer px-4 py-4 ${currentChatId == chat.uuid ? 'active-chat' : ''}">
-                        <div class="flex justify-between">
-                            <h3 class="font-bold">${chat.title}</h3>
-                            <div class="flex gap-2 items-center">
-                                <span class="text-[#7D7272] text-[12px]">${new Date(chat.updated_at).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}</span>
-                                <a href="javascript:;" onclick="deleteChat('${chat.uuid}', event)" class="text-red-500 hover:text-red-700 transition-colors ml-2" title="Delete chat">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <p class="text-[#7B7878] mt-3">${chat.description}</p>
-                    </div>
-                `;
-
-                    // Add click event for chat selection
-                    chatItem.addEventListener('click', (e) => {
-                        if (!e.target.closest('.fa-trash') && !e.target.closest(
-                                '[onclick*="deleteChat"]')) {
-                            selectChatWithUrlUpdate(chat.uuid);
-                        }
-                    });
-
-                    chatListContainer.appendChild(chatItem);
-                });
-
-                // If currentChatId is set, make sure it's selected
-                if (currentChatId && currentChatId != "dashboard") {
-                    selectChat(currentChatId);
-                }
-            } else {
-                // chatListContainer.innerHTML = '<p class="px-2 text-sm text-gray-500">No chats found.</p>';
-            }
-
+ 
             if (data.messages && data.messages.data) {
                 currentPage = data.messages.current_page;
                 hasMoreMessages = data.hasMore;
@@ -1591,8 +1608,9 @@ function autoScroll() {
 
         if (chatIdFromPath) {
             currentChatId = chatIdFromPath;
-            loadChats(); // Load chats and messages
             loadSidebarChatsOnly();
+            loadChats(); // Load chats and messages
+        
             // updateUrlChatId(chatIdFromPath); // Update URL with chat ID
 
             // selectChat(chatIdFromPath);
@@ -1612,27 +1630,46 @@ function autoScroll() {
         // if (!hasIdAfterDashboard) {
         //     placeholder()
         // }
-        $("#sendMessage").submit(() => {
-            event.preventDefault()
-            const pathParts = window.location.pathname.split('/');
-            const chatIdFromPath = pathParts[pathParts.length - 1];
+        // Function to update send button based on state
 
-            const messageInput = $("#messageInput").val();
-            if (ws.readyState === WebSocket.OPEN) {
-                addUserMessage(messageInput)
-                $("#placeholder").remove()
-                const message = {
-                    query: messageInput,
-                    user_id: @json($user_id_encrypted),
-                    chat_id: chatIdFromPath == "dashboard" ? "" : chatIdFromPath,
-                };
-                ws.send(JSON.stringify(message));
-                $("#messageInput").val("");
-                console.log('Sent:', message);
-            } else {
-                console.error('WebSocket not connected');
-            }
-        })
+
+// Function to stop streaming
+
+// Modified form submission handler
+$("#sendMessage").submit((event) => {
+    event.preventDefault();
+    
+    // If currently streaming, stop the stream instead of sending new message
+    if (isStreaming) {
+        stopStream();
+        return;
+    }
+    
+    // Normal message sending logic
+    const pathParts = window.location.pathname.split('/');
+    const chatIdFromPath = pathParts[pathParts.length - 1];
+    
+    const messageInput = $("#messageInput").val();
+    if (ws.readyState === WebSocket.OPEN && messageInput.trim()) {
+        addUserMessage(messageInput);
+        $("#placeholder").remove();
+        
+        const message = {
+            query: messageInput,
+            user_id: @json($user_id_encrypted),
+            chat_id: chatIdFromPath == "dashboard" ? "" : chatIdFromPath,
+        };
+        
+        ws.send(JSON.stringify(message));
+        $("#messageInput").val("");
+        console.log('Sent:', message);
+        
+        // Set button to loading state (will be updated to streaming when first token arrives)
+        updateSendButton('streaming');
+    } else {
+        console.error('WebSocket not connected or empty message');
+    }
+});
 
     })
 
@@ -1832,10 +1869,10 @@ console.log("my message data", message)
 
                     
                       <div class="flex gap-3 justify-end text-xl" id='containerr-${message.chat_id}'>
-        <i id="copy-${message.id}" class="bi bi-clipboard cursor-pointer" onclick="performAction('${message.id}', 'copy')"></i>
-        <i id="like-${message.id}" class="bi bi-hand-thumbs-up cursor-pointer" onclick="performAction('${message.id}', 'like')"></i>
-        <i id="unlike-${message.id}" class="bi bi-hand-thumbs-down cursor-pointer" onclick="performAction('${message.id}', 'unlike')"></i>
-        <i id="bookmark-${message.id}" class="bi bi-bookmark cursor-pointer" onclick="performAction('${message.id}', 'bookmark')"></i>
+        <i id="copy-${message.id}" class="bi bi-clipboard cursor-pointer" onclick="performAction('${message.chat_id}','${message.id}', 'copy')"></i>
+        <i id="like-${message.id}" class="bi bi-hand-thumbs-up cursor-pointer" onclick="performAction('${message.chat_id}','${message.id}', 'like')"></i>
+        <i id="dislike-${message.id}" class="bi bi-hand-thumbs-down cursor-pointer" onclick="performAction('${message.chat_id}','${message.id}', 'dislike')"></i>
+        <i id="bookmark-${message.id}" class="bi bi-bookmark cursor-pointer" onclick="performAction('${message.chat_id}','${message.id}', 'bookmark')"></i>
     </div>
                 </div>
             </div>
@@ -1845,6 +1882,14 @@ console.log("my message data", message)
  
         
             messageDiv.innerHTML = botMessageHTML;
+
+            setTimeout(()=>{
+                if(message.reaction == "like"){
+                    $(`#like-${message.id}`).addClass('text-reviewbod-yellow');
+                }else if(message.reaction == "dislike"){ 
+                    $(`#dislike-${message.id}`).addClass('text-reviewbod-yellow');
+                }
+            },400)
 
             // Process templates after creating the element
             message.template.forEach(msg => {
@@ -2004,16 +2049,17 @@ console.log("my message data", message)
             }
 
             const data = await response.json();
-
+            placeholder()
             if (data.success) {
                 const chatElement = document.querySelector(`[data-chat-id="${chatId}"]`);
                 if (chatElement) {
                     chatElement.remove();
                 }
+                 
 
                 if (currentChatId == chatId) {
                     const chatContainer = document.getElementById('chatContainer');
-                    placeholder()
+                    // placeholder()
                     const remainingChats = document.querySelectorAll('[data-chat-id]');
                     if (remainingChats.length > 0) {
                         const firstChatId = remainingChats[0].dataset.chatId;
@@ -2102,8 +2148,11 @@ function suggest() {
   $("#messageInput").focus();
 }
 
-function performAction(id = '',messageId, action) {
-    console.log(id)
+function performAction(id = '',messageId, action,tt) {
+     if(tt){
+        messageId = id
+     }
+     console.log("odfjskdfbsdf:",id)
     const messageElement = document.getElementById(`msg-${messageId}`);
     if (!messageElement) return;
 
@@ -2115,11 +2164,11 @@ function performAction(id = '',messageId, action) {
             break;
         case 'like':
             // Handle like action
-            reaction(id, 'like')
+            reaction(messageId, 'like')
             break;
-        case 'unlike':
-            // Handle unlike action
-            reaction(id, 'dislike')
+        case 'dislike':
+            // Handle dislike action
+            reaction(messageId, 'dislike')
             break;
         case 'bookmark':
             // Handle bookmark action
@@ -2141,10 +2190,12 @@ function reaction(id,type){
             _token: "{{ csrf_token() }}"
         },
         success: function(response) {
+            $(`#like-${id}`).removeClass('text-reviewbod-yellow');
+            $(`#unlike-${id}`).removeClass('text-reviewbod-yellow');
             if (response.success) {
                 toastr.success(`Message ${type}d successfully`);
                 // Update the UI or perform any additional actions if needed
-                $(`#${type}-${id}`).toggleClass('text-blue-500 text-gray-500');
+                $(`#${type}-${id}`).toggleClass('text-reviewbod-yellow text-gray-500');
             } else {
                 toastr.error('Failed to update reaction');
             }

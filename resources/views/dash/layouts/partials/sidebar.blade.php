@@ -2,7 +2,7 @@
 <div class=" border-r border-[#F1F2F7] flex flex-col h-screen">
 
     <!-- App title -->
-    <div class="p-3">
+    {{-- <div class="p-3">
         <div class="px-3 py-3 justify-between flex items-center cursor-pointer relative bg-white rounded-md"
             onclick="toggleDropdown('appMenu')">
             <div class="bg-gradient-to-r   w-6 h-6 rounded-md flex items-center justify-center mr-2 shadow-sm">
@@ -30,7 +30,7 @@
                 @endforeach
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Menu sections -->
     <div class="mt-6 px-3 flex-grow">
@@ -97,7 +97,7 @@
             </div>
 
             <div class="relative">
-                <div onclick="location.href='{{ route('user.teams') }}'"
+                <div onclick="location.href='{{ route('user.settings') }}'"
                     class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 cursor-pointer">
 
 
