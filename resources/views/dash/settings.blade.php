@@ -4,20 +4,21 @@
 @section('page-title', 'Settings')
 
 @section('content')
-<style>
-body{
-    font-family: arial !important;
-}
+    <style>
+        body {
+              font-family: "Plus Jakarta Sans", sans-serif !important;
+        }
     </style>
     <div class="    bg-white h-screen">
         <div class="flex">
             <div class="w-1/4    border-r h-screen">
-              <div class="p-5 border-b border-gray-200 mb-4"> 
-  <h2 class="text-[30px] font-semibold mb-4">Settings</h2>
-              </div>
+                <div class="p-5 border-b border-gray-200 mb-4">
+                    <h2 class="text-[30px] font-semibold mb-4">Settings</h2>
+                </div>
 
                 <ul class="space-y-2 p-5">
-                    <li><a href="{{ route('user.settings',['type'=>'']) }}" class="p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings', ['type' => '']) }}"
+                            class="p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="16" height="18" viewBox="0 0 16 18" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -25,7 +26,8 @@ body{
                                         fill="#4B5563" />
                                 </svg>
                             </i> Personal Information</a></li>
-                    <li><a href="{{ route('user.settings',['type'=>'metric']) }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings', ['type' => 'metric']) }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -35,7 +37,8 @@ body{
                                 </svg>
 
                             </i> Metric Selection</a></li>
-                    <li><a href="{{ route('user.settings',['type'=>'security']) }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings', ['type' => 'security']) }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -44,8 +47,8 @@ body{
                                         stroke-linejoin="round" />
                                 </svg>
                             </i>Security</a></li>
-                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
-                                class="">
+                    <li><a href="{{ route('user.settings',['type' => 'apps']) }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i class="">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -55,7 +58,8 @@ body{
                                 </svg>
 
                             </i>Integrations</a></li>
-                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings',['type'=>'notification']) }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -63,7 +67,8 @@ body{
                                         fill="#4B5563" />
                                 </svg>
                             </i> Notifications</a></li>
-                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings',['type' => 'billing']) }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -71,7 +76,8 @@ body{
                                         fill="#4B5563" />
                                 </svg>
                             </i> Billing & Subscription</a></li>
-                    <li><a href="{{ route('user.settings') }}" class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
+                    <li><a href="{{ route('user.settings') }}"
+                            class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="18" height="20" viewBox="0 0 18 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -85,15 +91,41 @@ body{
             </div>
 
             <div class="w-full">
-               @if(request()->type == '')
-                @include("dash.settings.personal")
+                @if (request()->type == '')
+                    @include('dash.settings.personal')
                 @elseif(request()->type == 'metric')
-                     @include("dash.settings.metric")
+                    @include('dash.settings.metric')
                 @elseif(request()->type == 'security')
-                     @include("dash.settings.security")
-                     @endif
+                    @include('dash.settings.security')
+                   @elseif(request()->type == 'apps')
+                    @include('dash.settings.linked')
+                       @elseif(request()->type == 'notification')
+                    @include('dash.settings.notification')
+                       @elseif(request()->type == 'billing')
+                    @include('dash.settings.billing')
+                @endif
             </div>
 
         </div>
     </div>
 @endsection
+
+<script>
+
+     function delete_linked(id) {
+        if (confirm("Are you sure you want to delete this linked app?")) {
+            $.post('{{ route('customers.delete_linked') }}', {
+                id: id,
+                _token: '{{ csrf_token() }}'
+            }, function(response) {
+     
+                    toastr.success("Linked app deleted successfully.");
+                     $("#linked_" + id).remove();
+                
+            }).fail(function(xhr) {
+                toastr.error(xhr.responseJSON.message);
+            });
+        }
+    }
+
+    </script>
