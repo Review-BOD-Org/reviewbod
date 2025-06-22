@@ -4,544 +4,804 @@
 @section('page-title', 'Settings')
 
 @section('content')
-    <div class="container mx-auto px-[50px] py-6 bg-white h-screen">
-        <!-- Tab Navigation -->
-        <div class="border-b border-gray-200 mb-6">
-            <ul class="flex mb-px" id="tabNav">
-                <li class="mr-1">
-                    <a href="?type="
-                        class="inline-block py-4 px-4 @if (request()->type == '') border-b-2 border-[#1E3A8A] @endif font-medium text-sm text-[#1E3A8A] "
-                        data-tab="personal">Profile</a>
-                </li>
-                <li class="mr-1">
-                    <a href="?type=Calendar"
-                        class="inline-block @if (request()->type == 'Calendar') border-b-2 border-[#1E3A8A] @endif  py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm "
-                        data-tab="general">Calendar</a>
-                </li>
-                <li class="mr-1">
-                    <a href="?type=Analytics"
-                        class="inline-block  @if (request()->type == 'Analytics') border-b-2 border-[#1E3A8A] @endif  py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm "
-                        data-tab="company">Analytics</a>
-                </li>
-                <li class="mr-1">
-                    <a href="?type=Chat"
-                        class="inline-block  @if (request()->type == 'Chat') border-b-2 border-[#1E3A8A] @endif  py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm "
-                        data-tab="company">Review Bot</a>
-                </li>
-                <li class="mr-1">
-                    <a href="?type=Manage"
-                        class="inline-block  @if (request()->type == 'Manage') border-b-2 border-[#1E3A8A] @endif  py-4 px-4 text-gray-500 hover:text-gray-700 font-medium text-sm "
-                        data-tab="company">Manage user</a>
-                </li>
-            </ul>
+    @include('dash.layouts.partials.head')
+    <style>
+        .font-schibsted {
+            font-family: 'Schibsted Grotesk', sans-serif;
+        }
+
+        /* Add some custom styles for better chart integration */
+        #taskChart {
+            border-radius: 8px;
+        }
+    </style>
+    <div class="p-9 flex flex-col">
+        <div class="bg-[#1E2875] w-full h-[300px] rounded-lg p-5 relative">
+            <h3 class="text-white text-xl font-semibold">User Details</h3>
         </div>
 
-        <!-- Tab Content Areas -->
-        <div class="tab-content-container">
-
-            @if (request()->type == '')
-                <!-- Personal Tab Content -->
-                <div id="personal" class="tab-content block">
-                    <h2 class="text-lg font-medium mb-4">Personal Content</h2>
-
-                    <div class="flex flex-col md:flex-row gap-6">
-                        <!-- Personal Details Section -->
-                        <div class="w-full md:w-[50%] border rounded-md">
-                            <div class="bg-[#FAFAFA] w-full p-3 flex items-center gap-3 rounded-t-lg">
-                                <img src="/image.png" width="40">
-                                <h3 class="text-bold text-[20px]">Personal Details</h3>
-                            </div>
-
-                            <div class="flex flex-col px-4 gap-3">
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">Full Name</span>
-                                    <span class="text-[#1E3A8A] text-medium" >{{ $data['user']['displayName'] }}</span>
-                                </div>
-
-                            @if( $data['user']['email'])
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">Email</span>
-                                    <span class="text-[#1E3A8A] text-medium">{{ $data['user']['email'] }}</span>
-                                </div>
-                                @endif
-
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">User ID</span>
-                                    <span class="text-[#1E3A8A] text-medium">{{ $data['user']['id'] }}</span>
-                                </div>
-
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">Last Seen</span>
-                                    <span
-                                        class="text-[#1E3A8A] text-medium">{{ \Carbon\Carbon::parse($data['user']['lastSeen'])->format('Y M D H:i:s') }}</span>
-                                </div>
-
-                                @if( $data['user']['timezone'])
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">Timezone</span>
-                                    <span class="text-[#1E3A8A] text-medium">{{ $data['user']['timezone'] }}</span>
-                                </div>
-                                @endif
-
-                                <div class="flex justify-between p-4 border-b">
-                                    <span class="text-bold">UpComing Schedule</span>
-                                    <span class="text-[#1E3A8A] text-medium flex flex-col gap-1">
-                                        @foreach ($upcomingTasks as $task)
-                                            <span><b>Task Title:</b> {{ $task['title'] }}</span>
-                                            <span><b>Due Date:</b>
-                                                {{ \Carbon\Carbon::parse($task['dueDate'])->format('Y M D h:i:s') }}</span>
-
-                                            @php
-                                                // Format the priority
-                                                $priorityLabel = '';
-                                                switch ($task['priority']) {
-                                                    case 1:
-                                                        $priorityLabel = 'High';
-                                                        break;
-                                                    case 2:
-                                                        $priorityLabel = 'Medium';
-                                                        break;
-                                                    case 3:
-                                                        $priorityLabel = 'Low';
-                                                        break;
-                                                    default:
-                                                        $priorityLabel = 'Unknown';
-                                                        break;
-                                                }
-                                            @endphp
-
-                                            <span><b>Priority:</b> {{ $priorityLabel }}</span>
-                                            <br>
-                                        @endforeach
-                                    </span>
-
-                                </div>
-                            </div>
+        <div class="flex gap-6 self-center relative -mt-32">
+            <!-- Left Card - User Details -->
+            <div class="bg-white rounded-lg shadow-lg p-6 w-[400px] border border-gray-100">
+                <!-- Profile Section -->
+                <div class="flex items-center gap-4 mb-6 justify-between">
+                    <div class="relative">
+                        <div class="w-[72px] h-[72px] rounded-full overflow-hidden"
+                            style="background: linear-gradient(135deg, #FFA78D 0%, #FF8A6B 100%);">
+                            <img src="https://static.vecteezy.com/system/resources/thumbnails/036/594/092/small_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg"
+                                alt="Profile Avatar" class="w-full h-full object-cover">
                         </div>
+                    </div>
+                    <button
+                        class="bg-[#F0EFFA] flex gap-3 items-center hover:bg-[#E8E7F5] px-4 py-2 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                            <path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                d="M15 19c1.2-3.678 2.526-5.005 6-6c-3.474-.995-4.8-2.322-6-6c-1.2 3.678-2.526 5.005-6 6c3.474.995 4.8 2.322 6 6Zm-8-9c.6-1.84 1.263-2.503 3-3c-1.737-.497-2.4-1.16-3-3c-.6 1.84-1.263 2.503-3 3c1.737.497 2.4 1.16 3 3Zm1.5 10c.3-.92.631-1.251 1.5-1.5c-.869-.249-1.2-.58-1.5-1.5c-.3.92-.631 1.251-1.5 1.5c.869.249 1.2.58 1.5 1.5Z" />
+                        </svg>
+                        Analyze
+                    </button>
+                </div>
 
-                        <!-- Linked Accounts Section -->
-                        <div class="w-full md:w-[50%] border rounded-md">
-                            <div class="bg-[#FAFAFA] w-full p-4 flex items-center gap-3 rounded-t-lg">
+                <!-- Personal Information Card -->
+                <div class="bg-white border border-black/15 rounded shadow-sm p-4 mb-6">
+                    <!-- Full Name -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <label class="text-xs font-medium text-gray-600 opacity-70">Full Name</label>
+                            <p class="text-sm font-medium text-gray-900 opacity-90">{{ $data->name }}</p>
+                        </div>
+                        <button class="px-3 py-1 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                            <i class="fa fa-user text-[18px]"></i>
+                        </button>
+                    </div>
 
-                                <h3 class="text-bold text-[20px]">Linked Accounts</h3>
-                            </div>
+                    <!-- Email -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <label class="text-xs font-medium text-gray-600 opacity-70">Email</label>
+                            <p class="text-sm font-medium text-gray-900 opacity-90">{{ $data->email }}</p>
+                        </div>
+                        <button class=" px-3 py-1 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 20 20">
+                                <path fill="currentColor"
+                                    d="M14.608 12.172c0 .84.239 1.175.864 1.175c1.393 0 2.28-1.775 2.28-4.727c0-4.512-3.288-6.672-7.393-6.672c-4.223 0-8.064 2.832-8.064 8.184c0 5.112 3.36 7.896 8.52 7.896c1.752 0 2.928-.192 4.727-.792l.386 1.607c-1.776.577-3.674.744-5.137.744c-6.768 0-10.393-3.72-10.393-9.456c0-5.784 4.201-9.72 9.985-9.72c6.024 0 9.215 3.6 9.215 8.016c0 3.744-1.175 6.6-4.871 6.6c-1.681 0-2.784-.672-2.928-2.161c-.432 1.656-1.584 2.161-3.145 2.161c-2.088 0-3.84-1.609-3.84-4.848c0-3.264 1.537-5.28 4.297-5.28c1.464 0 2.376.576 2.782 1.488l.697-1.272h2.016v7.057zm-2.951-3.168c0-1.319-.985-1.872-1.801-1.872c-.888 0-1.871.719-1.871 2.832c0 1.68.744 2.616 1.871 2.616c.792 0 1.801-.504 1.801-1.896z" />
+                            </svg>
+                        </button>
+                    </div>
 
-                            <div class="p-4">
-                                <h4 class="text-lg font-medium mb-4">Workspaces Integration</h4>
+                    <!-- Phone Number -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label class="text-xs font-medium text-gray-600 opacity-70">Date Joined</label>
+                            <p class="text-sm font-medium text-gray-900 opacity-90">{{ $data->created_at }}</p>
+                        </div>
+                        <button class="  px-3 py-1 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 20 20">
+                                <path fill="currentColor"
+                                    d="M5.673 0a.7.7 0 0 1 .7.7v1.309h7.517v-1.3a.7.7 0 0 1 1.4 0v1.3H18a2 2 0 0 1 2 1.999v13.993A2 2 0 0 1 18 20H2a2 2 0 0 1-2-1.999V4.008a2 2 0 0 1 2-1.999h2.973V.699a.7.7 0 0 1 .7-.699M1.4 7.742v10.259a.6.6 0 0 0 .6.6h16a.6.6 0 0 0 .6-.6V7.756zm5.267 6.877v1.666H5v-1.666zm4.166 0v1.666H9.167v-1.666zm4.167 0v1.666h-1.667v-1.666zm-8.333-3.977v1.666H5v-1.666zm4.166 0v1.666H9.167v-1.666zm4.167 0v1.666h-1.667v-1.666zM4.973 3.408H2a.6.6 0 0 0-.6.6v2.335l17.2.014V4.008a.6.6 0 0 0-.6-.6h-2.71v.929a.7.7 0 0 1-1.4 0v-.929H6.373v.92a.7.7 0 0 1-1.4 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
-                                <div class="mb-6">
-                                    <div class="flex items-center justify-between p-4 border-b">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-12 h-12 rounded-full flex items-center justify-center">
-                                               @if(Auth::user()->service == "trello")
-                                               <img src="/images/trello.webp">
-                                               @elseif(Auth::user()->service == "linear")
-                                               <img src="/images/linear.webp">
-                                               @endif
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-900 capitalize">{{Auth::user()->service}}</p>
-                                                {{-- <p class="text-sm text-gray-500">Review-Bot</p> --}}
-                                            </div>
-                                        </div>
-                                        <span class="text-[#1E3A8A] text-medium">{{ $data['user']['email'] }}</span>
-                                    </div>
+                <!-- About Section Card -->
+                <div class="bg-white border border-black/15 rounded shadow-sm p-4 mb-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-sm font-medium text-gray-900">User status</h4>
+                        <button
+                            class="bg-green-400 hover:bg-[#E8E7F5] px-3 py-1 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                            Active
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-700 opacity-80 leading-relaxed">
+                        This user was last updated <b>{{ \Carbon\Carbon::parse($data->updated_at)->diffForHumans() }}</b>
+                    </p>
+                </div>
 
-                                    {{-- <div class="flex items-center justify-between p-4 border-b">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-12 h-12   flex items-center justify-center">
-                                                <img src="/images/slack.webp">
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-900">Slack</p>
-                                                <p class="text-sm text-gray-500">Review-Bot</p>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <button
-                                                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md">
-                                                Link Account
-                                            </button>
-                                        </div>
-                                    </div> --}}
-                                </div>
-                            </div>
+                <!-- Linked Apps Section Card -->
+                <div class="bg-white border border-black/15 rounded shadow-sm p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Linked Apps</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-900 opacity-90">Linear</span>
+                            <span
+                                class="bg-[#99FDD2] text-gray-700 px-3 py-1 rounded-full text-xs font-medium opacity-80">Linked</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-900 opacity-90">Trello</span>
+                            <span
+                                class="bg-[#99FDD2] text-gray-700 px-3 py-1 rounded-full text-xs font-medium opacity-80">Linked</span>
                         </div>
                     </div>
                 </div>
-            @endif
-
-            @if (request()->type == 'Calendar')
-                <!-- General Tab Content -->
-                <div id="general" class="tab-content">
-                    @include('dash.user.calendar')
-                </div>
-            @endif
-
-            @if (request()->type == 'Analytics')
-                <!-- Company Tab Content -->
-                <div id="company" class="tab-content">
-                    @include('dash.user.analytics')
-                </div>
-            @endif
-
-            @if (request()->type == 'Chat')
-            <!-- Company Tab Content -->
-            <div id="company" class="tab-content">
-                @include('dash.user.chat')
             </div>
-        @endif
 
+            <!-- Right Card - Professional Details -->
+            <div class="bg-white rounded-lg shadow-lg border border-gray-100 p-4 w-[400px] h-fit">
 
-            @if (request()->type == 'Manage')
-                <!-- Company Tab Content -->
-                <div id="company" class="tab-content">
-                    @include('dash.user.edit')
+                <!-- Professional Details Header Section -->
+                <div
+                    class="bg-white border border-black/15 rounded-lg shadow-sm p-4 mb-4 flex items-center justify-between">
+                    <div class="flex items-center justify-between w-full gap-3">
+
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-900">Professional Details</h4>
+                            <!-- Description -->
+                            <p class="text-sm text-gray-600 mt-2">
+                                This are the professional details shown to users in the app.
+                            </p>
+                        </div>
+
+                        <!-- Stars Icon -->
+                        <div class="w-10 h-10 flex items-center justify-center">
+                            <svg width="40" height="40" viewBox="0 0 22 25" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.5"
+                                    d="M8.72753 3.15878C10.4381 1.11204 11.2934 0.0886686 12.2766 0.246294C13.2598 0.40392 13.7198 1.63815 14.6397 4.10662L14.8777 4.74524C15.1391 5.4467 15.2698 5.79743 15.5241 6.05579C15.7784 6.31415 16.1276 6.4509 16.8258 6.72438L17.4616 6.97337C19.9188 7.93577 21.1474 8.41698 21.2876 9.40053C21.4277 10.3841 20.3865 11.2186 18.3042 12.8877L17.7654 13.3195C17.1737 13.7938 16.8778 14.0309 16.7066 14.3556C16.5353 14.6802 16.508 15.0555 16.4535 15.8061L16.4038 16.4895C16.2119 19.1311 16.1159 20.4518 15.2193 20.9021C14.3228 21.3523 13.2193 20.6339 11.0124 19.197L10.4415 18.8252C9.81435 18.4169 9.50078 18.2127 9.14062 18.155C8.78045 18.0972 8.41446 18.1924 7.68249 18.3829L7.01608 18.5563C4.44022 19.2264 3.15229 19.5615 2.45804 18.8562C1.76379 18.1509 2.123 16.8723 2.84142 14.3152L3.02728 13.6536C3.23143 12.927 3.33351 12.5637 3.28218 12.2034C3.23085 11.8431 3.03192 11.5266 2.63408 10.8936L2.27187 10.3174C0.871824 8.09004 0.171803 6.97636 0.639328 6.09022C1.10685 5.20408 2.4323 5.13234 5.08319 4.98887L5.76901 4.95175C6.52231 4.91098 6.89896 4.8906 7.2274 4.72566C7.55584 4.56073 7.79889 4.26992 8.28498 3.6883L8.72753 3.15878Z"
+                                    fill="#2684FC" />
+                                <path
+                                    d="M15.1257 11.5283C13.8427 9.99321 13.2013 9.22568 12.4639 9.3439C11.7265 9.46212 11.3815 10.3878 10.6916 12.2391L10.5131 12.7181C10.317 13.2442 10.219 13.5073 10.0282 13.701C9.83749 13.8948 9.57564 13.9974 9.05194 14.2025L8.57515 14.3892C6.73222 15.111 5.81075 15.4719 5.70566 16.2096C5.60057 16.9472 6.38145 17.5731 7.94321 18.825L8.34726 19.1488C8.79106 19.5045 9.01296 19.6824 9.14141 19.9258C9.26985 20.1693 9.29031 20.4508 9.33121 21.0138L9.36845 21.5263C9.5124 23.5075 9.58437 24.4981 10.2568 24.8357C10.9293 25.1734 11.7568 24.6346 13.412 23.5569L13.8402 23.2781C14.3106 22.9718 14.5457 22.8187 14.8159 22.7754C15.086 22.7321 15.3605 22.8035 15.9095 22.9463L16.4093 23.0764C18.3412 23.579 19.3071 23.8303 19.8278 23.3013C20.3485 22.7724 20.0791 21.8134 19.5403 19.8956L19.4009 19.3994C19.2478 18.8544 19.1712 18.5819 19.2097 18.3117C19.2482 18.0415 19.3974 17.8041 19.6958 17.3294L19.9674 16.8972C21.0175 15.2267 21.5425 14.3914 21.1918 13.7268C20.8412 13.0622 19.8471 13.0084 17.8589 12.9008L17.3446 12.873C16.7796 12.8424 16.4971 12.8271 16.2508 12.7034C16.0044 12.5797 15.8222 12.3616 15.4576 11.9254L15.1257 11.5283Z"
+                                    fill="#413B89" />
+                            </svg>
+
+                        </div>
+                    </div>
+
                 </div>
-            @endif
 
+
+
+                <!-- Expertise In Section -->
+                {{-- <div class="mb-4">
+                    <h5 class="text-sm font-medium text-gray-900 mb-3">Expertise In</h5>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Career Tag -->
+                        <div class="bg-white border border-gray-300 rounded-full px-3 py-1.5 flex items-center gap-2">
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 4H13V12H3V4Z" fill="#0ead69"/>
+                                    <path d="M4 5H12V6H4V5Z" fill="#ffedde"/>
+                                    <path d="M4 7H8V8H4V7Z" fill="#ffedde"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm text-gray-700">Total</span>
+                        </div>
+
+                        <!-- Money Tag -->
+                        <div class="bg-white border border-gray-300 rounded-full px-3 py-1.5 flex items-center gap-2">
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 5C3 4.5 3.5 4 4 4H12C12.5 4 13 4.5 13 5V11C13 11.5 12.5 12 12 12H4C3.5 12 3 11.5 3 11V5Z" fill="#0ead69"/>
+                                    <path d="M5 7H11V8H5V7Z" fill="#ffedde"/>
+                                    <path d="M6 8.5H10V9H6V8.5Z" fill="#ffedde"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm text-gray-700">Money</span>
+                        </div>
+
+                        <!-- Mortgage Tag -->
+                        <div class="bg-white border border-gray-300 rounded-full px-3 py-1.5 flex items-center gap-2">
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 5L8 3L12 5V12H4V5Z" stroke="#413b89" stroke-width="0.8" fill="#ffedde"/>
+                                    <path d="M4 5L8 3L12 5" stroke="#413b89" stroke-width="0.8" fill="none"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm text-gray-700">Mortgage</span>
+                        </div>
+
+                        <!-- Stock Tag -->
+                        <div class="bg-white border border-gray-300 rounded-full px-3 py-1.5 flex items-center gap-2">
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 11L5 9L8 10L13 5" stroke="#413b89" stroke-width="0.8" fill="none"/>
+                                    <path d="M11 5H13V7" stroke="#413b89" stroke-width="0.8" fill="none"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm text-gray-700">Stock</span>
+                        </div>
+                    </div>
+                </div> --}}
+
+                <!-- Total Experience Section -->
+                <div class="mb-4">
+                    <h5 class="text-sm font-medium text-gray-900 mb-3">Total Tasks Assigned</h5>
+                    <div class="bg-white border border-black/15 rounded-lg shadow-sm p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ DB::table('tasks')->where(['user_id' => $data->user_id])->count() }}</p>
+                            <p class="text-sm text-gray-600">Tasks Assgined</p>
+                        </div>
+                        <div class="w-12 h-12 bg-[#ffa78d] rounded-lg flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <!-- Medal/Award Icon -->
+                                <path d="M12 3L14 9H20L15.5 12.5L17.5 19L12 15L6.5 19L8.5 12.5L4 9H10L12 3Z"
+                                    fill="white" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ratings Section -->
+                <div class="mb-6">
+                    <h5 class="text-sm font-medium text-gray-900 mb-3">Total Project Assigned</h5>
+                    <div class="bg-white border border-black/15 rounded-lg shadow-sm p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ DB::table('projects')->join('tasks', 'tasks.project_id', 'projects.project_key')->where(['tasks.user_id' => $data->user_id])->count() }}
+                            </p>
+                            <p class="text-sm text-gray-600">Projects Assigned</p>
+                        </div>
+                        <div class="w-12 h-12 bg-[#ffcb00] bg-opacity-70 rounded-lg flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <!-- Star Icon -->
+                                <path
+                                    d="M12 3L14.5 8.5H20.5L16.25 12.25L18.25 17.75L12 14L5.75 17.75L7.75 12.25L3.5 8.5H9.5L12 3Z"
+                                    fill="white" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Analytics CTA Button -->
+                <div>
+                    <button onclick="openUserAnalyticsModal()"
+                        class="w-full bg-[#1e3a8a] text-white py-3 px-4 rounded-lg text-sm font-medium hover:bg-[#1e3a8a]/90 transition-colors">
+                        User Analytics
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+@endsection
 
 
-    <script>
-        // This JavaScript will handle calendar rendering and Linear data integration
+<!-- User Analytics Modal -->
+<div id="userAnalyticsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    onclick="closeUserAnalyticsModal()">
+    <div class="bg-white rounded-[20px] w-[540px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+        onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-8 py-4 border-b border-[#e5e5e5] rounded-t-[20px]">
+            <h2 class="text-base font-bold text-[#292d32] font-schibsted">User Details</h2>
+            <button onclick="closeUserAnalyticsModal()"
+                class="w-6 h-6 bg-white border border-[#8e8e8e] rounded-full flex items-center justify-center hover:bg-gray-50">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M9 3L3 9M3 3L9 9" stroke="#8e8e8e" stroke-width="1.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
 
-        class CalendarApp {
-            constructor() {
-                this.currentYear = {{date('Y')}};
-                this.linearData = null;
-                this.issuesByDate = {};
-
-                // Initialize the calendar
-                this.initCalendar();
-
-                // Add event listeners
-                document.querySelector('#left-nav').addEventListener('click', () => this.navigateYear(-1));
-                document.querySelector('#right-nav').addEventListener('click', () => this.navigateYear(1));
-            }
-
-            initCalendar() {
-                console.log(this.currentYear)
-                // Update the year title
-                document.querySelector('.year-title').textContent = this.currentYear;
-
-                // Generate all months
-                const monthsGrid = document.querySelector('.months-grid');
-                monthsGrid.innerHTML = ''; // Clear existing months
-
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-                // Create 12 months (4 rows of 3)
-                for (let i = 0; i < 12; i++) {
-                    const monthCard = this.generateMonthCard(i, monthNames[i], this.currentYear);
-                    monthsGrid.appendChild(monthCard);
-                }
-
-                // After generating the calendar, apply the Linear data
-                this.applyLinearDataToCalendar();
-            }
-
-            generateMonthCard(monthIndex, monthName, year) {
-                const monthCard = document.createElement('div');
-                monthCard.className = 'month-card';
-
-                // Get first day of month and total days
-                const firstDay = new Date(year, monthIndex, 1);
-                const lastDay = new Date(year, monthIndex + 1, 0);
-                const daysInMonth = lastDay.getDate();
-
-                // Get day of week of first day (0 = Sunday, 1 = Monday, etc.)
-                // Adjust for Monday as first day of week
-                let firstDayOfWeek = firstDay.getDay() - 1;
-                if (firstDayOfWeek < 0) firstDayOfWeek = 6; // Sunday becomes last day
-
-                // Create month header
-                const monthHeader = document.createElement('div');
-                monthHeader.className = 'month-header';
-                monthHeader.textContent = monthName;
-                monthCard.appendChild(monthHeader);
-
-                // Create table
-                const table = document.createElement('table');
-
-                // Create table header
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                const weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-
-                weekdays.forEach(day => {
-                    const th = document.createElement('th');
-                    th.textContent = day;
-                    headerRow.appendChild(th);
-                });
-
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                // Create table body
-                const tbody = document.createElement('tbody');
-
-                // Create calendar days
-                let date = 1;
-
-                // Up to 6 rows might be needed for a month
-                for (let i = 0; i < 6; i++) {
-                    // Stop if we've used all days in the month
-                    if (date > daysInMonth) break;
-
-                    const row = document.createElement('tr');
-
-                    // Create 7 cells for each day of the week
-                    for (let j = 0; j < 7; j++) {
-                        const cell = document.createElement('td');
-
-                        // Fill in previous month days
-                        if (i === 0 && j < firstDayOfWeek) {
-                            const prevMonthLastDay = new Date(year, monthIndex, 0).getDate();
-                            cell.textContent = prevMonthLastDay - (firstDayOfWeek - j - 1);
-                            cell.className = 'other-month';
-                        }
-                        // Fill in current month days
-                        else if (date <= daysInMonth) {
-                            cell.textContent = date;
-
-                            // Add data attribute for issue display
-                            const fullDate =
-                                `${year}-${(monthIndex + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
-                            cell.dataset.date = fullDate;
-
-                            // Add click event for showing issues
-                            cell.addEventListener('click', () => this.showIssuesForDate(fullDate));
-
-                            date++;
-                        }
-                        // Fill in next month days
-                        else {
-                            cell.textContent = date - daysInMonth;
-                            cell.className = 'other-month';
-                            date++;
-                        }
-
-                        row.appendChild(cell);
-                    }
-
-                    tbody.appendChild(row);
-                }
-
-                table.appendChild(tbody);
-                monthCard.appendChild(table);
-
-                return monthCard;
-            }
-
-            navigateYear(increment) {
-                this.currentYear += increment;
-                this.initCalendar();
-            }
-
-            setLinearData(data) {
-                this.linearData = data;
-                this.processLinearData();
-                this.applyLinearDataToCalendar();
-            }
-
-            processLinearData() {
-            // Reset issues by date
-            this.issuesByDate = {};
-
-            if (!this.linearData || !this.linearData.user || !this.linearData.user.assignedIssues) {
-                return;
-            }
-
-            // Process assigned issues
-            const assignedIssues = this.linearData.user.assignedIssues.nodes;
-
-            assignedIssues.forEach(issue => {
-                // Process parent issue
-                let dateToUse;
-
-                if (issue.dueDate) {
-                    dateToUse = issue.dueDate;
-                } else if (issue.createdAt) {
-                    const createdDate = new Date(issue.createdAt);
-                    dateToUse =
-                        `${createdDate.getFullYear()}-${(createdDate.getMonth() + 1).toString().padStart(2, '0')}-${createdDate.getDate().toString().padStart(2, '0')}`;
-                } else {
-                    return; // Skip if no date available
-                }
-
-                if (!this.issuesByDate[dateToUse]) {
-                    this.issuesByDate[dateToUse] = [];
-                }
-
-                this.issuesByDate[dateToUse].push({
-                    id: issue.id,
-                    title: issue.title,
-                    identifier: issue.identifier,
-                    priority: issue.priority,
-                    state: issue.state.name,
-                    url: issue.url,
-                    isCreatedDate: !issue.dueDate,
-                    isSubissue: false, // Flag to indicate this is a parent issue
-                    parentId: null // No parent for top-level issues
-                });
-
-                // Process subissues
-                if (issue.children && issue.children.nodes && issue.children.nodes.length > 0) {
-                    issue.children.nodes.forEach(subissue => {
-                        let subissueDate;
-
-                        if (subissue.dueDate) {
-                            subissueDate = subissue.dueDate;
-                        } else if (subissue.createdAt) {
-                            const subCreatedDate = new Date(subissue.createdAt);
-                            subissueDate =
-                                `${subCreatedDate.getFullYear()}-${(subCreatedDate.getMonth() + 1).toString().padStart(2, '0')}-${subCreatedDate.getDate().toString().padStart(2, '0')}`;
-                        } else {
-                            return; // Skip subissue if no date available
-                        }
-
-                        if (!this.issuesByDate[subissueDate]) {
-                            this.issuesByDate[subissueDate] = [];
-                        }
-
-                        this.issuesByDate[subissueDate].push({
-                            id: subissue.id,
-                            title: subissue.title,
-                            identifier: subissue.identifier,
-                            priority: subissue.priority,
-                            state: subissue.state.name,
-                            url: subissue.url,
-                            isCreatedDate: !subissue.dueDate,
-                            isSubissue: true, // Flag to indicate this is a subissue
-                            parentId: issue.id, // Link to parent issue
-                            parentIdentifier: issue.identifier // For display purposes
-                        });
-                    });
-                }
-            });
-        }
-
-        applyLinearDataToCalendar() {
-            document.querySelectorAll('.has-issues').forEach(el => {
-                el.classList.remove('has-issues');
-            });
-
-            for (const date in this.issuesByDate) {
-                const cells = document.querySelectorAll(`td[data-date="${date}"]`);
-                cells.forEach(cell => {
-                    cell.classList.add('has-issues');
-
-                    const count = this.issuesByDate[date].length;
-                    if (count > 0) {
-                        let counter = cell.querySelector('.issue-count');
-                        if (!counter) {
-                            counter = document.createElement('span');
-                            counter.className = 'issue-count';
-                            cell.appendChild(counter);
-                        }
-                        counter.textContent = count;
-                    }
-                });
-            }
-        }
-
-        showIssuesForDate(date) {
-            let issuesPanel = document.getElementById('issues-panel');
-
-            if (!issuesPanel) {
-                issuesPanel = document.createElement('div');
-                issuesPanel.id = 'issues-panel';
-                issuesPanel.className = 'issues-panel';
-                document.querySelector('.calendar-container').appendChild(issuesPanel);
-            }
-
-            const displayDate = new Date(date);
-            const formattedDate = displayDate.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            const issues = this.issuesByDate[date] || [];
-
-            let content = `<div class="panel-header">
-                <h3>${formattedDate}</h3>
-                <button class="close-panel">×</button>
-            </div>`;
-
-            if (issues.length === 0) {
-                content += `<p>No issues or subissues on this date.</p>`;
-            } else {
-                content += `<ul class="issues-list">`;
-                issues.forEach(issue => {
-                    const priorityLabels = {
-                        0: 'No Priority',
-                        1: 'Urgent',
-                        2: 'High',
-                        3: 'Medium',
-                        4: 'Low'
-                    };
-
-                    const priorityLabel = priorityLabels[issue.priority] || 'Unknown';
-
-                    const dateTypeLabel = issue.isCreatedDate
-                        ? '<span class="created-date-label">Created On</span>'
-                        : '<span class="due-date-label">Due Date</span>';
-
-                    // Add subissue-specific display
-                    let subissueLabel = '';
-                    if (issue.isSubissue) {
-                        subissueLabel = `<span class="subissue-label">Subissue of ${issue.parentIdentifier}</span>`;
-                    }
-
-                    content += `
-                        <li class="issue-item priority-${issue.priority} ${issue.isCreatedDate ? 'created-date' : 'due-date'} ${issue.isSubissue ? 'subissue' : ''}">
-                            <div class="issue-header">
-                                <span class="issue-id">${issue.identifier}</span>
-                                <span class="issue-priority">${priorityLabel}</span>
-                                ${dateTypeLabel}
-                                ${subissueLabel}
+        <!-- Modal Content -->
+        <div class="p-8 space-y-6">
+            <!-- Performance Metrics -->
+            <div class="grid grid-cols-3 gap-4">
+                <!-- Tasks Completed -->
+                <div class="bg-[#f9fafb] rounded-lg p-4 h-32">
+                    <div class="h-full flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <p class="text-xs font-semibold text-[#757575] font-schibsted">Tasks Completed</p>
+                            <div class="w-6 h-6 rounded-full bg-[#70b489] flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M13.5 4.5L6 12L2.5 8.5" stroke="white" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
                             </div>
-                            <div class="issue-title">${issue.isSubissue ? '↳ ' : ''}${issue.title}</div>
-                            <div class="issue-state">Status: ${issue.state}</div>
-                            <a href="${issue.url}" target="_blank" class="issue-link">View in {{Auth::user()->service}}</a>
-                        </li>`;
-                });
-                content += `</ul>`;
+                        </div>
+                        <!-- Fixed: Changed from in_progress to completed tasks -->
+                        <p class="text-2xl font-bold text-[#f4d632] font-schibsted">
+                            {{ $tasks->where('status', 'Done')->count() }}</p>
+                    </div>
+                </div>
+
+                <!-- Average Completion Time -->
+                <div class="bg-[#f9fafb] rounded-lg p-4 h-32">
+                    <div class="h-full flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <p class="text-xs font-semibold text-[#757575] font-schibsted leading-tight">Avg.
+                                Completion<br>Time</p>
+                            <div class="w-7 h-7 rounded-full bg-[#70b489] flex items-center justify-center">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" fill="white" />
+                                    <path d="M10 6v4l3 2" stroke="#70b489" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Fixed: Calculate actual average completion time -->
+                        @php
+                            $completedTasks = $tasks->where('status', 'Done');
+                            $totalTime = 0;
+                            $taskCount = 0;
+
+                            foreach ($completedTasks as $task) {
+                                if ($task->created_at && $task->updated_at) {
+                                    $completionTime = \Carbon\Carbon::parse($task->created_at)->diffInHours(
+                                        \Carbon\Carbon::parse($task->updated_at),
+                                    );
+                                    $totalTime += $completionTime;
+                                    $taskCount++;
+                                }
+                            }
+
+                            $avgTime = $taskCount > 0 ? round($totalTime / $taskCount, 1) : 0;
+                        @endphp
+                        <p class="text-2xl font-bold text-[#f4d632] font-schibsted">{{ $avgTime }}h</p>
+                    </div>
+                </div>
+
+                <!-- On-Time Rate -->
+                <div class="bg-[#f9fafb] rounded-lg p-4 h-32">
+                    <div class="h-full flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <p class="text-xs font-semibold text-[#757575] font-schibsted">On - Time Rate</p>
+                            <div class="w-6 h-6 rounded-full bg-[#70b489] flex items-center justify-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M13.5 4.5L6 12L2.5 8.5" stroke="white" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Fixed: Calculate on-time completion rate as percentage -->
+                        @php
+
+                            $completedTasks = $tasks->where('status', 'Done');
+                            $onTimeTasks = 0;
+                            $totalCompleted = $completedTasks->count();
+
+                            foreach ($completedTasks as $task) {
+                                if ($task->due_date && $task->updated_at) {
+                                    $dueDate = \Carbon\Carbon::parse($task->due_date);
+                                    $completedDate = \Carbon\Carbon::parse($task->updated_at);
+                                    if ($completedDate->lte($dueDate)) {
+                                        $onTimeTasks++;
+                                    }
+                                }
+                            }
+
+                            $onTimeRate = $totalCompleted > 0 ? round(($onTimeTasks / $totalCompleted) * 100) : 0;
+                        @endphp
+                        <p class="text-2xl font-bold text-[#1e3a8a] font-schibsted">{{ $onTimeRate }}%</p>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Time Filter Buttons -->
+<div class="flex items-center justify-center space-x-4">
+    <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+        data-days="7">7 Days</button>
+    <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+        data-days="30">30 Days</button>
+      <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+        data-days="all">All</button>
+</div>
+
+<!-- Task Performance Chart -->
+<div>
+    <h3 class="text-xl font-semibold text-black mb-6 text-center">Task Performance</h3>
+    
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="hidden flex items-center justify-center mb-4">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#6fb489]"></div>
+        <span class="ml-2 text-sm text-[#8e8e8e]">Loading chart data...</span>
+    </div>
+    
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden text-center text-red-500 text-sm mb-4"></div>
+    
+    <!-- Chart Container -->
+    <div class="relative mb-6">
+        <div class="flex items-center justify-center mb-4">
+            <div class="w-8"></div>
+            <canvas id="taskChart" width="400" height="200"></canvas>
+        </div>
+        
+        <!-- Legend -->
+        <div class="flex items-center justify-center space-x-6 mt-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-3 bg-[#6fb489] rounded-sm"></div>
+                <span class="text-xs text-[#8e8e8e]">Completed</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-3 bg-[#f4d632] rounded-sm"></div>
+                <span class="text-xs text-[#8e8e8e]">Assigned</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+           <!-- Task List Section -->
+            <div>
+                <h3 class="text-xl font-semibold text-black mb-4">Task List</h3>
+
+                <!-- Loading Indicator for Tasks -->
+                <div id="tasksLoadingIndicator" class="hidden flex items-center justify-center mb-4">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#6fb489]"></div>
+                    <span class="ml-2 text-sm text-[#8e8e8e]">Loading tasks...</span>
+                </div>
+
+                <!-- Task Items Container -->
+                <div id="tasksList" class="space-y-3">
+                    <!-- Tasks will be loaded here via AJAX -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-6">
+                    <button id="loadMoreBtn" onclick="loadMoreTasks()" 
+                        class="bg-[#e1e1e1] text-[#717171] text-sm font-medium px-6 py-2 rounded-full hover:bg-[#d1d1d1] transition-all duration-200">
+                        Load More
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-8 py-4 border-t border-[#e5e5e580] rounded-b-[20px]">
+            <button onclick="closeUserAnalyticsModal()"
+                class="w-full bg-[#1e3a8a] text-white py-3 px-4 rounded-lg text-sm font-medium hover:bg-[#1e3a8a]/90 transition-colors">
+                Chat for more information
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<script>
+ 
+let taskChart = null;
+
+// Chart configuration
+const chartConfig = {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Completed',
+            data: [],
+            borderColor: '#6fb489',
+            backgroundColor: 'rgba(111, 180, 137, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#6fb489',
+            pointBorderColor: '#6fb489',
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }, {
+            label: 'Assigned',
+            data: [],
+            borderColor: '#f4d632',
+            backgroundColor: 'rgba(244, 214, 50, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#f4d632',
+            pointBorderColor: '#f4d632',
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
             }
-
-            issuesPanel.innerHTML = content;
-            issuesPanel.classList.add('visible');
-
-            issuesPanel.querySelector('.close-panel').addEventListener('click', () => {
-                issuesPanel.classList.remove('visible');
-            });
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                },
+                ticks: {
+                    color: '#8e8e8e',
+                    font: {
+                        size: 11
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                },
+                ticks: {
+                    color: '#8e8e8e',
+                    font: {
+                        size: 11
+                    }
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
         }
     }
+};
 
-    // Initialize the calendar application
-    document.addEventListener('DOMContentLoaded', () => {
-        const calendarApp = new CalendarApp();
+// Initialize chart
+function initChart() {
+    const ctx = document.getElementById('taskChart').getContext('2d');
+    taskChart = new Chart(ctx, chartConfig);
+}
 
-        function loadLinearData() {
-            fetch('{{ route("user.get_data", ["linear_user_id" => $data["user"]["id"]]) }}')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        calendarApp.setLinearData(data);
-                    } else {
-                        console.error('Failed to load Linear data:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading Linear data:', error);
-                });
+// Show loading state
+function showLoading() {
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    document.getElementById('errorMessage').classList.add('hidden');
+}
+
+// Hide loading state
+function hideLoading() {
+    document.getElementById('loadingIndicator').classList.add('hidden');
+}
+
+// Show error message
+function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('errorMessage').classList.remove('hidden');
+    hideLoading();
+}
+
+// Fetch chart data via AJAX
+async function fetchChartData(days = 7) {
+    showLoading();
+    
+    try {
+        const response = await fetch('{{route('user.getTaskPerformance')}}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({
+                days: days,
+                _token: "{{csrf_token()}}",
+                user_id: window.currentUserId // Assume this is set globally
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        loadLinearData();
+        const data = await response.json();
+        
+        if (data.success) {
+            updateChart(data.data);
+        } else {
+            throw new Error(data.message || 'Failed to fetch chart data');
+        }
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+        showError('Failed to load chart data. Please try again.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Update chart with new data
+function updateChart(data) {
+    if (!taskChart) return;
+    
+    taskChart.data.labels = data.labels;
+    taskChart.data.datasets[0].data = data.completed;
+    taskChart.data.datasets[1].data = data.assigned;
+    taskChart.update('active');
+}
+
+// Handle filter button clicks
+function setupFilterButtons() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active state from all buttons
+            filterButtons.forEach(btn => {
+                btn.classList.remove('bg-[#6fb489]', 'text-white');
+                btn.classList.add('bg-[#e1e1e1]', 'text-[#717171]');
+            });
+            
+            // Add active state to clicked button
+            this.classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
+            this.classList.add('bg-[#6fb489]', 'text-white');
+            
+            // Fetch new data
+            const days = parseInt(this.getAttribute('data-days'));
+            fetchChartData(days);
+        });
     });
-    </script>
-@endsection
+    
+    // Set default active button (7 days)
+    filterButtons[0].classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
+    filterButtons[0].classList.add('bg-[#6fb489]', 'text-white');
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initChart();
+    setupFilterButtons();
+    fetchChartData(7); // Load initial data
+});
+
+    // Modal functions (you'll need to implement these)
+    function closeUserAnalyticsModal() {
+        document.getElementById('userAnalyticsModal').style.display = 'none';
+    }
+
+    function openUserAnalyticsModal() {
+        document.getElementById('userAnalyticsModal').style.display = 'flex';
+    }
+
+    function openUserAnalyticsModal() {
+        const modal = document.getElementById('userAnalyticsModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeUserAnalyticsModal() {
+        const modal = document.getElementById('userAnalyticsModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeUserAnalyticsModal();
+        }
+    });
+
+    
+
+    // Task loading variables
+let currentTaskPage = 1;
+let isLoadingTasks = false;
+let hasMoreTasks = true;
+
+// Load tasks function
+async function loadTasks(page = 1) {
+    if (isLoadingTasks) return;
+    
+    isLoadingTasks = true;
+    document.getElementById('tasksLoadingIndicator').classList.remove('hidden');
+    
+    try {
+        const response = await fetch('{{ route('user.loadusertasks') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                user_id: '{{ $data->user_id }}',
+                page: page,
+                _token: "{{ csrf_token() }}"
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            displayTasks(data.tasks, page === 1);
+            hasMoreTasks = data.has_more;
+            currentTaskPage = data.current_page;
+            
+            // Show/hide load more button
+            document.getElementById('loadMoreBtn').style.display = hasMoreTasks ? 'block' : 'none';
+        }
+    } catch (error) {
+        console.error('Error loading tasks:', error);
+    } finally {
+        isLoadingTasks = false;
+        document.getElementById('tasksLoadingIndicator').classList.add('hidden');
+    }
+}
+// Updated displayTasks function with new card design
+function displayTasks(tasks, clearExisting = false) {
+    const tasksList = document.getElementById('tasksList');
+    
+    if (clearExisting) {
+        tasksList.innerHTML = '';
+    }
+    
+    tasks.forEach(task => {
+        const statusConfig = getStatusConfig(task.status);
+        const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date';
+        
+        const taskHTML = `
+            <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between mb-2">
+                    <h4 class="text-sm font-medium text-gray-900">${task.title}</h4>
+                    <span class="${statusConfig.class}">${statusConfig.text}</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-3 leading-relaxed">${task.description || 'No description available'}</p>
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <path d="M6 1v5l3 2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                                <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1" fill="none"/>
+                            </svg>
+                            ${dueDate}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <rect x="2" y="3" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1" fill="none"/>
+                                <path d="M4 1v4M8 1v4" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                            </svg>
+                            ${task.project_name || 'No Project'}
+                        </span>
+                    </div>
+                    <div class="w-2 h-2 rounded-full ${getStatusDot(task.status)}"></div>
+                </div>
+            </div>
+        `;
+        
+        tasksList.insertAdjacentHTML('beforeend', taskHTML);
+    });
+}
+
+// Helper function for status dots
+function getStatusDot(status) {
+    const dotColors = {
+        'Done': 'bg-green-500',
+        'In Progress': 'bg-yellow-500', 
+        'Pending': 'bg-orange-500',
+        'Todo': 'bg-gray-400'
+    };
+    return dotColors[status] || 'bg-gray-400';
+}
+
+// Updated status config with better sizing
+function getStatusConfig(status) {
+    const configs = {
+        'Done': {
+            class: 'bg-[#72c364] text-white text-xs px-3 py-1 rounded-full',
+            text: 'Completed'
+        },
+        'In Progress': {
+            class: 'bg-[#f4d632] text-black text-xs px-3 py-1 rounded-full',
+            text: 'In Progress'
+        },
+        'Pending': {
+            class: 'bg-[#ff8a6b] text-white text-xs px-3 py-1 rounded-full',
+            text: 'Pending'
+        },
+        'Todo': {
+            class: 'bg-[#e1e1e1] text-black text-xs px-3 py-1 rounded-full',
+            text: 'To Do'
+        }
+    };
+    
+    return configs[status] || {
+        class: 'bg-[#e1e1e1] text-black text-xs px-3 py-1 rounded-full',
+        text: status || 'Unknown'
+    };
+}
+
+// Load more tasks
+function loadMoreTasks() {
+    if (!hasMoreTasks || isLoadingTasks) return;
+    loadTasks(currentTaskPage + 1);
+}
+
+// Load tasks when modal opens
+function openUserAnalyticsModal() {
+    const modal = document.getElementById('userAnalyticsModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    
+    // Reset and load tasks
+    currentTaskPage = 1;
+    hasMoreTasks = true;
+    loadTasks(1);
+}
+</script>

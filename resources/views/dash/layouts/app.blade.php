@@ -27,9 +27,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <!-- Google Charts -->
 <script src="https://www.gstatic.com/charts/loader.js"></script> 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 <!-- CSRF Token Meta (Required for Laravel AJAX) -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div id="preloader" class="preloader">
@@ -154,6 +151,7 @@ body {
                 });
             }
         });
+        
     </script>
     @yield('scripts')
 </body>

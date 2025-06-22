@@ -1800,8 +1800,10 @@ $("#sendMessage").submit((event) => {
             messageDiv.innerHTML = userMessageHTML;
 
         } else {
-            // Process bot message with potential template
-            let processedMessage = message.message;
+               let processedMessage = message.message;
+           try{
+ // Process bot message with potential template
+         
 
             // Also check for multiple templates in the message text itself
             // Find all template markers in the message
@@ -1843,8 +1845,11 @@ $("#sendMessage").submit((event) => {
                 });
             }
 
+           }catch(error){
+            console.log(error)
+           }
      
-console.log("my message data", message)
+// console.log("my message data", message)
             const botMessageHTML = `
         <div class="space-x-3">
             <div class="w-8 h-8 relative top-9 right-3 self-start rounded-full  flex items-center justify-center text-white text-xs font-bold flex-shrink-0">

@@ -51,7 +51,12 @@ Route::prefix('/auth')->group(function(){
 
 
 Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function(){
+  Route::get('/users', [Dash::class, 'users'])->name("user.users");
+  Route::get('/loadusers', [Dash::class, 'loadusers'])->name("user.loadusers");
+   Route::post('/task-performance', [Dash::class, 'getTaskPerformance'])->name('user.getTaskPerformance');
+   Route::post('/loadusertasks', [Dash::class, 'loadusertasks'])->name('user.loadusertasks');
 
+  
     Route::get('/task-completion-trend', [Dash::class, 'getTaskCompletionTrend']);
  // Existing route
  Route::get('/task-completion-trend', [Dash::class, 'getTaskCompletionTrend']);
@@ -80,11 +85,10 @@ Route::post('/get_template', [Dash::class, 'get_template'])->name("user.get_temp
     Route::post('/chats/create', [Dash::class, 'createChat'])->name('user.create_chat'); 
     Route::get('/chats/load-more', [Dash::class, 'loadMoreMessages'])->name('user.loadMore');
 Route::delete('/chats/delete-chat', [Dash::class, 'deleteChat'])->name('user.delete_chat');
-   
+
 Route::get('/',[Dash::class,'dash'])->name("dashboard"); 
 Route::get('/{any}', [Dash::class, 'dash'])
     ->where('any', '.*');
-
  Route::get('/new', [Dash::class, 'new_user'])->name("user.new");
  Route::get('/customers', [LinearCustomerController::class, 'index'])->name('customers.index');
  Route::post('/customers', [LinearCustomerController::class, 'store'])->name('customers.store');
@@ -100,8 +104,14 @@ Route::get('/{any}', [Dash::class, 'dash'])
  Route::post('/reports/export', [ReportDispatcherController::class, 'exportReport'])->name('reports.export');
  Route::post('/save_notification', [Dash::class, 'save_notification'])->name('save_notification');
  Route::post('/reaction', [Dash::class, 'reaction'])->name('user.reaction');
-
+ Route::delete('/delete_account', [Dash::class, 'delete_account'])->name("user.delete_account");
  Route::get('/reports', [ReportDispatcherController::class, 'reports'])->name("user.reports");
+ Route::post('/setstatus', [LinearCustomerController::class, 'setstatus'])->name('user.setstatus');
+ Route::post('/bulk_send_invites', [LinearCustomerController::class, 'bulk_send_invites'])->name('user.bulk_send_invites');
+ Route::post('/bulk_block_users', [LinearCustomerController::class, 'bulk_block_users'])->name('user.bulk_block_users');
+
+
+
  // Route for getting calendar data
 Route::get('/get_data', function () {
     $service = Auth::user()->service ?? 'linear';

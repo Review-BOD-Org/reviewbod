@@ -1282,7 +1282,7 @@ public function members(Request $request)
  
     
     // Get linked user data
-    $linkedUsers = DB::table('linear_users')->where(["userid"=>Auth::id()])->select('email', 'blocked', 'verified')->get();
+    $linkedUsers = DB::table('linked_users')->where(["userid"=>Auth::id()])->select('email', 'blocked', 'verified')->get();
     $linkedUsersMap = [];
     
     foreach ($linkedUsers as $user) {
@@ -1378,6 +1378,14 @@ public function members(Request $request)
 
 }
 
+
+public function users(){
+    $data = DB::table("platform_users")
+  ->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
+  ->select('platform_users.*','linked_users.status as user_status','linked_users.id as iid')  
+  ->where(["platform_users.owner_id"=>Auth::id()])->distinct()->get();
+    return view("dash.members",compact("data"));
+}
 public function teams(Request $request){
     $res = new FetchData();
     $res = $res->getData("teams");
@@ -1749,77 +1757,35 @@ public function getFullTrelloUserData($apiKey, $token, $username)
         'user' => $formattedData
     ];
 }
-public function member($id,Request $request){
-    $service = Auth::user()->service;
-    $data = DB::table("linked")->where(["userid" => auth()->id(),"type"=>"$service"])->first();
-        
-    $token = $data->token ?? null;
-    $accessToken = $token;
-$userId = $id; // optional
-
-
-if($service == "trello"){
-    $result = $this->getFullTrelloUserData("e39869487a72d56e6758bd57b67fca4f",$accessToken, $userId);
-
-}elseif($service == "linear"){
-    $result = $this->getFullLinearUserData($accessToken, $userId);
-
-}
-
-
-
- 
- 
-if ($result['success']) {
+public function member($id, Request $request){              
+    $data = DB::table("platform_users")->where(["id"=>$id])->first();
+    if(!$data){
+        return redirect()->back();
+    }     
     
-    $assignedIssues = $result['user']['assignedIssues']['nodes'];
-
-    // Get the current date
-    $currentDate = now(); // This uses Laravel's `now()` helper to get the current date and time.
-
-    // Filter upcoming tasks (tasks with a dueDate after today)
-    $upcomingTasks = array_filter($assignedIssues, function ($issue) use ($currentDate) {
-        if (empty($issue['dueDate'])) return false;
+    // Get tasks with more detailed information
+    $tasks = DB::table("tasks")
+        ->where(["user_id"=>$data->user_id])
+        ->select('id', 'title', 'description', 'status', 'priority', 'due_date', 'created_at', 'updated_at')
+        ->orderBy('updated_at', 'desc')
+        ->where('is_deleted',null)
+        ->get();
     
-        $dueDate = Carbon::parse($issue['dueDate'])->setTimezone($currentDate->timezone);
-        return $dueDate->greaterThan($currentDate);
-    });
+    // Convert to array for JavaScript
+    $tasksArray = $tasks->toArray();
     
-    // dd($upcomingTasks);
-     
-    if($service == "trello"){
-        $controller = new \App\Http\Controllers\TrelloCalendarController();
-     
-    }else{
-        $controller = new \App\Http\Controllers\LinearCalendarController();
-    }
-    $customFields = DB::table('custom_fields')
-    ->where('linear_user_id', $id)
-    ->get();
-
-$managers = DB::table('managers')
-    ->where('linear_user_id', $id)
-    ->get();
-
-    $dashdata = $controller->getDashboardData($request);
-    // dd($dashdata);
-    return view("dash.user",["error"=>"","customFields"=>$customFields,"managers"=>$managers,"dashdata"=>$dashdata,"data"=>$result,"upcomingTasks"=>$upcomingTasks]);
-    // Do something with $result['linkedin_id'], $result['firstName'], etc.
-} else {
-    return redirect()->back();
-    // Handle error
+    return view("dash.user", [
+        'data' => $data,
+        "tasks" => $tasks,
+        "tasksJson" => json_encode($tasksArray) // Pass JSON for JavaScript
+    ]);      
 }
-
-
-  
-}
-
 public function settings(){
-    $users = DB::table("linear_users")->where(["userid" => auth()->id()])->get();
+    // $users = DB::table("linked_users")->where(["userid" => auth()->id()])->get();
     $slack =  DB::table("linked")->where(["userid"=>auth()->id(),"type"=>"slack"])->first();
     $notifications = DB::table("notification_channel")->where(["userid"=>auth()->id()])->get();
     $metrics_category = DB::table("metrics_category")->get();
-    return view("dash.settings",compact("users","slack","notifications","metrics_category"));
+    return view("dash.settings",compact("slack","notifications","metrics_category"));
 }
 
 public function new_user(Request $request){
@@ -1913,7 +1879,7 @@ public function update_password(){
 
 public function delete_invitation(Request $request){
     $id = $request->input("id");
-    DB::table("linear_users")->where(["userid" => auth()->id(),"id"=>$id])->delete();
+    DB::table("linked_users")->where(["userid" => auth()->id(),"id"=>$id])->delete();
     return response()->json(["message"=>"Deleted"]);
 }
 
@@ -2417,5 +2383,134 @@ public function save_config_metrics(Request $request){
         'message' => 'Metrics configuration saved successfully.'
     ]);
   }
+
+  public function delete_account(Request $request){
+    DB::table("users")->where(["id"=>Auth::id()])->delete();
+    return response()->json(["message"=>"Account Deleted!"]);
+  }
+
+  public function loadusers(){
+    $data = DB::table("platform_users")
+    ->join("linked","linked.id","platform_users.platform_id")
+->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
+    ->select("platform_users.*","linked.type",'linked_users.status as linked_status')
+    ->where(["platform_users.owner_id"=>Auth::id()])->get();
+    return response()->json(["users"=>$data]);
+  }
+
+   public function getTaskPerformance(Request $request)
+    {
+
+       
+
+        $days = $request->input('days', 7);
+        $userId = $request->input('user_id');
+        
+        try {
+            $data = $this->getOptimizedTaskData($userId, $days);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch task performance data'
+            ], 500);
+        }
+    }
+
+  private function getOptimizedTaskData($userId, $days)
+{
+    if ($days == null) {
+        // Get first created_at date for user
+        $firstTaskDate = DB::table('tasks')
+            ->where('user_id', $userId)
+            ->whereNull('is_deleted')
+            ->orderBy('created_at', 'asc')
+            ->value('created_at');
+
+        if (!$firstTaskDate) {
+            // No tasks found
+            return [
+                'labels' => [],
+                'assigned' => [],
+                'completed' => []
+            ];
+        }
+
+        $startDate = Carbon::parse($firstTaskDate)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+        $days = $startDate->diffInDays($endDate) + 1;
+    } else {
+        $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+    }
+
+    $taskStats = DB::table('tasks')
+        ->select([
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as total_assigned'),
+            DB::raw('SUM(CASE WHEN status IN ("Done") THEN 1 ELSE 0 END) as total_completed')
+        ])
+        ->where('user_id', $userId)
+        ->whereNull('is_deleted')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->groupBy(DB::raw('DATE(created_at)'))
+        ->orderBy('date', 'asc')
+        ->get();
+
+    // Generate date range and fill missing dates with zeros
+    $dateRange = collect();
+    for ($i = 0; $i < $days; $i++) {
+        $dateRange->push(Carbon::parse($startDate)->addDays($i)->format('Y-m-d'));
+    }
+
+    $labels = [];
+    $assignedData = [];
+    $completedData = [];
+
+    foreach ($dateRange as $date) {
+        $dayStats = $taskStats->firstWhere('date', $date);
+
+        $labels[] = Carbon::parse($date)->format('M j');
+        $assignedData[] = $dayStats ? (int)$dayStats->total_assigned : 0;
+        $completedData[] = $dayStats ? (int)$dayStats->total_completed : 0;
+    }
+
+    return [
+        'labels' => $labels,
+        'assigned' => $assignedData,
+        'completed' => $completedData
+    ];
+}
+
+public function loadusertasks(Request $request) {
+    $userId = $request->input('user_id');
+    $page = $request->input('page', 1);
+    $perPage = 10;
+    $offset = ($page - 1) * $perPage;
+    
+    $tasks = DB::table('tasks')
+        ->where('user_id', $userId)
+        ->where('is_deleted', null)
+        ->orderBy('created_at', 'desc')
+        ->offset($offset)
+        ->limit($perPage + 1) // Get one extra to check if there are more
+        ->get(['id', 'title', 'description', 'status', 'due_date', 'created_at']);
+    
+    $hasMore = $tasks->count() > $perPage;
+    if ($hasMore) {
+        $tasks = $tasks->take($perPage);
+    }
+    
+    return response()->json([
+        'success' => true,
+        'tasks' => $tasks,
+        'has_more' => $hasMore,
+        'current_page' => $page
+    ]);
+}
 
 }

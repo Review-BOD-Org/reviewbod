@@ -173,15 +173,15 @@ class LinearCustomerController extends Controller
     {
          
 
-        $check = DB::table('linear_users')->where('email', $request->email)->first();
-        $check2 = DB::table('linear_users')->where('email', $request->email)->where("password","!=",null)->first();
+        $check = DB::table('linked_users')->where('email', $request->email)->first();
+        $check2 = DB::table('linked_users')->where('email', $request->email)->where("password","!=",null)->first();
         if ($check2) {
             return response()->json(['message' => 'User already exists'], 409);
         }
         if (!$check) {
   // Store the user ID in the database
-  DB::table('linear_users')->insert([
-    'invite_id' => $request->id,
+  DB::table('linked_users')->insert([
+    'invite_id' => rand(1111111,9999999),
     'name' => $request->name,
     'email' => $request->email, 
     'userid'=>Auth::id()
@@ -190,7 +190,7 @@ class LinearCustomerController extends Controller
  
        
 
-        Mail::send('mail.invite', ['name' => $request->name,"id"=>$request->id], function ($message) use ($request) {
+        Mail::send('mail.invitation', ['name' => $request->name,"id"=>$request->id], function ($message) use ($request) {
             $message->to($request->email)
                 ->subject('Inivitation  to ReviewBod - Linear');
         });
@@ -198,7 +198,7 @@ class LinearCustomerController extends Controller
     }
 
     public function invite($id){
-        $user = DB::table('linear_users')->where('invite_id', $id)->where("password",null)->first();
+        $user = DB::table('linked_users')->where('invite_id', $id)->where("password",null)->first();
         if ($user) {
             return view('dash.invite', ['user' => $user]);
         } else {
@@ -208,5 +208,56 @@ class LinearCustomerController extends Controller
 
     public function reports(){
         return view("dash.reports");
+    }
+
+    public function setstatus(Request $request){
+        DB::table('linked_users')->where(["id"=>$request->id,'userid'=>Auth::id()])->update(["status"=>$request->status]);
+        return response()->json(["message"=>"User status updated to $request->status"]);
+    }
+
+    public function bulk_block_users(Request $request){
+         $users = $request->input('users');
+    $userIds = array_column($users, 'id');
+    
+    // Update user status to blocked
+      DB::table('linked_users')->whereIn('id', $userIds)->where(['userid'=>Auth::id()])->update(['status' => 'blocked']);
+    
+    return response()->json(['message' => 'Users blocked successfully']);
+    }
+
+     public function bulk_send_invites(Request $request)
+    {
+         
+          $users = $request->input('users');
+    
+    foreach ($users as $userData) {
+
+        $check2 = DB::table('linked_users')->where('email', $userData['email'])->where("password","!=",null)->first();
+        if ($check2) {
+            return response()->json(['message' => 'User already exists'], 409);
+        }
+                $check = DB::table('linked_users')->where('email', $userData['email'])->first();
+
+        if (!$check) {
+  // Store the user ID in the database
+  DB::table('linked_users')->insert([
+    'invite_id' => rand(1111111,9999999),
+    'name' => $userData['name'],
+    'email' => $userData['email'], 
+    'userid'=>Auth::id()
+]);
+
+        }
+ 
+         $check = DB::table('linked_users')->where('email', $userData['email'])->first();
+
+       
+
+        Mail::send('mail.invitation', ['name' => $userData['name'],"id"=>$check->id], function ($message) use ($request,$userData) {
+            $message->to($userData['email'])
+                ->subject('Inivitation  to ReviewBod - Linear');
+        });
+               }
+        return response()->json(['message' => 'User created successfully'], 201);
     }
 }

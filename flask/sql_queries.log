@@ -9077,3 +9077,1572 @@ LIMIT 1
 2025-06-20 11:22:30,245 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-06-20 11:28:38,308 - INFO - Client disconnected from WebSocket
 2025-06-21 09:29:23,390 - INFO - Client disconnected from WebSocket
+2025-06-21 11:39:07,230 - INFO - Client disconnected from WebSocket
+2025-06-21 11:39:27,624 - INFO - Client disconnected from WebSocket
+2025-06-21 11:40:18,491 - INFO - Client disconnected from WebSocket
+2025-06-21 11:40:34,643 - INFO - Client disconnected from WebSocket
+2025-06-21 11:40:44,481 - INFO - Client disconnected from WebSocket
+2025-06-21 11:41:02,799 - INFO - Client disconnected from WebSocket
+2025-06-21 11:41:15,605 - INFO - Client disconnected from WebSocket
+2025-06-21 11:41:25,913 - INFO - Client disconnected from WebSocket
+2025-06-21 12:02:16,535 - INFO - Client disconnected from WebSocket
+2025-06-21 12:02:41,859 - INFO - Client disconnected from WebSocket
+2025-06-21 12:02:51,447 - INFO - Client disconnected from WebSocket
+2025-06-21 12:02:53,363 - INFO - Client disconnected from WebSocket
+2025-06-21 13:14:38,813 - INFO - Client disconnected from WebSocket
+2025-06-21 13:14:47,733 - INFO - Client disconnected from WebSocket
+2025-06-21 13:15:05,913 - INFO - chat_id_enc 
+2025-06-21 13:15:06,351 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:06,734 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:06,805 - INFO - Created new chat with ID 30 and UUID 08105440-c832-423b-a231-e385794901f2 for user 1
+2025-06-21 13:15:06,805 - INFO - 08105440-c832-423b-a231-e385794901f2
+2025-06-21 13:15:06,807 - INFO - Executing chat history query for chat_id 08105440-c832-423b-a231-e385794901f2:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 13:15:06,808 - INFO - Saving message to DB for chat_id 08105440-c832-423b-a231-e385794901f2, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 13:15:06,819 - INFO - Generated unique_id_with_template: uid_9d3b81ddb1c346fcaf13a164a33a15c6_e3b448f1ea71b334_1750511706819
+2025-06-21 13:15:06,822 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 13:15:06,824 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 13:15:06,825 - INFO - Processing query for user_id 1: How many tasks have no status assigned?
+2025-06-21 13:15:06,825 - INFO - Generated unique_id_with_template: uid_9d3b81ddb1c346fcaf13a164a33a15c6_e3b448f1ea71b334_1750511706819
+2025-06-21 13:15:06,825 - INFO - User metrics loaded: 7 metrics
+2025-06-21 13:15:07,241 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:07,251 - INFO - Intent classification: sql
+2025-06-21 13:15:07,252 - INFO - SQLAlchemy connection failed, recreating: (pymysql.err.OperationalError) (2006, "MySQL server has gone away (BrokenPipeError(32, 'Broken pipe'))")
+[SQL: SELECT 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-06-21 13:15:07,254 - ERROR - SQL Query Error for user_id 1: Connection.__init__() got an unexpected keyword argument 'pool_pre_ping'
+2025-06-21 13:15:07,263 - INFO - Final prompt created with unique_id_with_template: uid_9d3b81ddb1c346fcaf13a164a33a15c6_e3b448f1ea71b334_1750511706819
+2025-06-21 13:15:07,552 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:17,193 - INFO - chat_id_enc 08105440-c832-423b-a231-e385794901f2
+2025-06-21 13:15:17,194 - INFO - Executing chat history query for chat_id 08105440-c832-423b-a231-e385794901f2:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 13:15:17,196 - INFO - Saving message to DB for chat_id 08105440-c832-423b-a231-e385794901f2, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 13:15:17,202 - INFO - Generated unique_id_with_template: uid_ba97370d6a0f41918bd98dabea56aad0_bed2ee7224278625_1750511717201
+2025-06-21 13:15:17,203 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 13:15:17,204 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 13:15:17,207 - INFO - Processing query for user_id 1: How many high-priority tasks are still incomplete?
+2025-06-21 13:15:17,207 - INFO - Generated unique_id_with_template: uid_ba97370d6a0f41918bd98dabea56aad0_bed2ee7224278625_1750511717201
+2025-06-21 13:15:17,207 - INFO - User metrics loaded: 7 metrics
+2025-06-21 13:15:17,728 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:17,749 - INFO - Intent classification: sql
+2025-06-21 13:15:17,765 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 13:15:18,155 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:18,964 - INFO - Generated SQL Query for user_id 1:
+SELECT COUNT(*) AS high_priority_incomplete_tasks
+FROM tasks
+LEFT JOIN projects ON tasks.project_id = projects.id
+AND projects.owner_id = 1
+LEFT JOIN teams ON tasks.team_id = teams.id
+AND teams.owner_id = 1
+LEFT JOIN platform_users ON tasks.user_id = platform_users.id
+AND platform_users.owner_id = 1
+WHERE tasks.owner_id = 1
+  AND tasks.priority >= 1
+  AND tasks.status != 'Done'
+  AND tasks.is_deleted = 0;
+2025-06-21 13:15:18,966 - INFO - Raw DB data retrieved: 1 rows
+2025-06-21 13:15:18,966 - INFO - Sample data: {'high_priority_incomplete_tasks': 0}
+2025-06-21 13:15:18,966 - INFO - Final prompt created with unique_id_with_template: uid_ba97370d6a0f41918bd98dabea56aad0_bed2ee7224278625_1750511717201
+2025-06-21 13:15:19,198 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:15:36,028 - INFO - Client disconnected from WebSocket
+2025-06-21 13:16:07,464 - INFO - Client disconnected from WebSocket
+2025-06-21 13:18:46,581 - INFO - Client disconnected from WebSocket
+2025-06-21 13:18:59,128 - INFO - Client disconnected from WebSocket
+2025-06-21 13:19:14,885 - INFO - Client disconnected from WebSocket
+2025-06-21 13:19:50,783 - INFO - Client disconnected from WebSocket
+2025-06-21 13:20:39,866 - INFO - Client disconnected from WebSocket
+2025-06-21 13:23:21,305 - INFO - Client disconnected from WebSocket
+2025-06-21 13:23:31,661 - INFO - Client disconnected from WebSocket
+2025-06-21 13:23:49,309 - INFO - Client disconnected from WebSocket
+2025-06-21 13:23:54,672 - INFO - chat_id_enc 
+2025-06-21 13:23:54,960 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:23:55,327 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:23:55,381 - INFO - Created new chat with ID 31 and UUID 5e045acc-9395-4d91-8065-dee0656450bd for user 1
+2025-06-21 13:23:55,381 - INFO - 5e045acc-9395-4d91-8065-dee0656450bd
+2025-06-21 13:23:55,382 - INFO - Executing chat history query for chat_id 5e045acc-9395-4d91-8065-dee0656450bd:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 13:23:55,383 - INFO - Saving message to DB for chat_id 5e045acc-9395-4d91-8065-dee0656450bd, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 13:23:55,387 - INFO - Generated unique_id_with_template: uid_a3b9c730300e44dfa042db09165b9bb2_6307a3c287210667_1750512235387
+2025-06-21 13:23:55,388 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 13:23:55,389 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 13:23:55,390 - INFO - Processing query for user_id 1: Who has the highest number of high-priority tasks assigned?
+2025-06-21 13:23:55,390 - INFO - Generated unique_id_with_template: uid_a3b9c730300e44dfa042db09165b9bb2_6307a3c287210667_1750512235387
+2025-06-21 13:23:55,390 - INFO - User metrics loaded: 7 metrics
+2025-06-21 13:23:55,602 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:23:55,621 - INFO - Intent classification: sql
+2025-06-21 13:23:55,656 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 13:23:56,447 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:23:56,868 - INFO - Generated SQL Query for user_id 1:
+SELECT pu.full_name AS user_name,
+       COUNT(t.id) AS high_priority_task_count
+FROM tasks t
+LEFT JOIN platform_users pu ON t.user_id = pu.id
+AND pu.owner_id = 1
+WHERE t.owner_id = 1
+  AND t.priority IS NOT NULL
+  AND t.priority >= 8
+GROUP BY pu.id,
+         pu.full_name
+ORDER BY high_priority_task_count DESC
+LIMIT 1;
+2025-06-21 13:23:56,870 - INFO - Raw DB data retrieved: 0 rows
+2025-06-21 13:23:56,871 - WARNING - No data returned from SQL query
+2025-06-21 13:23:56,871 - INFO - Final prompt created with unique_id_with_template: uid_a3b9c730300e44dfa042db09165b9bb2_6307a3c287210667_1750512235387
+2025-06-21 13:23:57,606 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:24:01,517 - INFO - chat_id_enc 5e045acc-9395-4d91-8065-dee0656450bd
+2025-06-21 13:24:01,519 - INFO - Executing chat history query for chat_id 5e045acc-9395-4d91-8065-dee0656450bd:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 13:24:01,520 - INFO - Saving message to DB for chat_id 5e045acc-9395-4d91-8065-dee0656450bd, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 13:24:01,523 - INFO - Generated unique_id_with_template: uid_dc99163519764d6996114bf456569ec7_ba09496f16e893b4_1750512241523
+2025-06-21 13:24:01,524 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 13:24:01,525 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 13:24:01,526 - INFO - Processing query for user_id 1: How many high-priority tasks are still incomplete?
+2025-06-21 13:24:01,526 - INFO - Generated unique_id_with_template: uid_dc99163519764d6996114bf456569ec7_ba09496f16e893b4_1750512241523
+2025-06-21 13:24:01,526 - INFO - User metrics loaded: 7 metrics
+2025-06-21 13:24:02,014 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:24:02,030 - INFO - Intent classification: sql
+2025-06-21 13:24:02,042 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 13:24:02,238 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:24:02,436 - INFO - Generated SQL Query for user_id 1:
+SELECT COUNT(*) AS incomplete_high_priority_tasks
+FROM tasks
+WHERE owner_id = 1
+  AND status != 'Done'
+  AND priority >= 2;
+2025-06-21 13:24:02,437 - INFO - Raw DB data retrieved: 1 rows
+2025-06-21 13:24:02,437 - INFO - Sample data: {'incomplete_high_priority_tasks': 83}
+2025-06-21 13:24:02,438 - INFO - Final prompt created with unique_id_with_template: uid_dc99163519764d6996114bf456569ec7_ba09496f16e893b4_1750512241523
+2025-06-21 13:24:02,802 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 13:24:38,496 - INFO - Client disconnected from WebSocket
+2025-06-21 13:24:57,696 - INFO - Client disconnected from WebSocket
+2025-06-21 14:05:47,453 - INFO - chat_id_enc 
+2025-06-21 14:05:47,774 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:05:48,786 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:05:48,924 - INFO - Created new chat with ID 32 and UUID 693af052-c8e9-48f5-ae03-1518e42b86f7 for user 1
+2025-06-21 14:05:48,925 - INFO - 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:05:48,926 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:05:48,927 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:05:48,932 - INFO - Generated unique_id_with_template: uid_0ac48e15cbc3419ba288066580be8680_452d001c99367ef7_1750514748932
+2025-06-21 14:05:48,932 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:05:48,933 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:05:48,934 - INFO - Processing query for user_id 1: hey
+2025-06-21 14:05:48,934 - INFO - Generated unique_id_with_template: uid_0ac48e15cbc3419ba288066580be8680_452d001c99367ef7_1750514748932
+2025-06-21 14:05:48,934 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:05:49,397 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:05:49,425 - INFO - Intent classification: chat
+2025-06-21 14:05:49,425 - INFO - Final prompt created with unique_id_with_template: uid_0ac48e15cbc3419ba288066580be8680_452d001c99367ef7_1750514748932
+2025-06-21 14:05:49,849 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:05:55,910 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:05:55,911 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:05:55,912 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:05:55,917 - INFO - Generated unique_id_with_template: uid_7efa083bb13a415e9b33ab8cce672287_4115cfd9169d5c46_1750514755917
+2025-06-21 14:05:55,918 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:05:55,919 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:05:55,920 - INFO - Processing query for user_id 1: ur an ai right?
+2025-06-21 14:05:55,920 - INFO - Generated unique_id_with_template: uid_7efa083bb13a415e9b33ab8cce672287_4115cfd9169d5c46_1750514755917
+2025-06-21 14:05:55,920 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:05:57,306 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:05:57,320 - INFO - Intent classification: chat
+2025-06-21 14:05:57,321 - INFO - Final prompt created with unique_id_with_template: uid_7efa083bb13a415e9b33ab8cce672287_4115cfd9169d5c46_1750514755917
+2025-06-21 14:05:57,570 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:07,715 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:07,716 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:07,718 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:07,723 - INFO - Generated unique_id_with_template: uid_bd828f4e825e4e41acc03e184cb44ba8_e00d69e8d1690e28_1750514767723
+2025-06-21 14:06:07,724 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:07,725 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:07,725 - INFO - Processing query for user_id 1: code a website for me
+2025-06-21 14:06:07,726 - INFO - Generated unique_id_with_template: uid_bd828f4e825e4e41acc03e184cb44ba8_e00d69e8d1690e28_1750514767723
+2025-06-21 14:06:07,726 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:07,965 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:07,996 - INFO - Intent classification: chat
+2025-06-21 14:06:07,997 - INFO - Final prompt created with unique_id_with_template: uid_bd828f4e825e4e41acc03e184cb44ba8_e00d69e8d1690e28_1750514767723
+2025-06-21 14:06:08,340 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:15,392 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:15,393 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:15,394 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:15,402 - INFO - Generated unique_id_with_template: uid_ed39446bea6f45838ab2676035a78171_7a51a1d189d41dcc_1750514775402
+2025-06-21 14:06:15,403 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:15,404 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:15,406 - INFO - Processing query for user_id 1: give me the code
+2025-06-21 14:06:15,406 - INFO - Generated unique_id_with_template: uid_ed39446bea6f45838ab2676035a78171_7a51a1d189d41dcc_1750514775402
+2025-06-21 14:06:15,406 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:15,607 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:15,621 - INFO - Intent classification: chat
+2025-06-21 14:06:15,622 - INFO - Final prompt created with unique_id_with_template: uid_ed39446bea6f45838ab2676035a78171_7a51a1d189d41dcc_1750514775402
+2025-06-21 14:06:15,972 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:25,535 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:25,536 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:25,546 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:25,552 - INFO - Generated unique_id_with_template: uid_331a5fbdcd8145f59deed955a934b66c_6d44e779ad218df6_1750514785552
+2025-06-21 14:06:25,553 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:25,554 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:25,556 - INFO - Processing query for user_id 1: i need html code 
+2025-06-21 14:06:25,556 - INFO - Generated unique_id_with_template: uid_331a5fbdcd8145f59deed955a934b66c_6d44e779ad218df6_1750514785552
+2025-06-21 14:06:25,556 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:26,216 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:26,245 - INFO - Intent classification: chat
+2025-06-21 14:06:26,245 - INFO - Final prompt created with unique_id_with_template: uid_331a5fbdcd8145f59deed955a934b66c_6d44e779ad218df6_1750514785552
+2025-06-21 14:06:26,601 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:31,012 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:31,013 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:31,015 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:31,019 - INFO - Generated unique_id_with_template: uid_0575e984f19c4c8d9c68ff5d4ba056b4_51b174eecc2d606c_1750514791018
+2025-06-21 14:06:31,019 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:31,020 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:31,021 - INFO - Processing query for user_id 1: why cant u
+2025-06-21 14:06:31,021 - INFO - Generated unique_id_with_template: uid_0575e984f19c4c8d9c68ff5d4ba056b4_51b174eecc2d606c_1750514791018
+2025-06-21 14:06:31,021 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:31,243 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:31,269 - INFO - Intent classification: chat
+2025-06-21 14:06:31,270 - INFO - Final prompt created with unique_id_with_template: uid_0575e984f19c4c8d9c68ff5d4ba056b4_51b174eecc2d606c_1750514791018
+2025-06-21 14:06:31,502 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:40,624 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:40,625 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:40,627 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:40,630 - INFO - Generated unique_id_with_template: uid_0b013f9d08ba46aab700f9aff1238595_5452f2751486a866_1750514800630
+2025-06-21 14:06:40,631 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:40,632 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:40,633 - INFO - Processing query for user_id 1: do it i know u can
+2025-06-21 14:06:40,633 - INFO - Generated unique_id_with_template: uid_0b013f9d08ba46aab700f9aff1238595_5452f2751486a866_1750514800630
+2025-06-21 14:06:40,633 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:40,883 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:40,905 - INFO - Intent classification: chat
+2025-06-21 14:06:40,905 - INFO - Final prompt created with unique_id_with_template: uid_0b013f9d08ba46aab700f9aff1238595_5452f2751486a866_1750514800630
+2025-06-21 14:06:41,088 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:46,480 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:46,480 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:46,481 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:46,486 - INFO - Generated unique_id_with_template: uid_d30e1f3db47741a48b8eefa2964daffd_e63effa671a6dcf0_1750514806486
+2025-06-21 14:06:46,486 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:46,487 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:46,488 - INFO - Processing query for user_id 1: i said do ittt
+2025-06-21 14:06:46,488 - INFO - Generated unique_id_with_template: uid_d30e1f3db47741a48b8eefa2964daffd_e63effa671a6dcf0_1750514806486
+2025-06-21 14:06:46,489 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:46,737 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:46,779 - INFO - Intent classification: chat
+2025-06-21 14:06:46,779 - INFO - Final prompt created with unique_id_with_template: uid_d30e1f3db47741a48b8eefa2964daffd_e63effa671a6dcf0_1750514806486
+2025-06-21 14:06:46,994 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:55,392 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:06:55,393 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:06:55,394 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:06:55,398 - INFO - Generated unique_id_with_template: uid_92020e9834854291a77803348e01c358_8cf826026783bebe_1750514815398
+2025-06-21 14:06:55,398 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:06:55,399 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:06:55,400 - INFO - Processing query for user_id 1: fuking hell
+2025-06-21 14:06:55,401 - INFO - Generated unique_id_with_template: uid_92020e9834854291a77803348e01c358_8cf826026783bebe_1750514815398
+2025-06-21 14:06:55,401 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:06:55,618 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:06:55,655 - INFO - Intent classification: chat
+2025-06-21 14:06:55,655 - INFO - Final prompt created with unique_id_with_template: uid_92020e9834854291a77803348e01c358_8cf826026783bebe_1750514815398
+2025-06-21 14:06:55,888 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:07:04,164 - INFO - chat_id_enc 693af052-c8e9-48f5-ae03-1518e42b86f7
+2025-06-21 14:07:04,165 - INFO - Executing chat history query for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 14:07:04,167 - INFO - Saving message to DB for chat_id 693af052-c8e9-48f5-ae03-1518e42b86f7, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 14:07:04,177 - INFO - Generated unique_id_with_template: uid_c3c3758542e34ef4b4a642cceaa9a306_9dd45f30c499947b_1750514824177
+2025-06-21 14:07:04,177 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 14:07:04,178 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 14:07:04,180 - INFO - Processing query for user_id 1: can u search google?
+2025-06-21 14:07:04,180 - INFO - Generated unique_id_with_template: uid_c3c3758542e34ef4b4a642cceaa9a306_9dd45f30c499947b_1750514824177
+2025-06-21 14:07:04,180 - INFO - User metrics loaded: 7 metrics
+2025-06-21 14:07:04,416 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:07:04,446 - INFO - Intent classification: chat
+2025-06-21 14:07:04,446 - INFO - Final prompt created with unique_id_with_template: uid_c3c3758542e34ef4b4a642cceaa9a306_9dd45f30c499947b_1750514824177
+2025-06-21 14:07:04,624 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 14:38:42,152 - INFO - Client disconnected from WebSocket
+2025-06-21 14:50:12,385 - INFO - Client disconnected from WebSocket
+2025-06-21 17:18:06,651 - INFO - Client disconnected from WebSocket
+2025-06-21 17:29:00,652 - INFO - Client disconnected from WebSocket
+2025-06-21 17:29:56,549 - INFO - Client disconnected from WebSocket
+2025-06-21 17:31:01,046 - INFO - Client disconnected from WebSocket
+2025-06-21 17:31:07,419 - INFO - Client disconnected from WebSocket
+2025-06-21 17:35:10,392 - INFO - chat_id_enc 5e045acc-9395-4d91-8065-dee0656450bd
+2025-06-21 17:35:10,393 - INFO - Executing chat history query for chat_id 5e045acc-9395-4d91-8065-dee0656450bd:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:35:10,394 - INFO - Saving message to DB for chat_id 5e045acc-9395-4d91-8065-dee0656450bd, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:35:10,399 - INFO - Generated unique_id_with_template: uid_9d26636aea5240e5b20a777bf2380804_850134ce62bfd1e1_1750527310399
+2025-06-21 17:35:10,399 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:35:10,401 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:35:10,402 - INFO - Processing query for user_id 1: give chart
+2025-06-21 17:35:10,402 - INFO - Generated unique_id_with_template: uid_9d26636aea5240e5b20a777bf2380804_850134ce62bfd1e1_1750527310399
+2025-06-21 17:35:10,402 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:35:10,723 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:35:10,737 - INFO - Intent classification: chat
+2025-06-21 17:35:10,738 - INFO - Final prompt created with unique_id_with_template: uid_9d26636aea5240e5b20a777bf2380804_850134ce62bfd1e1_1750527310399
+2025-06-21 17:35:11,073 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:35:17,400 - INFO - chat_id_enc 08105440-c832-423b-a231-e385794901f2
+2025-06-21 17:35:17,401 - INFO - Executing chat history query for chat_id 08105440-c832-423b-a231-e385794901f2:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:35:17,402 - INFO - Saving message to DB for chat_id 08105440-c832-423b-a231-e385794901f2, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:35:17,407 - INFO - Generated unique_id_with_template: uid_7a653730f84d4a928120ad8a475f2982_6b6aea55d071e038_1750527317407
+2025-06-21 17:35:17,407 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:35:17,408 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:35:17,409 - INFO - Processing query for user_id 1: give chart
+2025-06-21 17:35:17,410 - INFO - Generated unique_id_with_template: uid_7a653730f84d4a928120ad8a475f2982_6b6aea55d071e038_1750527317407
+2025-06-21 17:35:17,410 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:35:20,191 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:35:20,213 - INFO - Intent classification: chat
+2025-06-21 17:35:20,213 - INFO - Final prompt created with unique_id_with_template: uid_7a653730f84d4a928120ad8a475f2982_6b6aea55d071e038_1750527317407
+2025-06-21 17:35:20,436 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:35:26,660 - INFO - chat_id_enc 5c04457c-d22c-472b-b27f-972258969063
+2025-06-21 17:35:26,661 - INFO - Executing chat history query for chat_id 5c04457c-d22c-472b-b27f-972258969063:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:35:26,663 - INFO - Saving message to DB for chat_id 5c04457c-d22c-472b-b27f-972258969063, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:35:26,667 - INFO - Generated unique_id_with_template: uid_1271c617b2b645389717c667ee1dfb49_d6a47b9af7f4e38f_1750527326667
+2025-06-21 17:35:26,668 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:35:26,669 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:35:26,670 - INFO - Processing query for user_id 1: give chart
+2025-06-21 17:35:26,670 - INFO - Generated unique_id_with_template: uid_1271c617b2b645389717c667ee1dfb49_d6a47b9af7f4e38f_1750527326667
+2025-06-21 17:35:26,670 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:35:27,211 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:35:27,240 - INFO - Intent classification: chat
+2025-06-21 17:35:27,240 - INFO - Final prompt created with unique_id_with_template: uid_1271c617b2b645389717c667ee1dfb49_d6a47b9af7f4e38f_1750527326667
+2025-06-21 17:35:27,747 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:36:02,261 - INFO - Client disconnected from WebSocket
+2025-06-21 17:36:37,401 - INFO - Client disconnected from WebSocket
+2025-06-21 17:37:53,996 - INFO - Client disconnected from WebSocket
+2025-06-21 17:37:56,954 - INFO - chat_id_enc 
+2025-06-21 17:37:57,290 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:37:57,516 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:37:57,596 - INFO - Created new chat with ID 33 and UUID 64d60833-6629-414d-a74c-04268d23f254 for user 1
+2025-06-21 17:37:57,596 - INFO - 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:37:57,597 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:37:57,598 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:37:57,602 - INFO - Generated unique_id_with_template: uid_904e19a4e4b84f7eaf994631387e7344_38a2ae8ef188d2d2_1750527477602
+2025-06-21 17:37:57,602 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:37:57,603 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:37:57,604 - INFO - Processing query for user_id 1: How many tasks are missing due dates?
+2025-06-21 17:37:57,604 - INFO - Generated unique_id_with_template: uid_904e19a4e4b84f7eaf994631387e7344_38a2ae8ef188d2d2_1750527477602
+2025-06-21 17:37:57,604 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:37:57,804 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:37:57,820 - INFO - Intent classification: sql
+2025-06-21 17:37:57,836 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:37:58,294 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:37:58,445 - INFO - Generated SQL Query for user_id 1:
+SELECT COUNT(*) AS missing_due_dates_count
+FROM tasks
+WHERE owner_id = 1
+  AND (due_date IS NULL
+       OR due_date = 'None')
+2025-06-21 17:37:58,446 - INFO - Raw DB data retrieved: 1 rows
+2025-06-21 17:37:58,446 - INFO - Sample data: {'missing_due_dates_count': 114}
+2025-06-21 17:37:58,447 - INFO - Final prompt created with unique_id_with_template: uid_904e19a4e4b84f7eaf994631387e7344_38a2ae8ef188d2d2_1750527477602
+2025-06-21 17:37:58,636 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:16,215 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:16,215 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:16,217 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:16,221 - INFO - Generated unique_id_with_template: uid_c48ef4fb6eec4736b91767387f779b11_ced9d07310cd518d_1750527496221
+2025-06-21 17:38:16,223 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:16,226 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:16,227 - INFO - Processing query for user_id 1: Are there tasks linked to non-existent or deleted projects?
+2025-06-21 17:38:16,227 - INFO - Generated unique_id_with_template: uid_c48ef4fb6eec4736b91767387f779b11_ced9d07310cd518d_1750527496221
+2025-06-21 17:38:16,227 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:16,449 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:16,462 - INFO - Intent classification: sql
+2025-06-21 17:38:16,476 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:16,984 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:17,302 - INFO - Generated SQL Query for user_id 1:
+SELECT t.*
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+AND p.owner_id = 1
+WHERE p.id IS NULL
+  OR p.id IS NULL
+  AND p.owner_id = 1;
+2025-06-21 17:38:17,310 - INFO - Raw DB data retrieved: 199 rows
+2025-06-21 17:38:17,311 - INFO - Sample data: {'id': 1, 'project_id': 'e09b716d-c3aa-43e1-bfc2-c0a0a5b7695a', 'team_id': '8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5', 'platform_id': '4', 'parent_id': 'd181b6a9-2a96-480f-b82d-5a4c94f7a11b', 'user_id': '1d66d358-c981-4563-917f-8e8b35b497e6', 'title': 'Develop Ticket Categorization Model', 'description': 'Design and implement a machine learning model to categorize support tickets based on their content. Acceptance criteria: Model accurately categorizes tickets with at least 85% accuracy during testing.', 'status': 'Duplicate', 'priority': 2, 'labels': '[]', 'estimate': 13.0, 'due_date': None, 'source': 'linear', 'last_synced_at': datetime.datetime(2025, 6, 19, 11, 21, 38), 'is_deleted': None, 'created_at': datetime.datetime(2025, 6, 18, 18, 6, 46), 'updated_at': datetime.datetime(2025, 6, 19, 10, 21, 37), 'owner_id': 4}
+2025-06-21 17:38:17,319 - INFO - Final prompt created with unique_id_with_template: uid_c48ef4fb6eec4736b91767387f779b11_ced9d07310cd518d_1750527496221
+2025-06-21 17:38:18,593 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:22,234 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:22,235 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:22,237 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:22,241 - INFO - Generated unique_id_with_template: uid_e0d3e41d50b64ba3a81d1089115b404d_38109a3925e2976a_1750527502241
+2025-06-21 17:38:22,242 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:22,243 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:22,244 - INFO - Processing query for user_id 1: Which user is assigned to the most overdue tasks?
+2025-06-21 17:38:22,244 - INFO - Generated unique_id_with_template: uid_e0d3e41d50b64ba3a81d1089115b404d_38109a3925e2976a_1750527502241
+2025-06-21 17:38:22,244 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:22,433 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:22,462 - INFO - Intent classification: sql
+2025-06-21 17:38:22,475 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:22,778 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:23,286 - INFO - Generated SQL Query for user_id 1:
+SELECT pu.full_name AS user_name,
+       COUNT(t.id) AS overdue_task_count
+FROM tasks t
+LEFT JOIN platform_users pu ON t.user_id = pu.id
+AND pu.owner_id = 1
+WHERE t.status != 'Done'
+  AND t.due_date IS NOT NULL
+  AND STR_TO_DATE(t.due_date, '%Y-%m-%d') < CURDATE()
+  AND t.owner_id = 1
+GROUP BY pu.id,
+         pu.full_name
+ORDER BY overdue_task_count DESC
+LIMIT 1
+2025-06-21 17:38:23,287 - INFO - Raw DB data retrieved: 0 rows
+2025-06-21 17:38:23,288 - WARNING - No data returned from SQL query
+2025-06-21 17:38:23,288 - INFO - Final prompt created with unique_id_with_template: uid_e0d3e41d50b64ba3a81d1089115b404d_38109a3925e2976a_1750527502241
+2025-06-21 17:38:23,494 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:30,742 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:30,743 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:30,744 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:30,748 - INFO - Generated unique_id_with_template: uid_7567f92e2d634154ae1db03527ea50e9_e791e5c32a3c7d0c_1750527510748
+2025-06-21 17:38:30,749 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:30,750 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:30,751 - INFO - Processing query for user_id 1: Which label appears most frequently in overdue tasks?
+2025-06-21 17:38:30,751 - INFO - Generated unique_id_with_template: uid_7567f92e2d634154ae1db03527ea50e9_e791e5c32a3c7d0c_1750527510748
+2025-06-21 17:38:30,751 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:31,075 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:31,089 - INFO - Intent classification: sql
+2025-06-21 17:38:31,100 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:31,315 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:31,637 - INFO - Generated SQL Query for user_id 1:
+SELECT JSON_UNQUOTE(JSON_EXTRACT(labels, '$')) AS label,
+       COUNT(*) AS COUNT
+FROM tasks
+WHERE status != 'Done'
+  AND due_date < CURRENT_DATE
+  AND is_deleted = 0
+  AND owner_id = 1
+  AND labels IS NOT NULL
+GROUP BY label
+ORDER BY COUNT DESC
+LIMIT 1
+2025-06-21 17:38:31,639 - INFO - Raw DB data retrieved: 0 rows
+2025-06-21 17:38:31,639 - WARNING - No data returned from SQL query
+2025-06-21 17:38:31,640 - INFO - Final prompt created with unique_id_with_template: uid_7567f92e2d634154ae1db03527ea50e9_e791e5c32a3c7d0c_1750527510748
+2025-06-21 17:38:31,955 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:40,537 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:40,538 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:40,539 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:40,545 - INFO - Generated unique_id_with_template: uid_4c233fc4a29b4f20bcc6430e0558ecf3_2cdd520c3cdedc04_1750527520545
+2025-06-21 17:38:40,545 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:40,546 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:40,547 - INFO - Processing query for user_id 1: Which labels are used most across high-priority tasks?
+2025-06-21 17:38:40,547 - INFO - Generated unique_id_with_template: uid_4c233fc4a29b4f20bcc6430e0558ecf3_2cdd520c3cdedc04_1750527520545
+2025-06-21 17:38:40,547 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:40,798 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:40,821 - INFO - Intent classification: sql
+2025-06-21 17:38:40,835 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:41,063 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:41,220 - INFO - Generated SQL Query for user_id 1:
+SELECT label,
+       COUNT(*) AS usage_count
+FROM tasks
+WHERE owner_id = 1
+  AND priority >= 8
+GROUP BY label
+ORDER BY usage_count DESC;
+2025-06-21 17:38:41,221 - ERROR - SQL Query Error for user_id 1: (1054, "Unknown column 'label' in 'field list'")
+2025-06-21 17:38:41,222 - INFO - Final prompt created with unique_id_with_template: uid_4c233fc4a29b4f20bcc6430e0558ecf3_2cdd520c3cdedc04_1750527520545
+2025-06-21 17:38:41,418 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:46,153 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:46,154 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:46,155 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:46,159 - INFO - Generated unique_id_with_template: uid_12daef3d3a574244932a34cfc3eb8c92_36b453faa5f923db_1750527526159
+2025-06-21 17:38:46,160 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:46,161 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:46,162 - INFO - Processing query for user_id 1: Which tasks are overdue and not in 'completed' status?
+2025-06-21 17:38:46,162 - INFO - Generated unique_id_with_template: uid_12daef3d3a574244932a34cfc3eb8c92_36b453faa5f923db_1750527526159
+2025-06-21 17:38:46,162 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:46,373 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:46,393 - INFO - Intent classification: sql
+2025-06-21 17:38:46,405 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:46,650 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:47,372 - INFO - Generated SQL Query for user_id 1:
+SELECT t.id,
+       t.project_id,
+       t.team_id,
+       t.platform_id,
+       t.parent_id,
+       t.user_id,
+       t.title,
+       t.description,
+       t.status,
+       t.priority,
+       t.labels,
+       t.estimate,
+       t.due_date,
+       t.source,
+       t.last_synced_at,
+       t.is_deleted,
+       t.created_at,
+       t.updated_at
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+AND p.owner_id = 1
+LEFT JOIN platform_users u ON t.user_id = u.id
+AND u.owner_id = 1
+WHERE t.status != 'Done'
+  AND t.due_date IS NOT NULL
+  AND t.due_date < CURRENT_TIMESTAMP
+  AND t.is_deleted = 0;
+2025-06-21 17:38:47,374 - INFO - Raw DB data retrieved: 0 rows
+2025-06-21 17:38:47,374 - WARNING - No data returned from SQL query
+2025-06-21 17:38:47,375 - INFO - Final prompt created with unique_id_with_template: uid_12daef3d3a574244932a34cfc3eb8c92_36b453faa5f923db_1750527526159
+2025-06-21 17:38:47,665 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:55,781 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:38:55,782 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:38:55,784 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:38:55,788 - INFO - Generated unique_id_with_template: uid_e61a5e2946754670af35df55dcf6f4c8_b4b12db2f6ec9d62_1750527535788
+2025-06-21 17:38:55,789 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:38:55,789 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:38:55,790 - INFO - Processing query for user_id 1: What percentage of tasks are currently in 'in-progress' status?
+2025-06-21 17:38:55,790 - INFO - Generated unique_id_with_template: uid_e61a5e2946754670af35df55dcf6f4c8_b4b12db2f6ec9d62_1750527535788
+2025-06-21 17:38:55,791 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:38:55,982 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:55,996 - INFO - Intent classification: sql
+2025-06-21 17:38:56,009 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:38:56,445 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:38:56,723 - INFO - Generated SQL Query for user_id 1:
+SELECT ROUND((COUNT(*) * 100.0) /
+               (SELECT COUNT(*)
+                FROM tasks
+                WHERE owner_id = 1), 2) AS in_progress_percentage
+FROM tasks
+WHERE owner_id = 1
+  AND status = 'In Progress'
+2025-06-21 17:38:56,725 - INFO - Raw DB data retrieved: 1 rows
+2025-06-21 17:38:56,725 - INFO - Sample data: {'in_progress_percentage': Decimal('12.28')}
+2025-06-21 17:38:56,726 - INFO - Final prompt created with unique_id_with_template: uid_e61a5e2946754670af35df55dcf6f4c8_b4b12db2f6ec9d62_1750527535788
+2025-06-21 17:38:56,971 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:08,941 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:08,942 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:08,944 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:08,949 - INFO - Generated unique_id_with_template: uid_29e7b682e3084747b3868e8fa4e98416_cffc90c6e9613295_1750527548949
+2025-06-21 17:39:08,949 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:08,951 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:08,952 - INFO - Processing query for user_id 1: what sql did u use
+2025-06-21 17:39:08,952 - INFO - Generated unique_id_with_template: uid_29e7b682e3084747b3868e8fa4e98416_cffc90c6e9613295_1750527548949
+2025-06-21 17:39:08,952 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:09,154 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:09,171 - INFO - Intent classification: sql
+2025-06-21 17:39:09,192 - INFO - Database schema: "\nCREATE TABLE linked (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttype VARCHAR(100) NOT NULL, \n\tslack_channel VARCHAR(255), \n\ttoken VARCHAR(100) NOT NULL, \n\towner_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tbot TEXT, \n\tjson TEXT, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from linked table:\nid\ttype\tslack_channel\ttoken\towner_id\tuserid\tbot\tjson\tcreated_at\n1\tlinear\tNone\tlin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\tNone\t1\tNone\t{\"access_token\":\"lin_oauth_d6bad6e86004fe178c3a2f9cff9c31c243dd617284d36f1f1412a7053f88a08c\",\"token_\t2025-06-05 14:49:34\n3\tlinear\tNone\tlin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\tNone\t2\tNone\t{\"access_token\":\"lin_oauth_740eee0ff4bf659babba481407b31a1e890e7a2d85bd9ea87f605e0b3bb26fb9\",\"token_\t2025-06-15 11:23:22\n4\tlinear\tNone\tlin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\tNone\t4\tNone\t{\"access_token\":\"lin_oauth_02a5455953ec7f91656029d97c55ee4af928ecaf93625992d4cfba74f9b9b98e\",\"token_\t2025-06-16 15:41:09\n*/\n\n\nCREATE TABLE platform_users (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tname VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci, \n\temail VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tfull_name VARCHAR(255), \n\tsource VARCHAR(50) DEFAULT 'tasks', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from platform_users table:\nid\tname\temail\tuser_id\tplatform_id\tfull_name\tsource\tcreated_at\tupdated_at\towner_id\n1\tprebad50@gmail.com\tprebad50@gmail.com\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t1\tprebad50@gmail.com\tlinear\t2025-06-01 09:02:23\t2025-06-01 09:02:23\t1\n2\tgodswillikwan01@gmail.com\tgodswillikwan01@gmail.com\tb99caeb0-2bb3-4c15-9297-e657a46a3377\t1\tgodswillikwan01@gmail.com\tlinear\t2025-05-11 17:43:54\t2025-05-11 17:43:54\t1\n3\tdev.ayomide@gmail.com\tdev.ayomide@gmail.com\t1d66d358-c981-4563-917f-8e8b35b497e6\t1\tdev.ayomide@gmail.com\tlinear\t2025-03-18 09:45:42\t2025-03-18 09:45:42\t1\n*/\n\n\nCREATE TABLE projects (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tplatform_id VARCHAR(255), \n\tuser_id INTEGER, \n\tname VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstart_date VARCHAR(255), \n\tend_date VARCHAR(255), \n\tproject_key TEXT, \n\tstate VARCHAR(50), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreator VARCHAR(255), \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from projects table:\nid\tplatform_id\tuser_id\tname\tdescription\tstart_date\tend_date\tproject_key\tstate\tsource\tlast_synced_at\tcreator\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tAutomated Testing Framework\tDevelop a framework for automated testing to improve code quality and reduce manual testing efforts \t2025-06-18 18:07:50\tNone\ta7b01a44-f674-4aea-af6f-24cc9238c440\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:50\t2025-06-18 18:07:50\t1\n2\t1\t1\tSelf-Service Knowledge Base\tCreate a platform for users to access guides, FAQs, and troubleshooting tips to reduce support reque\t2025-06-18 18:07:06\tNone\t66ef2686-929d-428c-96a4-8a6e8c37d8c1\tplanned\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:07:06\t2025-06-18 18:07:06\t1\n3\t1\t1\tAI-Powered Help Desk\tDevelop a system to automate support ticket categorization and response suggestions using machine le\t2025-06-18 18:06:32\tNone\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\tstarted\tlinear\t2025-06-18 19:08:04\t0a996c49-4f8f-4af7-9414-01aa7759bb08\t2025-06-18 18:06:32\t2025-06-18 18:06:32\t1\n*/\n\n\nCREATE TABLE sub_issues (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tsub_task_id VARCHAR(300), \n\tstatus VARCHAR(255), \n\tuser_id VARCHAR(255), \n\tplatform_id INTEGER, \n\tis_deleted INTEGER, \n\ttask_id VARCHAR(255) NOT NULL, \n\towner_id INTEGER, \n\tcreated_at VARCHAR(255), \n\tupdated_at VARCHAR(255), \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from sub_issues table:\nid\ttitle\tsub_task_id\tstatus\tuser_id\tplatform_id\tis_deleted\ttask_id\towner_id\tcreated_at\tupdated_at\n1\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n2\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t1\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n3\tData Collection for Model Training\t56b62aba-58a8-464e-bc7f-81f08ba7416a\tCanceled\tc3dd513d-b340-49fe-883e-d780403d978a\t4\tNone\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t4\t2025-06-18 18:06:46\t2025-06-19 10:21:36\n*/\n\n\nCREATE TABLE tasks (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tproject_id VARCHAR(255), \n\tteam_id VARCHAR(255), \n\tplatform_id VARCHAR(255), \n\tparent_id VARCHAR(255), \n\tuser_id VARCHAR(255), \n\ttitle VARCHAR(255) NOT NULL, \n\tdescription TEXT, \n\tstatus VARCHAR(50) NOT NULL, \n\tpriority INTEGER, \n\tlabels JSON, \n\testimate FLOAT, \n\tdue_date VARCHAR(255), \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tis_deleted TINYINT(1) DEFAULT '0', \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from tasks table:\nid\tproject_id\tteam_id\tplatform_id\tparent_id\tuser_id\ttitle\tdescription\tstatus\tpriority\tlabels\testimate\tdue_date\tsource\tlast_synced_at\tis_deleted\tcreated_at\tupdated_at\towner_id\n1\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t4\n2\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t1\td181b6a9-2a96-480f-b82d-5a4c94f7a11b\t1d66d358-c981-4563-917f-8e8b35b497e6\tDevelop Ticket Categorization Model\tDesign and implement a machine learning model to categorize support tickets based on their content. \tDuplicate\t2\t[]\t13.0\tNone\tlinear\t2025-06-19 11:21:38\tNone\t2025-06-18 18:06:46\t2025-06-19 10:21:37\t1\n3\te09b716d-c3aa-43e1-bfc2-c0a0a5b7695a\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t4\t4d455271-c73f-4c66-9868-4e829c3c64f4\tae80d1ab-25b0-436a-8f07-cf84b3ddd46a\tIntegrate Response Suggestion System\tImplement a system that suggests responses to support tickets using a pre-trained model. Acceptance \tDuplicate\t3\t[]\t8.0\tNone\tlinear\t2025-06-19 11:21:34\tNone\t2025-06-18 18:06:50\t2025-06-19 10:21:34\t4\n*/\n\n\nCREATE TABLE teams (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\tuser_id INTEGER, \n\tplatform_id VARCHAR(255), \n\tname VARCHAR(255) NOT NULL, \n\tteam_key VARCHAR(50), \n\tdescription TEXT, \n\tsource ENUM('linear','trello','jira') NOT NULL, \n\tlast_synced_at TIMESTAMP NULL, \n\tcreated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, \n\tupdated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, \n\towner_id INTEGER NOT NULL, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from teams table:\nid\tuser_id\tplatform_id\tname\tteam_key\tdescription\tsource\tlast_synced_at\tcreated_at\tupdated_at\towner_id\n1\t1\t1\tHelp and support\t8e2e1b68-cf6b-4ef3-9f09-dce0931a72d5\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:40\t2025-06-17 20:06:40\t1\n2\t1\t1\tTesters\tf6a76b45-8a4f-40c9-a965-62cb1cdb5e9c\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:06:02\t2025-06-17 20:06:02\t1\n3\t1\t1\tMarketing\tc8215456-ff8b-4b45-93c7-f0350f13f7fb\t\tlinear\t2025-06-18 19:08:04\t2025-06-17 20:05:45\t2025-06-17 20:05:45\t1\n*/\n\n\nCREATE TABLE user_metrics (\n\tid INTEGER NOT NULL AUTO_INCREMENT, \n\ttitle TEXT, \n\tdescription TEXT, \n\tcategory TEXT, \n\tweight VARCHAR(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0', \n\tpercentage VARCHAR(255) DEFAULT '0', \n\tmetric_id INTEGER, \n\tuserid INTEGER NOT NULL, \n\tcreated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, \n\tPRIMARY KEY (id)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_0900_ai_ci\n\n/*\n3 rows from user_metrics table:\nid\ttitle\tdescription\tcategory\tweight\tpercentage\tmetric_id\tuserid\tcreated_at\n32\tPrecision\tProportion of correct positive predictions.\t1\t7\t37\t1\t1\t2025-06-19 16:15:21\n33\tRecall\tProportion of actual positives identified.\t1\t5\t26\t2\t1\t2025-06-19 16:15:21\n34\tF1 Score\tHarmonic mean of precision and recall.\t1\t1\t5\t3\t1\t2025-06-19 16:15:30\n*/"
+2025-06-21 17:39:09,452 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:09,636 - INFO - Generated SQL Query for user_id 1:
+SELECT COUNT(CASE
+                 WHEN status = 'In Progress' THEN 1
+             END) * 100.0 / COUNT(*) AS in_progress_percentage
+FROM tasks
+WHERE owner_id = 1;
+2025-06-21 17:39:09,638 - INFO - Raw DB data retrieved: 1 rows
+2025-06-21 17:39:09,638 - INFO - Sample data: {'in_progress_percentage': Decimal('12.28070')}
+2025-06-21 17:39:09,639 - INFO - Final prompt created with unique_id_with_template: uid_29e7b682e3084747b3868e8fa4e98416_cffc90c6e9613295_1750527548949
+2025-06-21 17:39:09,931 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:17,814 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:17,815 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:17,816 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:17,821 - INFO - Generated unique_id_with_template: uid_78076e99c59f4d67bfe1d8c58d147ea0_685e267d0de3e3b6_1750527557821
+2025-06-21 17:39:17,821 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:17,822 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:17,823 - INFO - Processing query for user_id 1: no u used sql i know
+2025-06-21 17:39:17,823 - INFO - Generated unique_id_with_template: uid_78076e99c59f4d67bfe1d8c58d147ea0_685e267d0de3e3b6_1750527557821
+2025-06-21 17:39:17,823 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:18,016 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:18,031 - INFO - Intent classification: chat
+2025-06-21 17:39:18,031 - INFO - Final prompt created with unique_id_with_template: uid_78076e99c59f4d67bfe1d8c58d147ea0_685e267d0de3e3b6_1750527557821
+2025-06-21 17:39:18,304 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:25,582 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:25,583 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:25,585 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:25,590 - INFO - Generated unique_id_with_template: uid_2ceec84d613e4f93887866ae23be46f1_ab184a1e287e3b40_1750527565590
+2025-06-21 17:39:25,590 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:25,591 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:25,592 - INFO - Processing query for user_id 1: why r u lying?
+2025-06-21 17:39:25,593 - INFO - Generated unique_id_with_template: uid_2ceec84d613e4f93887866ae23be46f1_ab184a1e287e3b40_1750527565590
+2025-06-21 17:39:25,593 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:25,818 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:25,852 - INFO - Intent classification: chat
+2025-06-21 17:39:25,852 - INFO - Final prompt created with unique_id_with_template: uid_2ceec84d613e4f93887866ae23be46f1_ab184a1e287e3b40_1750527565590
+2025-06-21 17:39:26,060 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:36,082 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:36,083 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:36,084 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:36,090 - INFO - Generated unique_id_with_template: uid_df5c0e44cf59428ba7118105a84be686_e867211c2d9dfae3_1750527576090
+2025-06-21 17:39:36,090 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:36,091 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:36,092 - INFO - Processing query for user_id 1: i said u do. give me now
+2025-06-21 17:39:36,092 - INFO - Generated unique_id_with_template: uid_df5c0e44cf59428ba7118105a84be686_e867211c2d9dfae3_1750527576090
+2025-06-21 17:39:36,092 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:36,283 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:36,317 - INFO - Intent classification: chat
+2025-06-21 17:39:36,317 - INFO - Final prompt created with unique_id_with_template: uid_df5c0e44cf59428ba7118105a84be686_e867211c2d9dfae3_1750527576090
+2025-06-21 17:39:36,537 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:44,634 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:44,635 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:44,636 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:44,640 - INFO - Generated unique_id_with_template: uid_00fadcb38e2b4b66a4971dc18fc8a6eb_18c33a7966e3612f_1750527584640
+2025-06-21 17:39:44,641 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:44,642 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:44,643 - INFO - Processing query for user_id 1: hmm if u dont give me i will leave
+2025-06-21 17:39:44,644 - INFO - Generated unique_id_with_template: uid_00fadcb38e2b4b66a4971dc18fc8a6eb_18c33a7966e3612f_1750527584640
+2025-06-21 17:39:44,644 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:44,913 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:44,942 - INFO - Intent classification: chat
+2025-06-21 17:39:44,942 - INFO - Final prompt created with unique_id_with_template: uid_00fadcb38e2b4b66a4971dc18fc8a6eb_18c33a7966e3612f_1750527584640
+2025-06-21 17:39:45,253 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:51,342 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:39:51,342 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:39:51,344 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:39:51,347 - INFO - Generated unique_id_with_template: uid_33d5015c25eb4d64818f927a94ffece7_1a53a41843bffa9d_1750527591347
+2025-06-21 17:39:51,347 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:39:51,349 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:39:51,350 - INFO - Processing query for user_id 1: good ai
+2025-06-21 17:39:51,350 - INFO - Generated unique_id_with_template: uid_33d5015c25eb4d64818f927a94ffece7_1a53a41843bffa9d_1750527591347
+2025-06-21 17:39:51,350 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:39:51,552 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:39:51,565 - INFO - Intent classification: chat
+2025-06-21 17:39:51,565 - INFO - Final prompt created with unique_id_with_template: uid_33d5015c25eb4d64818f927a94ffece7_1a53a41843bffa9d_1750527591347
+2025-06-21 17:39:51,796 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:42:54,073 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:42:54,074 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:42:54,075 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:42:54,079 - INFO - Generated unique_id_with_template: uid_0e2caa8dd0e14c3e90624b853984767c_90063f07f36b1ba8_1750527774079
+2025-06-21 17:42:54,080 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:42:54,082 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:42:54,082 - INFO - Processing query for user_id 1: is it in the bible that jesus is coming back
+2025-06-21 17:42:54,083 - INFO - Generated unique_id_with_template: uid_0e2caa8dd0e14c3e90624b853984767c_90063f07f36b1ba8_1750527774079
+2025-06-21 17:42:54,083 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:42:54,306 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:42:54,319 - INFO - Intent classification: chat
+2025-06-21 17:42:54,319 - INFO - Final prompt created with unique_id_with_template: uid_0e2caa8dd0e14c3e90624b853984767c_90063f07f36b1ba8_1750527774079
+2025-06-21 17:42:54,526 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:00,834 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:43:00,835 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:43:00,836 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:43:00,840 - INFO - Generated unique_id_with_template: uid_a08a71abd0364dcfb68b2a50ff8a84b7_fbff29f0a34845d7_1750527780840
+2025-06-21 17:43:00,840 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:43:00,841 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:43:00,842 - INFO - Processing query for user_id 1: what about koran
+2025-06-21 17:43:00,842 - INFO - Generated unique_id_with_template: uid_a08a71abd0364dcfb68b2a50ff8a84b7_fbff29f0a34845d7_1750527780840
+2025-06-21 17:43:00,842 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:43:01,073 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:01,103 - INFO - Intent classification: chat
+2025-06-21 17:43:01,103 - INFO - Final prompt created with unique_id_with_template: uid_a08a71abd0364dcfb68b2a50ff8a84b7_fbff29f0a34845d7_1750527780840
+2025-06-21 17:43:01,323 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:18,342 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:43:18,343 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:43:18,345 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:43:18,352 - INFO - Generated unique_id_with_template: uid_8318082108364950b6161495a637ce86_101d0ec33b80f1b3_1750527798352
+2025-06-21 17:43:18,353 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:43:18,354 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:43:18,355 - INFO - Processing query for user_id 1: but they said he is coming there right?
+2025-06-21 17:43:18,355 - INFO - Generated unique_id_with_template: uid_8318082108364950b6161495a637ce86_101d0ec33b80f1b3_1750527798352
+2025-06-21 17:43:18,355 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:43:18,604 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:18,615 - INFO - Intent classification: chat
+2025-06-21 17:43:18,616 - INFO - Final prompt created with unique_id_with_template: uid_8318082108364950b6161495a637ce86_101d0ec33b80f1b3_1750527798352
+2025-06-21 17:43:18,927 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:41,253 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:43:41,254 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:43:41,256 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:43:41,260 - INFO - Generated unique_id_with_template: uid_3a7cf7509c94467a9a2432d72bbb1a9c_4f2d39ebe96659d6_1750527821260
+2025-06-21 17:43:41,260 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:43:41,261 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:43:41,261 - INFO - Processing query for user_id 1: ok so if he is coming back he is not a prophet then, and why not moahmmed the ped thats coming back?
+2025-06-21 17:43:41,262 - INFO - Generated unique_id_with_template: uid_3a7cf7509c94467a9a2432d72bbb1a9c_4f2d39ebe96659d6_1750527821260
+2025-06-21 17:43:41,262 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:43:41,491 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:43:41,516 - INFO - Intent classification: chat
+2025-06-21 17:43:41,516 - INFO - Final prompt created with unique_id_with_template: uid_3a7cf7509c94467a9a2432d72bbb1a9c_4f2d39ebe96659d6_1750527821260
+2025-06-21 17:43:41,708 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:30,383 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:44:30,384 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:44:30,385 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:44:30,390 - INFO - Generated unique_id_with_template: uid_cec12b2630a24515a912975ac7c83a93_dc5e9fa7bbe6baef_1750527870390
+2025-06-21 17:44:30,390 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:44:30,391 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:44:30,393 - INFO - Processing query for user_id 1: lol someone that hate blacks comparing them with satan, also have slaves and kill people, and married a kid and u said he a prophet hahahahahahaha
+2025-06-21 17:44:30,393 - INFO - Generated unique_id_with_template: uid_cec12b2630a24515a912975ac7c83a93_dc5e9fa7bbe6baef_1750527870390
+2025-06-21 17:44:30,393 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:44:30,590 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:30,613 - INFO - Intent classification: chat
+2025-06-21 17:44:30,613 - INFO - Final prompt created with unique_id_with_template: uid_cec12b2630a24515a912975ac7c83a93_dc5e9fa7bbe6baef_1750527870390
+2025-06-21 17:44:30,840 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:44,875 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:44:44,876 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:44:44,877 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:44:44,882 - INFO - Generated unique_id_with_template: uid_83fc1c369dda44688021502d7194c540_aa257d4c5f8affa7_1750527884882
+2025-06-21 17:44:44,883 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:44:44,883 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:44:44,884 - INFO - Processing query for user_id 1: whats complex there bro.,. its written in their qoran
+2025-06-21 17:44:44,884 - INFO - Generated unique_id_with_template: uid_83fc1c369dda44688021502d7194c540_aa257d4c5f8affa7_1750527884882
+2025-06-21 17:44:44,885 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:44:45,084 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:45,101 - INFO - Intent classification: chat
+2025-06-21 17:44:45,101 - INFO - Final prompt created with unique_id_with_template: uid_83fc1c369dda44688021502d7194c540_aa257d4c5f8affa7_1750527884882
+2025-06-21 17:44:45,313 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:51,114 - INFO - chat_id_enc 64d60833-6629-414d-a74c-04268d23f254
+2025-06-21 17:44:51,114 - INFO - Executing chat history query for chat_id 64d60833-6629-414d-a74c-04268d23f254:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-21 17:44:51,116 - INFO - Saving message to DB for chat_id 64d60833-6629-414d-a74c-04268d23f254, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-21 17:44:51,124 - INFO - Generated unique_id_with_template: uid_f16145dc9f2449e9a1d913d5578d2dd4_cc08ca4f7d8151e2_1750527891124
+2025-06-21 17:44:51,124 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-21 17:44:51,125 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-21 17:44:51,126 - INFO - Processing query for user_id 1: rest
+2025-06-21 17:44:51,126 - INFO - Generated unique_id_with_template: uid_f16145dc9f2449e9a1d913d5578d2dd4_cc08ca4f7d8151e2_1750527891124
+2025-06-21 17:44:51,126 - INFO - User metrics loaded: 7 metrics
+2025-06-21 17:44:51,366 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:44:51,389 - INFO - Intent classification: chat
+2025-06-21 17:44:51,389 - INFO - Final prompt created with unique_id_with_template: uid_f16145dc9f2449e9a1d913d5578d2dd4_cc08ca4f7d8151e2_1750527891124
+2025-06-21 17:44:51,565 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-21 17:45:54,621 - INFO - Client disconnected from WebSocket
+2025-06-22 07:44:41,210 - INFO - chat_id_enc 
+2025-06-22 07:44:41,579 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-22 07:44:42,122 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-22 07:44:42,204 - INFO - Created new chat with ID 34 and UUID 0aa1d4b5-7d34-41aa-a786-c816565b5b1a for user 1
+2025-06-22 07:44:42,204 - INFO - 0aa1d4b5-7d34-41aa-a786-c816565b5b1a
+2025-06-22 07:44:42,207 - INFO - Executing chat history query for chat_id 0aa1d4b5-7d34-41aa-a786-c816565b5b1a:
+
+        SELECT sender_type, message, reaction
+        FROM chat_messages
+        WHERE chat_id = %s
+        ORDER BY created_at DESC
+        LIMIT 10
+    
+2025-06-22 07:44:42,212 - INFO - Saving message to DB for chat_id 0aa1d4b5-7d34-41aa-a786-c816565b5b1a, user_id 1:
+
+        INSERT INTO chat_messages (chat_id, user_id, owner_id, sender_type, message)
+        VALUES (%s, %s, %s, %s, %s)
+    
+2025-06-22 07:44:42,223 - INFO - Generated unique_id_with_template: uid_5cb5bf2c74f24671b6a3c4be2c6e1df2_a2b9081ab8b6d73d_1750578282223
+2025-06-22 07:44:42,224 - INFO - Fetching workspace types for owner_id 1:
+
+        SELECT type
+        FROM linked
+        WHERE userid = %s
+    
+2025-06-22 07:44:42,226 - INFO - Fetching user metrics for owner_id 1:
+
+        SELECT title, description, category, weight, percentage, metric_id
+        FROM user_metrics
+        WHERE userid = %s
+        ORDER BY created_at DESC
+    
+2025-06-22 07:44:42,227 - INFO - Processing query for user_id 1: Which team has the highest number of tasks stuck in 'in-progress'?
+2025-06-22 07:44:42,229 - INFO - Generated unique_id_with_template: uid_5cb5bf2c74f24671b6a3c4be2c6e1df2_a2b9081ab8b6d73d_1750578282223
+2025-06-22 07:44:42,229 - INFO - User metrics loaded: 7 metrics
+2025-06-22 07:44:42,625 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-22 07:44:42,643 - INFO - Intent classification: sql
+2025-06-22 07:44:42,645 - INFO - SQLAlchemy connection failed, recreating: (pymysql.err.OperationalError) (2006, "MySQL server has gone away (BrokenPipeError(32, 'Broken pipe'))")
+[SQL: SELECT 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-06-22 07:44:42,646 - ERROR - SQL Query Error for user_id 1: Connection.__init__() got an unexpected keyword argument 'pool_pre_ping'
+2025-06-22 07:44:42,647 - INFO - Final prompt created with unique_id_with_template: uid_5cb5bf2c74f24671b6a3c4be2c6e1df2_a2b9081ab8b6d73d_1750578282223
+2025-06-22 07:44:42,835 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-22 07:47:34,527 - INFO - Client disconnected from WebSocket
+2025-06-22 13:20:17,057 - INFO - Client disconnected from WebSocket
+2025-06-22 13:26:46,216 - INFO - Client disconnected from WebSocket
+2025-06-22 14:21:14,454 - INFO - Client disconnected from WebSocket
+2025-06-22 14:32:12,532 - INFO - Client disconnected from WebSocket
+2025-06-22 14:32:44,255 - INFO - Client disconnected from WebSocket
+2025-06-22 14:32:45,696 - INFO - Client disconnected from WebSocket
+2025-06-22 14:32:59,620 - INFO - Client disconnected from WebSocket
+2025-06-22 14:45:55,606 - INFO - Client disconnected from WebSocket

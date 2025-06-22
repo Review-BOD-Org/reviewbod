@@ -42,7 +42,7 @@
         <!-- Menu items -->
         <nav class="space-y-[50px]" style="@if (!$linked) pointer-events:none; @endif">
             <a href="/dashboard"
-                class="flex items-center px-3 py-2 text-sm font-medium text-gray-900 rounded-md {{ request()->routeIs('dashboard') ? 'bg-gray-100' : 'hover:bg-gray-50 hover:text-gray-900' }}">
+                class="flex  items-center justify-center px-3 py-2 text-sm font-medium text-gray-900 rounded-md {{ request()->routeIs('dashboard') ? 'bg-gray-100' : 'hover:bg-gray-50 hover:text-gray-900' }}">
 
                 <svg width="42" height="38" viewBox="0 0 42 38" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
@@ -73,8 +73,8 @@
             </a>
 
             <div class="relative">
-                <div onclick="toggleDropdown('membersMenu')"
-                    class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 cursor-pointer">
+                <div onclick="location.href='{{ route('user.users') }}'"
+                    class="flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 cursor-pointer">
 
                     <svg width="40" height="41" viewBox="0 0 40 41" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -98,10 +98,10 @@
 
             <div class="relative">
                 <div onclick="location.href='{{ route('user.settings') }}'"
-                    class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 cursor-pointer">
+                    class="flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 cursor-pointer">
 
 
-                    <svg width="47" height="50" viewBox="0 0 47 50" fill="none"
+                    <svg width="55" height="50" viewBox="0 0 47 50" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M3.91666 26.8336V23.167C3.91666 21.0003 5.58125 19.2086 7.6375 19.2086C11.1821 19.2086 12.6312 16.542 10.8492 13.2711C9.83083 11.3961 10.4379 8.95865 12.22 7.87531L15.6079 5.81282C17.155 4.83365 19.1525 5.41698 20.0729 7.06282L20.2883 7.45865C22.0508 10.7295 24.9492 10.7295 26.7312 7.45865L26.9467 7.06282C27.8671 5.41698 29.8646 4.83365 31.4117 5.81282L34.7996 7.87531C36.5817 8.95865 37.1887 11.3961 36.1704 13.2711C34.3883 16.542 35.8375 19.2086 39.3821 19.2086C41.4187 19.2086 43.1029 20.9795 43.1029 23.167V26.8336C43.1029 29.0003 41.4383 30.792 39.3821 30.792C35.8375 30.792 34.3883 33.4586 36.1704 36.7295C37.1887 38.6253 36.5817 41.042 34.7996 42.1253L31.4117 44.1878C29.8646 45.167 27.8671 44.5836 26.9467 42.9378L26.7312 42.542C24.9687 39.2711 22.0704 39.2711 20.2883 42.542L20.0729 42.9378C19.1525 44.5836 17.155 45.167 15.6079 44.1878L12.22 42.1253C10.4379 41.042 9.83083 38.6045 10.8492 36.7295C12.6312 33.4586 11.1821 30.792 7.6375 30.792C5.58125 30.792 3.91666 29.0003 3.91666 26.8336Z"
@@ -117,8 +117,8 @@
 
             </div>
 
-            <a href="{{ route('user.reports') }}"
-                class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
+            <a href="{{ route('user.logout') }}"
+                class="flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900">
 
 
                 <svg width="50" height="54" viewBox="0 0 50 54" fill="none"
