@@ -76,7 +76,7 @@
                                         fill="#4B5563" />
                                 </svg>
                             </i> Billing & Subscription</a></li>
-                    <li><a href="{{ route('user.settings',['type'=>'delete']) }}"
+                    {{-- <li><a href="{{ route('user.settings',['type'=>'delete']) }}"
                             class=" p-2 rounded-md hover:bg-gray-100 flex gap-2 items-center text-[17px]"><i
                                 class=""><svg width="18" height="20" viewBox="0 0 18 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +85,7 @@
                                         stroke="#4B5563" stroke-width="1.5" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                            </i> Delete Account</a></li>
+                            </i> Delete Account</a></li> --}}
 
                 </ul>
             </div>

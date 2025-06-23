@@ -2498,7 +2498,7 @@ public function loadusertasks(Request $request) {
         ->orderBy('created_at', 'desc')
         ->offset($offset)
         ->limit($perPage + 1) // Get one extra to check if there are more
-        ->get(['id', 'title', 'description', 'status', 'due_date', 'created_at']);
+        ->get(['id', 'title', 'description', 'status', 'due_date', 'created_at','user_id']);
     
     $hasMore = $tasks->count() > $perPage;
     if ($hasMore) {

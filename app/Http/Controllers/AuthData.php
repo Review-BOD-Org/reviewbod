@@ -624,9 +624,11 @@ public function handleTrelloCallback(Request $request)
         ]);
     }
 
-    DB::table("users")->where("id", Auth::id())->update([
-        'service' => 'trello'
-    ]);
+   $res = new FetchData();
+      
+    $res = $res->StoreData("trello");
+   
+  $this->registerLinearWebhook(Auth::id());
 
     Cache::flush();         
     return redirect('/auth/pricing')->with('success', 'Trello connected successfully.');
