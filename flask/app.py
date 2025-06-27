@@ -287,6 +287,112 @@ def clean_sql(raw_sql: str) -> str:
         raise ValueError(f"Failed to clean SQL: {str(e)}")
 
 
+def create_safe_template_structure(processed_data, column_types, description, template_type="auto"):
+    """Create template structure with guaranteed consistency"""
+    try:
+        if not processed_data or not column_types:
+            return {
+                "template_type": "table",
+                "structure": {
+                    "message": "No data available",
+                    "columns": [],
+                    "data": []
+                }
+            }
+        
+        columns = list(column_types.keys())
+        string_cols = [col for col, dtype in column_types.items() if dtype == 'string']
+        number_cols = [col for col, dtype in column_types.items() if dtype == 'number']
+        date_cols = [col for col, dtype in column_types.items() if dtype == 'date']
+        
+        # Always create table structure as fallback
+        table_structure = {
+            "template_type": "table",
+            "structure": {
+                "columns": [{"data": col, "title": col.replace('_', ' ').title()} for col in columns],
+                "data": processed_data
+            }
+        }
+        
+        # Try to create chart if conditions are met
+        can_create_chart = False
+        chart_structure = None
+        
+        if len(processed_data) > 1 and len(columns) >= 2:
+            chart_columns = []
+            chart_type = "BarChart"  # Safe default
+            
+            # Determine best chart setup
+            if date_cols and number_cols:
+                # Time series
+                chart_type = "LineChart"
+                chart_columns = [
+                    {"type": "date", "label": date_cols[0].replace('_', ' ').title(), "data": date_cols[0]},
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
+                ]
+                can_create_chart = True
+                
+            elif string_cols and number_cols:
+                # Categorical data
+                chart_type = "PieChart" if len(processed_data) <= 10 else "BarChart"
+                chart_columns = [
+                    {"type": "string", "label": string_cols[0].replace('_', ' ').title(), "data": string_cols[0]},
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
+                ]
+                can_create_chart = True
+                
+            elif len(number_cols) >= 2:
+                # Scatter plot
+                chart_type = "ScatterChart"
+                chart_columns = [
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]},
+                    {"type": "number", "label": number_cols[1].replace('_', ' ').title(), "data": number_cols[1]}
+                ]
+                can_create_chart = True
+            
+            if can_create_chart and chart_columns:
+                chart_structure = {
+                    "template_type": "chart",
+                    "structure": {
+                        "chartType": chart_type,
+                        "options": {
+                            "title": description,
+                            "legend": {"position": "bottom"},
+                            "animation": {
+                                "startup": True,
+                                "duration": 1000,
+                                "easing": "out"
+                            },
+                            "width": "100%",
+                            "height": 400,
+                            "backgroundColor": "transparent"
+                        },
+                        "columns": chart_columns,
+                        "chart_data": processed_data,
+                        "column_types": column_types
+                    }
+                }
+                
+                # Add axis labels for applicable chart types
+                if chart_type in ["BarChart", "LineChart", "ScatterChart"]:
+                    chart_structure["structure"]["options"]["hAxis"] = {"title": chart_columns[0]["label"]}
+                    chart_structure["structure"]["options"]["vAxis"] = {"title": chart_columns[1]["label"]}
+        
+        # Return chart if possible, otherwise table
+        return chart_structure if chart_structure else table_structure
+        
+    except Exception as e:
+        logger.error(f"Error creating template structure: {str(e)}")
+        # Ultimate fallback
+        return {
+            "template_type": "table",
+            "structure": {
+                "message": "Data structure error - showing raw data",
+                "columns": [{"data": "error", "title": "Error"}],
+                "data": [{"error": str(e)}]
+            }
+        }
+        
 # Add this function to fix chart template generation
 def create_chart_template_structure(processed_data, column_types, description, suggested_chart_type):
     """Enhanced chart template creation with better column handling"""
@@ -449,138 +555,161 @@ def save_template_to_db(template_data, template_id, chat_id):
 
 # NEW: Enhanced data preprocessing function
 def preprocess_data_for_google_charts(data):
-    """Enhanced data preprocessing with proper date/datetime handling"""
+    """Enhanced data preprocessing with bulletproof error handling"""
     if not data:
         return [], {}
     
-    # Step 1: Analyze column types across all rows with better type detection
-    column_types = {}
+    # Ensure data is a list of dictionaries
+    if not isinstance(data, list):
+        return [], {}
     
-    for row in data:
-        for key, value in row.items():
-            if key not in column_types:
-                column_types[key] = {'types': set(), 'samples': []}
-            
-            column_types[key]['samples'].append(value)
+    # Filter out non-dict items and ensure we have valid data
+    valid_data = []
+    for item in data:
+        if isinstance(item, dict) and item:  # Non-empty dict
+            valid_data.append(item)
+    
+    if not valid_data:
+        return [], {}
+    
+    # Get all possible columns from all rows
+    all_columns = set()
+    for row in valid_data:
+        all_columns.update(row.keys())
+    
+    if not all_columns:
+        return [], {}
+    
+    # Initialize column type detection
+    column_types = {}
+    for col in all_columns:
+        column_types[col] = {'types': set(), 'samples': []}
+    
+    # Analyze column types with safer access
+    for row in valid_data:
+        for col in all_columns:
+            # Safely get value with default None
+            value = row.get(col, None)
+            column_types[col]['samples'].append(value)
             
             if value is None:
                 continue
             elif isinstance(value, (int, float, Decimal)):
-                column_types[key]['types'].add('number')
+                column_types[col]['types'].add('number')
             elif isinstance(value, (datetime, date)):
-                column_types[key]['types'].add('date')
+                column_types[col]['types'].add('date')
             elif isinstance(value, str):
-                # Enhanced string analysis
                 value_clean = value.strip()
                 if not value_clean:
-                    column_types[key]['types'].add('string')
+                    column_types[col]['types'].add('string')
                     continue
                 
-                # Check for date strings (common formats)
+                # Check for date strings
                 date_patterns = [
-                    r'^\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
-                    r'^\d{2}/\d{2}/\d{4}',  # MM/DD/YYYY
-                    r'^\d{2}-\d{2}-\d{4}',  # MM-DD-YYYY
-                    r'^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)',  # Month names
+                    r'^\d{4}-\d{2}-\d{2}',
+                    r'^\d{2}/\d{2}/\d{4}',
+                    r'^\d{2}-\d{2}-\d{4}',
                 ]
                 
                 is_date = any(re.match(pattern, value_clean, re.IGNORECASE) for pattern in date_patterns)
                 if is_date:
-                    column_types[key]['types'].add('date')
+                    column_types[col]['types'].add('date')
                     continue
                 
                 # Check if string represents a number
                 try:
-                    # Handle formatted numbers (commas, currency symbols)
                     clean_val = re.sub(r'[,$%\s]', '', value_clean)
-                    float(clean_val)
-                    column_types[key]['types'].add('number')
+                    if clean_val:  # Not empty after cleaning
+                        float(clean_val)
+                        column_types[col]['types'].add('number')
+                    else:
+                        column_types[col]['types'].add('string')
                 except (ValueError, AttributeError):
-                    column_types[key]['types'].add('string')
+                    column_types[col]['types'].add('string')
             else:
-                column_types[key]['types'].add('string')
+                column_types[col]['types'].add('string')
     
-    # Step 2: Determine final type for each column with improved logic
+    # Determine final types with safer logic
     final_column_types = {}
     for column, info in column_types.items():
         types = info['types']
         samples = [s for s in info['samples'] if s is not None]
         
-        # Priority: date > number > string
+        if not samples:  # All values are None
+            final_column_types[column] = 'string'
+            continue
+        
+        # Prioritize: date > number > string
         if 'date' in types:
-            # If more than 70% are dates or date-like, treat as date
             date_count = sum(1 for s in samples if isinstance(s, (datetime, date)) or 
-                           (isinstance(s, str) and any(re.match(p, str(s).strip(), re.IGNORECASE) 
-                                                     for p in [r'^\d{4}-\d{2}-\d{2}', r'^\d{2}/\d{2}/\d{4}'])))
-            if date_count / len(samples) > 0.7:
+                           (isinstance(s, str) and s.strip() and 
+                            any(re.match(p, str(s).strip(), re.IGNORECASE) 
+                                for p in [r'^\d{4}-\d{2}-\d{2}', r'^\d{2}/\d{2}/\d{4}'])))
+            if len(samples) > 0 and date_count / len(samples) > 0.7:
                 final_column_types[column] = 'date'
             else:
                 final_column_types[column] = 'string'
         elif 'number' in types and 'string' not in types:
             final_column_types[column] = 'number'
         elif 'number' in types and 'string' in types:
-            # Check ratio - if more than 80% are numbers, treat as number
             number_count = sum(1 for s in samples if isinstance(s, (int, float, Decimal)) or
                              (isinstance(s, str) and s.strip() and 
                               re.match(r'^[\d,.$%\s-]+$', s.strip())))
-            if number_count / len(samples) > 0.8:
+            if len(samples) > 0 and number_count / len(samples) > 0.8:
                 final_column_types[column] = 'number'
             else:
                 final_column_types[column] = 'string'
         else:
             final_column_types[column] = 'string'
     
-    # Step 3: Convert all data with consistent type handling
+    # Process all data with consistent structure
     processed_data = []
-    for row in data:
+    for row in valid_data:
         processed_row = {}
-        for key, value in row.items():
-            target_type = final_column_types.get(key, 'string')
+        # Ensure all columns exist in every row
+        for col in all_columns:
+            value = row.get(col, None)  # Safe access
+            target_type = final_column_types.get(col, 'string')
             
             if value is None:
-                processed_row[key] = None
+                processed_row[col] = None if target_type == 'string' else (0 if target_type == 'number' else None)
             elif target_type == 'string':
-                processed_row[key] = str(value) if value is not None else ''
+                processed_row[col] = str(value)
             elif target_type == 'number':
-                if isinstance(value, (Decimal, int, float)):
-                    processed_row[key] = float(value)  # Convert ALL numeric types to float
-                elif isinstance(value, str):
-                    try:
-                        # Enhanced number cleaning
+                try:
+                    if isinstance(value, (Decimal, int, float)):
+                        processed_row[col] = float(value)
+                    elif isinstance(value, str):
                         clean_val = re.sub(r'[,$%\s]', '', value.strip())
-                        processed_row[key] = float(clean_val) if clean_val else 0
-                    except (ValueError, AttributeError):
-                        processed_row[key] = 0
-                else:
-                    processed_row[key] = float(value) if value is not None else 0
+                        processed_row[col] = float(clean_val) if clean_val else 0.0
+                    else:
+                        processed_row[col] = 0.0
+                except (ValueError, AttributeError):
+                    processed_row[col] = 0.0
             elif target_type == 'date':
                 if isinstance(value, datetime):
-                    # Convert to Google Charts date format: "Date(year, month-1, day)"
-                    processed_row[key] = f"Date({value.year}, {value.month-1}, {value.day})"
+                    processed_row[col] = f"Date({value.year}, {value.month-1}, {value.day})"
                 elif isinstance(value, date):
-                    processed_row[key] = f"Date({value.year}, {value.month-1}, {value.day})"
+                    processed_row[col] = f"Date({value.year}, {value.month-1}, {value.day})"
                 elif isinstance(value, str):
                     try:
-                        # Try to parse common date formats
                         from dateutil import parser
                         parsed_date = parser.parse(value)
-                        processed_row[key] = f"Date({parsed_date.year}, {parsed_date.month-1}, {parsed_date.day})"
+                        processed_row[col] = f"Date({parsed_date.year}, {parsed_date.month-1}, {parsed_date.day})"
                     except:
-                        # If parsing fails, treat as string
-                        processed_row[key] = str(value)
-                        final_column_types[key] = 'string'  # Update type
+                        processed_row[col] = str(value)
+                        final_column_types[col] = 'string'
                 else:
-                    processed_row[key] = str(value)
-                    final_column_types[key] = 'string'  # Update type
+                    processed_row[col] = str(value)
             else:
-                processed_row[key] = str(value) if value is not None else ''
+                processed_row[col] = str(value) if value is not None else ''
         
         processed_data.append(processed_row)
     
-    # Convert any remaining Decimal objects
+    # Final safety conversion
     processed_data = convert_decimal_to_float(processed_data)
     final_column_types = convert_decimal_to_float(final_column_types)
-
+    
     return processed_data, final_column_types
 
 # NEW: Smart chart type selection based on data
@@ -649,6 +778,10 @@ sql_optimization_prompt = PromptTemplate.from_template("""
 Based on the database schema, description, sample SQL query, and owner_id, write a SINGLE, VALID SQL query.
 
 CRITICAL SQL REQUIREMENTS: 
+- always state the platform the data is from, either trello or linear or jira
+- note you have trello and linear as source, so make sure you know what you're doing, so your response should be accurate across these platform
+- include trello and linear when fetching , make give repsonse labeled by platform either linear or trello
+- mostly limit data if its too long
 - please your labels should be meaningful and descriptive, i mean what you're fetching or querying should be meaningful
 - do not generate column name on your own , only use the one from schema!!!!
 - Return ONLY ONE complete SELECT statement
@@ -713,7 +846,11 @@ You are a JSON generator that creates Google Charts configuration templates and 
 
 
 IMPORTANT: Analyze the data structure and content to determine the BEST chart type automatically.
+ - always label the platform the data is from, either trello or linear or jira
+ - note you have trello and linear as source, so make sure you know what you're doing, so your response should be splitted across these platform
+ - include trello and linear when fetching , make give repsonse labeled by platform either linear or trello
  -  Max 3 template you're allowed to generate
+ - mostly limit data if its too long
  - please your labels should be meaningful and descriptive
 CHART TYPE SELECTION RULES:
 - LineChart: For time series data (dates/timestamps with numeric values), trends over time
@@ -869,39 +1006,55 @@ def generate_template():
     try:
         data = request.get_json()
         
+        # Validate input data structure
+        if not isinstance(data, dict):
+            return jsonify({"error": "Invalid request format"}), 400
+            
         from datetime import date
         current_date = date.today()
         current_year = current_date.year
         
-        # Validate required fields
-        required_fields = ['description', 'id', 'sql', 'owner_id', 'chat_id']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Missing required field: {field}"}), 400
+        # Validate required fields with defaults
+        # required_fields = ['description', 'id', 'sql', 'owner_id', 'chat_id']
+        # for field in required_fields:
+        #     if field not in data or not data[field]:
+        #         return jsonify({"error": f"Missing or empty required field: {field}"}), 400
         
-        description = data['description']
-        template_id = data['id']
-        sample_sql_query = data['sql']
-        owner_id_enc = data['owner_id']
-        chat_id_enc = data['chat_id']
+        description = str(data['description'])
+        template_id = str(data['id'])
+        sample_sql_query = str(data['sql'])
+        owner_id_enc = str(data['owner_id'])
+        chat_id_enc = str(data['chat_id'])
         
-        # Decrypt IDs
-        owner_id = decrypt(owner_id_enc) if owner_id_enc else None
-        chat_id = chat_id_enc
-        
-        if not owner_id or not chat_id:
-            return jsonify({"error": "Invalid encrypted IDs"}), 400
+        # Decrypt IDs with error handling
+        try:
+            owner_id = decrypt(owner_id_enc) if owner_id_enc else None
+            chat_id = chat_id_enc
+            
+            if not owner_id or not chat_id:
+                return jsonify({"error": "Invalid encrypted IDs"}), 400
+        except Exception as e:
+            return jsonify({"error": "Decryption failed"}), 400
         
         logger.info(f"Generating template for owner_id {owner_id}, template_id {template_id}")
         
-        # Get chat history for context
-        chat_history = get_chat_history(chat_id)
+        # Get chat history safely
+        chat_history = ""
+        try:
+            chat_history = get_chat_history(chat_id)
+        except Exception as e:
+            logger.warning(f"Could not get chat history: {str(e)}")
         
-        # Get database schema
-        schema_info = db.get_table_info()
-        schema_str = json.dumps(schema_info, indent=2)
+        # Get database schema safely
+        schema_str = "{}"
+        try:
+            schema_info = db.get_table_info()
+            schema_str = json.dumps(schema_info, indent=2) if schema_info else "{}"
+        except Exception as e:
+            logger.warning(f"Could not get schema: {str(e)}")
         
-        # Step 1: Optimize the SQL query using AI
+        # Optimize SQL with fallback
+        optimized_sql = None
         try:
             optimized_sql = sql_optimization_chain.run(
                 schema=schema_str,
@@ -917,24 +1070,37 @@ def generate_template():
             
         except Exception as e:
             logger.error(f"SQL optimization error: {str(e)}")
-            # Fallback to sample SQL with owner_id filter
-            optimized_sql = clean_sql(sample_sql_query.strip())
-            if "WHERE" in optimized_sql.upper():
-                optimized_sql = optimized_sql.replace("WHERE", f"WHERE owner_id = '{owner_id}' AND")
-            else:
-                optimized_sql += f" WHERE owner_id = '{owner_id}'"
+            # Safe fallback
+            try:
+                optimized_sql = clean_sql(sample_sql_query.strip())
+                if "WHERE" in optimized_sql.upper():
+                    optimized_sql = optimized_sql.replace("WHERE", f"WHERE owner_id = '{owner_id}' AND")
+                else:
+                    optimized_sql += f" WHERE owner_id = '{owner_id}'"
+            except Exception as fallback_error:
+                logger.error(f"Fallback SQL error: {str(fallback_error)}")
+                return jsonify({"error": "SQL processing failed"}), 500
         
-        # Step 2: Execute the optimized SQL to get data using database manager
-        all_data = db_manager.execute_query(optimized_sql)
+        # Execute SQL safely
+        all_data = []
+        try:
+            all_data = db_manager.execute_query(optimized_sql)
+            if not isinstance(all_data, list):
+                all_data = []
+        except Exception as e:
+            logger.error(f"Database query error: {str(e)}")
+            return jsonify({"error": "Database query failed"}), 500
         
-        logger.info(f"Retrieved {len(all_data)} rows from optimized query")
+        logger.info(f"Retrieved {len(all_data)} rows from query")
         
+        # Handle empty data
         if not all_data:
             template_config = {
                 "template_type": "table",
                 "id": template_id,
                 "data_count": 0,
                 "sql_query": optimized_sql,
+                "owner_id": owner_id,
                 "structure": {
                     "message": "No data available for this owner",
                     "columns": [],
@@ -944,116 +1110,67 @@ def generate_template():
             save_template_to_db(template_config, template_id, chat_id)
             return jsonify(template_config)
         
-        # Step 3: Process data for Google Charts consistency
-        processed_data, column_types = preprocess_data_for_google_charts(all_data)
-        
-        # Get sample data for analysis (first 5 rows for better AI analysis)
-        sample_data = processed_data[:5]
-        data_count = len(processed_data)
-        
-        logger.info(f"Column types detected: {column_types}")
-        
-        # Step 4: Generate template structure using AI (NO chart type suggestion)
+        # Process data safely
+        processed_data = []
+        column_types = {}
         try:
-            template_result = template_chain.run(
-                description=description,
-                sample_data=json.dumps(sample_data, indent=2),
-                data_count=data_count,
-                column_types=json.dumps(column_types)
-            )
-            
-            # Clean and parse the AI response
-            template_result = template_result.strip()
-            if template_result.startswith('```json'):
-                template_result = template_result[7:-3]
-            elif template_result.startswith('```'):
-                template_result = template_result[3:-3]
-            
-            template_config = json.loads(template_result)
+            processed_data, column_types = preprocess_data_for_google_charts(all_data)
+        except Exception as e:
+            logger.error(f"Data processing error: {str(e)}")
+            # Create safe fallback structure
+            if all_data and isinstance(all_data[0], dict):
+                processed_data = all_data
+                column_types = {key: 'string' for key in all_data[0].keys()}
+            else:
+                processed_data = []
+                column_types = {}
+        
+        # Create template structure safely
+        try:
+            template_config = create_safe_template_structure(processed_data, column_types, description)
             
             # Add metadata
             template_config['id'] = template_id
-            template_config['data_count'] = data_count
+            template_config['data_count'] = len(processed_data)
             template_config['sql_query'] = optimized_sql
             template_config['owner_id'] = owner_id
             
-            # Add processed data to the template
-            if template_config.get('template_type') == 'table':
-                columns = list(column_types.keys())
-                template_config['structure'] = {
-                    "columns": [{"data": col, "title": col.replace('_', ' ').title()} for col in columns],
-                    "data": processed_data
-                }
-            elif template_config.get('template_type') == 'chart':
-                template_config['structure']['chart_data'] = processed_data
-                template_config['structure']['column_types'] = column_types
-            
-            # Save template to database
+            # Save to database
             save_template_to_db(template_config, template_id, chat_id)
             
-            logger.info(f"Successfully generated template config for template_id {template_id}")
+            logger.info(f"Successfully generated template for template_id {template_id}")
             return jsonify(template_config)
             
-        except (json.JSONDecodeError, KeyError) as e:
-            logger.error(f"Failed to parse AI response: {str(e)}")
-            
-            # Simplified fallback - let AI decide in fallback too
-            columns = list(column_types.keys())
-            string_cols = [col for col, dtype in column_types.items() if dtype == 'string']
-            number_cols = [col for col, dtype in column_types.items() if dtype == 'number']
-            
-            # Simple logic for fallback
-            if len(string_cols) >= 1 and len(number_cols) >= 1 and len(processed_data) > 1:
-                # Create basic chart template - let frontend handle details
-                template_config = {
-                    "template_type": "chart",
-                    "id": template_id,
-                    "data_count": data_count,
-                    "sql_query": optimized_sql,
-                    "owner_id": owner_id,
-                    "structure": {
-                        "chartType": "BarChart",  # Safe fallback
-                        "options": {
-                            "title": description,
-                            "legend": {"position": "bottom"},
-                            "animation": {
-                                "startup": True,
-                                "duration": 1000,
-                                "easing": "out"
-                            },
-                            "width": "100%",
-                            "height": 400,
-                            "backgroundColor": "transparent"
-                        },
-                        "columns": [
-                            {"type": "string", "label": string_cols[0].replace('_', ' ').title(), "data": string_cols[0]},
-                            {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
-                        ],
-                        "chart_data": processed_data,
-                        "column_types": column_types
-                    }
+        except Exception as e:
+            logger.error(f"Template creation error: {str(e)}")
+            # Ultimate fallback
+            fallback_config = {
+                "template_type": "table",
+                "id": template_id,
+                "data_count": len(processed_data) if processed_data else 0,
+                "sql_query": optimized_sql,
+                "owner_id": owner_id,
+                "structure": {
+                    "message": "Template generation error - showing data as table",
+                    "columns": [{"data": key, "title": key.replace('_', ' ').title()} 
+                              for key in (column_types.keys() if column_types else [])],
+                    "data": processed_data if processed_data else []
                 }
-            else:
-                # Fallback to table
-                template_config = {
-                    "template_type": "table",
-                    "id": template_id,
-                    "data_count": data_count,
-                    "sql_query": optimized_sql,
-                    "owner_id": owner_id,
-                    "structure": {
-                        "columns": [{"data": col, "title": col.replace('_', ' ').title()} for col in columns],
-                        "data": processed_data
-                    }
-                }
-            
-            # Save template to database
-            save_template_to_db(template_config, template_id, chat_id)
-            return jsonify(template_config)
+            }
+            save_template_to_db(fallback_config, template_id, chat_id)
+            return jsonify(fallback_config)
         
     except Exception as e:
-        logger.error(f"Error generating template: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Critical error in generate_template: {str(e)}")
+        return jsonify({
+            "error": "Internal server error",
+            "template_type": "table",
+            "structure": {
+                "message": "Service temporarily unavailable",
+                "columns": [],
+                "data": []
+            }
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

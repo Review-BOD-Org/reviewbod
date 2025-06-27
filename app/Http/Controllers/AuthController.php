@@ -160,9 +160,7 @@ class AuthController extends Controller
             $link = "/trello/auth";
         }
         if($service == "jira"){
-        return response()->json([
-            'message' => 'Coming soon', 
-        ],400);
+        $link = "/jira/auth";
         }
         return response()->json([
             'message' => 'Service selected successfully',

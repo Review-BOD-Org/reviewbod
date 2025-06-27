@@ -83,6 +83,7 @@ public function registerLinearWebhook($userId) {
 
 
 
+
 public function handleLinearCallback(Request $request)
 {
 
@@ -564,10 +565,80 @@ public function redirectToTrello() {
     return redirect($authUrl);
 }
 
+
+
+
+public function getTrelloWebhooks($userId) 
+{
+    $tokenRecord = DB::table('linked')
+        ->where(['userid' => $userId, 'type' => 'trello'])
+        ->first();
+
+    if (!$tokenRecord) {
+        return ['error' => 'Trello token not found for user'];
+    }
+
+    $token = $tokenRecord->token;
+    $trelloKey = 'e39869487a72d56e6758bd57b67fca4f';
+
+    $response = Http::get("https://api.trello.com/1/tokens/{$token}/webhooks", [
+        'key' => $trelloKey,
+        'token' => $token
+    ]);
+    dd($response->json());
+
+    return $response->json();
+}
+
  
 
+
+public function registerTrelloWebhook($userId) 
+{
+    $tokenRecord = DB::table('linked')
+        ->where(['userid' => $userId, 'type' => 'trello'])
+        ->first();
+
+    if (!$tokenRecord) {
+        return ['error' => 'Trello token not found for user'];
+    }
+
+    $token = $tokenRecord->token;
+    $encryptedUserId = Crypt::encryptString($userId);
+    $callbackUrl = url("/api/callback?platform_type=trello&user={$encryptedUserId}");
+    $trelloKey = 'e39869487a72d56e6758bd57b67fca4f';
+
+    // Get user ID
+    $userResponse = Http::get("https://api.trello.com/1/members/me", [
+        'key' => $trelloKey,
+        'token' => $token
+    ]);
+
+    if (!$userResponse->successful()) {
+        return ['error' => 'Failed to fetch user info'];
+    }
+
+    $userData = $userResponse->json();
+    $trelloUserId = $userData['id'];
+
+    // Create webhook
+    $response = Http::post("https://api.trello.com/1/webhooks", [
+        'key' => $trelloKey,
+        'token' => $token,
+        'description' => 'Trello webhook',
+        'callbackURL' => $callbackUrl,
+        'idModel' => $trelloUserId,
+        'active' => true
+    ]);
+
+    // dd($response->json());
+    return $response->json();
+}
 public function handleTrelloCallback(Request $request)
 {
+    
+
+ 
     $server = new Trello([
         'identifier' => 'e39869487a72d56e6758bd57b67fca4f',
         'secret' => '8c42ae7ad0587f23a578ee71ceec3d6df4f887cb3867169ef1661361400d01fe',
@@ -628,7 +699,8 @@ public function handleTrelloCallback(Request $request)
       
     $res = $res->StoreData("trello");
    
-  $this->registerLinearWebhook(Auth::id());
+  $this->registerTrelloWebhook(Auth::id());
+ 
 
     Cache::flush();         
     return redirect('/auth/pricing')->with('success', 'Trello connected successfully.');
@@ -870,5 +942,240 @@ public function callSimilaritySearch($user_id, $search)
     return json_decode($response->getBody()->getContents(), true);
 }
 
+
+public function redirectToJira() {
+    $clientId = 'zkn7PiTAHwmUg1tYJucegiQkHn8BmKxW';
+    $redirectUri = 'https://reviewbod.com/jira/callback';
+    
+ $authUrl = 'https://auth.atlassian.com/authorize?' . http_build_query([
+    'audience' => 'api.atlassian.com',
+    'client_id' => $clientId,
+    'scope' => 'read:jira-work read:jira-user manage:jira-project manage:jira-webhook',
+    'redirect_uri' => $redirectUri,
+    'state' => csrf_token(),
+    'response_type' => 'code',
+    'prompt' => 'consent'
+]);
+    return redirect($authUrl);
+}
+public function handleJiraCallback(Request $request){
+   if(!Auth::check()){
+       return redirect("/auth/login");
+   }
+   
+   $code = $request->get('code');
+   
+   $response = Http::post('https://auth.atlassian.com/oauth/token', [
+       'grant_type' => 'authorization_code',
+       'client_id' => 'zkn7PiTAHwmUg1tYJucegiQkHn8BmKxW',
+       'client_secret' => 'ATOA4KFN-VPkrDaXxMuyU191R5TWHQDiGtsAQeAeB9tDLRaY_EXzCeOxXV6yqAXEMgGq343D956B',
+       'code' => $code,
+       'redirect_uri' => 'https://reviewbod.com/jira/callback'
+   ]);
+   
+   $token = $response->json();
+//    dd($token);
+   if ($response->failed()) {
+       return redirect("/auth/login");
+   }
+   
+   // Get cloudId
+   $resourcesResponse = Http::withHeaders([
+       'Authorization' => 'Bearer ' . $token['access_token'],
+       'Accept' => 'application/json'
+   ])->get('https://api.atlassian.com/oauth/token/accessible-resources');
+   
+   $resources = $resourcesResponse->json();
+   $cloudId = $resources[0]['id'] ?? null;
+   
+   $linked = DB::table("linked")->where(["userid"=>Auth::id(),"type"=>"jira"])->exists();
+   if(!$linked){
+       DB::table("linked")->insert([
+           "userid"=>Auth::id(),
+           "type"=>"jira",
+           "token"=>$token['access_token'],
+           "cloud_id"=>$cloudId,
+           "json"=>json_encode($token)
+       ]);
+   }else{
+       DB::table("linked")->where(["userid"=>Auth::id(),"type"=>"jira"])->update([
+           "token"=>$token['access_token'],
+           "cloud_id"=>$cloudId,
+           "json"=>json_encode($token)
+       ]);
+   }
+   
+   $res = new FetchData();
+   $res = $res->StoreData("jira");
+   
+   $this->registerJiraWebhook(Auth::id());
+   
+   return redirect("/auth/pricing");
+}
+
+public function registerJiraWebhook($userId) {
+    $tokenRecord = DB::table('linked')
+        ->where(['userid' => $userId, 'type' => 'jira'])
+        ->first();
+    
+    if (!$tokenRecord) {
+        return ['error' => 'Jira token not found for user'];
+    }
+    
+    $token = $tokenRecord->token;
+    $cloudId = $tokenRecord->cloud_id;
+    $encryptedUserId = Crypt::encryptString($userId);
+    
+    // Check if these values exist
+    if (!$token || !$cloudId) {
+        return [
+            'error' => 'Missing required data',
+            'token_exists' => !empty($token),
+            'cloud_id_exists' => !empty($cloudId)
+        ];
+    }
+    
+    // STEP 1: Check if user has admin permissions FIRST
+    $permissionsResponse = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+        'Accept' => 'application/json'
+    ])->get("https://api.atlassian.com/ex/jira/{$cloudId}/rest/api/3/mypermissions?permissions=ADMINISTER");
+    
+    if (!$permissionsResponse->successful()) {
+        return [
+            'error' => 'Cannot check user permissions',
+            'status' => $permissionsResponse->status(),
+            'body' => $permissionsResponse->body(),
+            'solution' => 'User needs "Administer Jira" global permission to create webhooks'
+        ];
+    }
+    
+    $permissions = $permissionsResponse->json();
+    $hasAdminPermission = isset($permissions['permissions']['ADMINISTER']['havePermission']) && 
+                         $permissions['permissions']['ADMINISTER']['havePermission'];
+    
+    if (!$hasAdminPermission) {
+        return [
+            'error' => 'User does not have required permissions',
+            'required_permission' => 'Administer Jira (global permission)',
+            'user_permissions' => $permissions,
+            'solution' => 'Ask a Jira administrator to authorize your app, or grant the current user "Administer Jira" global permission'
+        ];
+    }
+    
+    $callbackUrl = url("/api/callback?platform_type=jira&user={$userId}");
+    
+    // Get accessible resources to find the correct site
+    $resourcesResponse = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+        'Accept' => 'application/json'
+    ])->get('https://api.atlassian.com/oauth/token/accessible-resources');
+    
+    if (!$resourcesResponse->successful()) {
+        return [
+            'error' => 'Cannot fetch accessible resources',
+            'status' => $resourcesResponse->status(),
+            'body' => $resourcesResponse->body()
+        ];
+    }
+    
+    $resources = $resourcesResponse->json();
+    $correctResource = null;
+    
+    // Find the resource that matches our cloud_id
+    foreach ($resources as $resource) {
+        if ($resource['id'] === $cloudId) {
+            $correctResource = $resource;
+            break;
+        }
+    }
+    
+    if (!$correctResource) {
+        return [
+            'error' => 'Cloud ID not found in accessible resources',
+            'available_resources' => $resources,
+            'looking_for_cloud_id' => $cloudId
+        ];
+    }
+    
+  // Change your webhook data to this exact format:
+$webhookData = [
+    'name' => 'ReviewBod Webhook',
+    'url' => 'https://reviewbod.com/api/callback',
+    'events' => [
+        'issue_created',
+        'issue_updated'
+    ]
+];
+    
+    // Use the API Gateway approach (recommended for OAuth)
+    $gatewayUrl = "https://api.atlassian.com/ex/jira/{$cloudId}/rest/api/3/webhook";
+    
+ $gatewayResponse = Http::timeout(30)->withHeaders([
+    'Authorization' => 'Bearer ' . $token,
+    'Content-Type' => 'application/json',
+    'Accept' => 'application/json',
+    'X-Atlassian-Token' => 'no-check'  // Add this line
+])->post($gatewayUrl, $webhookData);
+    
+    if ($gatewayResponse->successful()) {
+        return [
+            'success' => true,
+            'data' => $gatewayResponse->json(),
+            'endpoint_used' => $gatewayUrl,
+            'user_has_admin_permission' => true
+        ];
+    }
+    
+    // If that fails, try with minimal webhook data
+    $minimalWebhookData = [
+        'name' => 'ReviewBod Webhook',
+        'url' => $callbackUrl,
+    'events' => ['issue_created']
+
+    ];
+    
+    $fallbackResponse = Http::timeout(30)->withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json'
+    ])->post($gatewayUrl, $minimalWebhookData);
+    
+    if ($fallbackResponse->successful()) {
+        return [
+            'success' => true,
+            'data' => $fallbackResponse->json(),
+            'endpoint_used' => $gatewayUrl,
+            'note' => 'Used minimal webhook configuration',
+            'user_has_admin_permission' => true
+        ];
+    }
+    
+    // Return detailed error information
+    $res =  [
+        'error' => 'Webhook registration failed even with admin permissions',
+        'site_info' => $correctResource,
+        'user_has_admin_permission' => true,
+        'user_permissions' => $permissions,
+        'attempts' => [
+            'api_gateway_full' => [
+                'url' => $gatewayUrl,
+                'status' => $gatewayResponse->status(),
+                'body' => $gatewayResponse->body(),
+                'headers' => $gatewayResponse->headers()
+            ],
+            'api_gateway_minimal' => [
+                'url' => $gatewayUrl,
+                'status' => $fallbackResponse->status(),
+                'body' => $fallbackResponse->body(),
+                'headers' => $fallbackResponse->headers()
+            ]
+        ],
+        'webhook_data_full' => $webhookData,
+        'webhook_data_minimal' => $minimalWebhookData,
+        'callback_url' => $callbackUrl
+    ];
+    dd($res);
+}
 
 }

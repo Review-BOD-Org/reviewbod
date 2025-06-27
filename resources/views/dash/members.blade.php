@@ -356,6 +356,7 @@
                                             </th>
                                             <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">NAME</th>
                                             <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">EMAIL</th>
+                                            <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">APP</th>
                                             <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">STATUS</th>
                                             <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">DATE</th>
                                             <th class="text-left py-4 px-6 font-medium text-gray-600 text-sm">ACTION</th>
@@ -384,7 +385,22 @@
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <span
-                                                        class="text-sm font-medium text-gray-900">{{ $user->email }}</span>
+                                                        class="text-sm font-medium text-gray-900">{{ $user->email ? $user->email : "No email provided" }}</span>
+                                                </td>
+
+                                                <td class="py-4 px-6 flex">
+                                                    <span class="text-sm font-medium text-gray-900 capitalize flex gap-3">
+
+                                                        @if ($user->source == 'jira')
+                                                            <img src="/{{ $user->source }}.svg" width="20" />
+                                                        @else
+                                                            <img src="/images/{{ $user->source }}.webp" width="30" />
+                                                        @endif
+
+
+
+                                                        {{ $user->source }}
+                                                    </span>
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     @if ($user->user_status == 'blocked')
@@ -409,70 +425,89 @@
                                                 <td class="py-4 px-6">
 
                                                     <div class="dropdown-container">
-    <!-- Dropdown Button with your SVG -->
-    <button 
-        class="dropdown-button" 
-        aria-label="More actions"
-    >
-        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 512 512">
-            <circle cx="256" cy="256" r="48" fill="currentColor" />
-            <circle cx="416" cy="256" r="48" fill="currentColor" />
-            <circle cx="96" cy="256" r="48" fill="currentColor" />
-        </svg>
-    </button>
+                                                        <!-- Dropdown Button with your SVG -->
+                                                        <button class="dropdown-button" aria-label="More actions">
+                                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                                                width="96" height="96" viewBox="0 0 512 512">
+                                                                <circle cx="256" cy="256" r="48"
+                                                                    fill="currentColor" />
+                                                                <circle cx="416" cy="256" r="48"
+                                                                    fill="currentColor" />
+                                                                <circle cx="96" cy="256" r="48"
+                                                                    fill="currentColor" />
+                                                            </svg>
+                                                        </button>
 
-    <!-- Dropdown Menu -->
-    <div class="dropdown-menu">
-        <!-- View Action -->
-        <a href="{{ route('user.member', ['id' => $user->id]) }}" class="dropdown-item">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            View Details
-        </a>
+                                                        <!-- Dropdown Menu -->
+                                                        <div class="dropdown-menu">
+                                                            <!-- View Action -->
+                                                            <a href="{{ route('user.member', ['id' => $user->id]) }}"
+                                                                class="dropdown-item">
+                                                                <svg fill="none" stroke="currentColor"
+                                                                    viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        stroke-width="2"
+                                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        stroke-width="2"
+                                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                                </svg>
+                                                                View Details
+                                                            </a>
 
-        <!-- Send Invitation - Only show if conditions are met -->
-        @if ($user->user_status != 'blocked' && $user->user_status != 'active')
-            @if ($user->email != 'N/A')
-                <button class="dropdown-item primary" 
-                        onclick="send_invite('{{ $user->id }}','{{ $user->name }}','{{ $user->email }}')">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                    Send Invitation
-                </button>
-            @endif
-        @endif
+                                                            <!-- Send Invitation - Only show if conditions are met -->
+                                                            @if ($user->user_status != 'blocked' && $user->user_status != 'active')
+                                                                @if ($user->email != 'N/A')
+                                                                    <button class="dropdown-item primary"
+                                                                        onclick="send_invite('{{ $user->id }}','{{ $user->name }}','{{ $user->email }}')">
+                                                                        <svg fill="none" stroke="currentColor"
+                                                                            viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round" stroke-width="2"
+                                                                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                                                        </svg>
+                                                                        Send Invitation
+                                                                    </button>
+                                                                @endif
+                                                            @endif
 
-        <!-- Show divider only if there are actions above -->
-        @if (($user->user_status != 'blocked' && $user->user_status != 'active' && $user->email != 'N/A') || $user->user_status == 'active' || $user->user_status == 'blocked')
-            <div class="dropdown-divider"></div>
-        @endif
+                                                            <!-- Show divider only if there are actions above -->
+                                                            @if (
+                                                                ($user->user_status != 'blocked' && $user->user_status != 'active' && $user->email != 'N/A') ||
+                                                                    $user->user_status == 'active' ||
+                                                                    $user->user_status == 'blocked')
+                                                                <div class="dropdown-divider"></div>
+                                                            @endif
 
-        <!-- Restrict User - Only show if user is active -->
-        @if ($user->user_status == 'active')
-            <button class="dropdown-item danger" 
-                    onclick="userstatus('{{$user->iid}}','blocked')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
-                </svg>
-                Restrict User
-            </button>
-        @endif
+                                                            <!-- Restrict User - Only show if user is active -->
+                                                            @if ($user->user_status == 'active')
+                                                                <button class="dropdown-item danger"
+                                                                    onclick="userstatus('{{ $user->iid }}','blocked')">
+                                                                    <svg fill="none" stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
+                                                                    </svg>
+                                                                    Restrict User
+                                                                </button>
+                                                            @endif
 
-        <!-- Unrestrict User - Only show if user is blocked -->
-        @if ($user->user_status == 'blocked')
-            <button class="dropdown-item primary" 
-                    onclick="userstatus('{{$user->iid}}','active')">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Unrestrict User
-            </button>
-        @endif
-    </div>
-</div>
+                                                            <!-- Unrestrict User - Only show if user is blocked -->
+                                                            @if ($user->user_status == 'blocked')
+                                                                <button class="dropdown-item primary"
+                                                                    onclick="userstatus('{{ $user->iid }}','active')">
+                                                                    <svg fill="none" stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                    Unrestrict User
+                                                                </button>
+                                                            @endif
+                                                        </div>
+                                                    </div>
 
                                                 </td>
                                             </tr>
@@ -1176,52 +1211,52 @@
 
 
     <script>
-      // Fixed Vanilla JavaScript version
-document.addEventListener('DOMContentLoaded', function() {
-    const dropdowns = document.querySelectorAll('.dropdown-container');
+        // Fixed Vanilla JavaScript version
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown-container');
 
-    dropdowns.forEach(dropdown => {
-        const button = dropdown.querySelector('.dropdown-button');
-        const menu = dropdown.querySelector('.dropdown-menu');
+            dropdowns.forEach(dropdown => {
+                const button = dropdown.querySelector('.dropdown-button');
+                const menu = dropdown.querySelector('.dropdown-menu');
 
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
 
-            const isCurrentlyOpen = menu.classList.contains('show');
+                    const isCurrentlyOpen = menu.classList.contains('show');
 
-            // Close all other dropdowns first
-            dropdowns.forEach(other => {
-                if (other !== dropdown) {
-                    other.querySelector('.dropdown-menu').classList.remove('show');
+                    // Close all other dropdowns first
+                    dropdowns.forEach(other => {
+                        if (other !== dropdown) {
+                            other.querySelector('.dropdown-menu').classList.remove('show');
+                        }
+                    });
+
+                    // Toggle current dropdown (opposite of its current state)
+                    if (isCurrentlyOpen) {
+                        menu.classList.remove('show');
+                    } else {
+                        menu.classList.add('show');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside the menu
+                menu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+
+            // Close all dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                // Check if click is outside all dropdowns
+                const clickedInsideAnyDropdown = Array.from(dropdowns).some(dropdown =>
+                    dropdown.contains(e.target)
+                );
+
+                if (!clickedInsideAnyDropdown) {
+                    dropdowns.forEach(dropdown => {
+                        dropdown.querySelector('.dropdown-menu').classList.remove('show');
+                    });
                 }
             });
-
-            // Toggle current dropdown (opposite of its current state)
-            if (isCurrentlyOpen) {
-                menu.classList.remove('show');
-            } else {
-                menu.classList.add('show');
-            }
         });
-
-        // Prevent dropdown from closing when clicking inside the menu
-        menu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    });
-
-    // Close all dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-        // Check if click is outside all dropdowns
-        const clickedInsideAnyDropdown = Array.from(dropdowns).some(dropdown =>
-            dropdown.contains(e.target)
-        );
-
-        if (!clickedInsideAnyDropdown) {
-            dropdowns.forEach(dropdown => {
-                dropdown.querySelector('.dropdown-menu').classList.remove('show');
-            });
-        }
-    });
-});
     </script>

@@ -20,60 +20,61 @@ class Dash extends Controller
     //
 
 
-    public function getLinearUser() {
+    public function getLinearUser()
+    {
         // Check if cached data exists
         $cacheKey = 'linear_data_' . auth()->id();
         if (Cache::has($cacheKey)) {
             // Return the cached data directly as an array, not wrapped in a response
             return Cache::get($cacheKey);
         }
-        
+
         // Check if we've hit the rate limit
         $rateLimitKey = 'linear_api_' . auth()->id();
         $requestCount = Cache::get($rateLimitKey, 0);
-        
+
         // Rate limit: 100 requests per hour
         // if ($requestCount >= 100) {
         //     return response()->json(['message' => 'Rate limit exceeded. Please try again later.'], 429);
         // }
-        
+
         // Get token from database
-        $data = DB::table("linked")->where(["userid" => auth()->id(),"type"=>"linear"])->first();
-        
+        $data = DB::table("linked")->where(["userid" => auth()->id(), "type" => "linear"])->first();
+
         $token = $data->token ?? null;
-        
+
         if (!$token) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        
+
         try {
             // Increment the request counter for each API call
             $requestIncrement = 0;
-            
+
             // Fetch data in smaller chunks
             $usersData = $this->fetchLinearData($token, $this->getUsersQuery(), $rateLimitKey, $requestCount, $requestIncrement);
             $requestIncrement++;
-            
+
             $teamsData = $this->fetchLinearData($token, $this->getTeamsQuery(), $rateLimitKey, $requestCount, $requestIncrement);
             $requestIncrement++;
-            
+
             $projectsData = $this->fetchLinearData($token, $this->getProjectsQuery(), $rateLimitKey, $requestCount, $requestIncrement);
-            
+
             // Update the rate limit counter
             Cache::put($rateLimitKey, $requestCount + $requestIncrement, now()->addHour());
-            
+
             // Combine and transform the data
             $combinedData = [
                 'users' => $usersData['users'] ?? ['nodes' => []],
                 'teams' => $teamsData['teams'] ?? ['nodes' => []],
                 'projects' => $projectsData['projects'] ?? ['nodes' => []]
             ];
-            
+
             $transformedData = $this->transformLinearData($combinedData);
-            
+
             // Cache the result for 5 minutes to improve performance
             Cache::put($cacheKey, $transformedData, now()->addMinutes(1));
-     
+
             // Return the transformed data directly as an array
             return $transformedData;
         } catch (\Exception $e) {
@@ -81,8 +82,9 @@ class Dash extends Controller
             return response()->json(['message' => 'Failed to fetch data from Linear: ' . $e->getMessage()], 500);
         }
     }
-    
-    private function fetchLinearData($token, $query, $rateLimitKey, $baseCount, $increment) {
+
+    private function fetchLinearData($token, $query, $rateLimitKey, $baseCount, $increment)
+    {
         try {
             $response = Http::withToken($token)
                 ->timeout(15)
@@ -90,21 +92,22 @@ class Dash extends Controller
                 ->post('https://api.linear.app/graphql', [
                     'query' => $query
                 ]);
-                
+
             $data = $response->json();
-            
+
             if (isset($data['errors'])) {
                 Log::error('Linear API Error', ['errors' => $data['errors'], 'query' => $query]);
                 throw new \Exception('GraphQL error: ' . json_encode($data['errors']));
             }
-            
+
             return $data['data'] ?? [];
         } catch (\Exception $e) {
             throw $e;
         }
     }
-    
-    private function getUsersQuery() {
+
+    private function getUsersQuery()
+    {
         return '
         query {
             users(first: 20) {
@@ -139,7 +142,7 @@ class Dash extends Controller
         }
         ';
     }
-    
+
     private function getTeamsQuery()
     {
         return '
@@ -179,9 +182,10 @@ class Dash extends Controller
             }
         ';
     }
-    
-    
-    private function getProjectsQuery() {
+
+
+    private function getProjectsQuery()
+    {
         return '
         query {
             projects(first: 20) {
@@ -207,8 +211,9 @@ class Dash extends Controller
         }
         ';
     }
-    private function transformLinearData($data) {
-    
+    private function transformLinearData($data)
+    {
+
         $users = [];
         $teams = [];
         $projects = [];
@@ -219,7 +224,7 @@ class Dash extends Controller
             'blocked' => 0
         ];
         $taskCompletionTrend = [];
-        
+
         // Process users and their issues
         foreach ($data['users']['nodes'] ?? [] as $user) {
             $assignedIssues = $user['assignedIssues']['nodes'] ?? [];
@@ -229,23 +234,23 @@ class Dash extends Controller
             $avgCompletionTime = 0;
             $totalCompletionTime = 0;
             $completedIssuesCount = 0;
-            
+
             foreach ($assignedIssues as $issue) {
                 $stateType = $issue['state']['type'] ?? '';
                 $stateName = strtolower($issue['state']['name'] ?? '');
-                
+
                 // Count issues by state for the pie chart
                 if ($stateType === 'completed' || strpos($stateName, 'done') !== false || strpos($stateName, 'complete') !== false) {
                     $tasksByState['completed']++;
                     $completedTasks++;
                     $completedIssuesCount++;
-                    
+
                     if (isset($issue['completedAt']) && isset($issue['createdAt'])) {
                         $created = new \DateTime($issue['createdAt']);
                         $completed = new \DateTime($issue['completedAt']);
                         $completionTime = $created->diff($completed)->days;
                         $totalCompletionTime += $completionTime;
-                        
+
                         // Check if completed on time (arbitrary threshold of 7 days)
                         if ($completionTime <= 7) {
                             $onTimeCompletions++;
@@ -259,22 +264,22 @@ class Dash extends Controller
                     $tasksByState['blocked']++;
                 }
             }
-            
+
             // Calculate average completion time
             if ($completedIssuesCount > 0) {
                 $avgCompletionTime = $totalCompletionTime / $completedIssuesCount;
             }
-            
+
             $onTimePercentage = $totalTasks > 0 ? ($onTimeCompletions / $totalTasks) * 100 : 0;
-            $slack = DB::table("linked")->where(["type"=>"slack","userid"=>Auth::id()])->first();
-          
+            $slack = DB::table("linked")->where(["type" => "slack", "userid" => Auth::id()])->first();
+
             $users[] = [
                 'id' => $user['id'],
                 'name' => $user['name'],
                 'email' => $user['email'] ?? '',
                 'avatar' => $user['avatarUrl'] ?? '',
                 'teams' => array_map(fn($team) => [
-                    'id' => $team['id'], 
+                    'id' => $team['id'],
                     'name' => $team['name']
                 ], $user['teams']['nodes'] ?? []),
                 'tasks_completed' => $completedTasks,
@@ -294,65 +299,65 @@ class Dash extends Controller
                 ], $assignedIssues)
             ];
         }
-        
+
         $allCompletedTasks = [];
-    
-    foreach ($data['teams']['nodes'] ?? [] as $team) {
-        $teamIssues = $team['issues']['nodes'] ?? [];
-        
-        // Process all tasks individually for trend data instead of grouping by week
-       
-        foreach ($teamIssues as $issue) {
-         
-            if (!empty($issue['completedAt'])) {
-                $completedAt = new \DateTime($issue['completedAt']);
-                $allCompletedTasks[] = [
-                    'date' => $completedAt->format('Y-m-d'),
-                    'title' => $issue['title'] ?? 'Unknown Task',
-                    'team' => $team['name'],
-                    'id' => $issue['id'],
-                    'status'=>$issue['state']['name']
-                ];
+
+        foreach ($data['teams']['nodes'] ?? [] as $team) {
+            $teamIssues = $team['issues']['nodes'] ?? [];
+
+            // Process all tasks individually for trend data instead of grouping by week
+
+            foreach ($teamIssues as $issue) {
+
+                if (!empty($issue['completedAt'])) {
+                    $completedAt = new \DateTime($issue['completedAt']);
+                    $allCompletedTasks[] = [
+                        'date' => $completedAt->format('Y-m-d'),
+                        'title' => $issue['title'] ?? 'Unknown Task',
+                        'team' => $team['name'],
+                        'id' => $issue['id'],
+                        'status' => $issue['state']['name']
+                    ];
+                }
             }
+
+
+
+            // [rest of team processing remains the same]
+            $teams[] = [
+                'id' => $team['id'],
+                'total_users' => count($team['users']['nodes'] ?? []),
+                'name' => $team['name'],
+                'states' => array_map(fn($state) => [
+                    'id' => $state['id'],
+                    'name' => $state['name'],
+                    'color' => $state['color'] ?? '',
+                    'type' => $state['type'] ?? ''
+                ], $team['states']['nodes'] ?? []),
+                'issues_count' => count($teamIssues),
+                'completed_count' => count(array_filter($teamIssues, fn($issue) => !empty($issue['completedAt'])))
+            ];
         }
 
+        // Sort all completed tasks by date
+        usort($allCompletedTasks, function ($a, $b) {
+            return strtotime($a['date']) - strtotime($b['date']);
+        });
 
-        
-        // [rest of team processing remains the same]
-        $teams[] = [
-            'id' => $team['id'],
-            'total_users' => count($team['users']['nodes'] ?? []),
-            'name' => $team['name'],
-            'states' => array_map(fn($state) => [
-                'id' => $state['id'],
-                'name' => $state['name'],
-                'color' => $state['color'] ?? '',
-                'type' => $state['type'] ?? ''
-            ], $team['states']['nodes'] ?? []),
-            'issues_count' => count($teamIssues),
-            'completed_count' => count(array_filter($teamIssues, fn($issue) => !empty($issue['completedAt'])))
-        ];
-    }
+        // Format all completed tasks for the trend chart
+        $taskCompletionTrend = $allCompletedTasks;
 
-      // Sort all completed tasks by date
-      usort($allCompletedTasks, function($a, $b) {
-        return strtotime($a['date']) - strtotime($b['date']);
-    });
-    
-    // Format all completed tasks for the trend chart
-    $taskCompletionTrend = $allCompletedTasks;
-    
-        
+
         // Process projects
         foreach ($data['projects']['nodes'] ?? [] as $project) {
             $projectIssues = $project['issues']['nodes'] ?? [];
             $completedCount = 0;
             $inProgressCount = 0;
             $backlogCount = 0;
-            
+
             foreach ($projectIssues as $issue) {
                 $stateType = $issue['state']['type'] ?? '';
-                
+
                 if ($stateType === 'completed') {
                     $completedCount++;
                 } elseif ($stateType === 'started') {
@@ -361,7 +366,7 @@ class Dash extends Controller
                     $backlogCount++;
                 }
             }
-            
+
             $projects[] = [
                 'id' => $project['id'],
                 'name' => $project['name'],
@@ -375,14 +380,14 @@ class Dash extends Controller
                 'total_issues' => count($projectIssues)
             ];
         }
-        
+
         // Generate dashboard data with fallbacks for empty data
         // dd($tasksByState);
-        $arr =  [
+        $arr = [
             'users' => $users,
             'teams' => $teams,
             'projects' => $projects,
-            'data'=>$data,
+            'data' => $data,
             'dashboard_data' => [
                 'stats' => [
                     'tasks_completed' => $tasksByState['completed'],
@@ -423,27 +428,28 @@ class Dash extends Controller
             ]
         ];
 
-       return $arr;
+        return $arr;
     }
-    
+
     // Helper function to generate placeholder trend data if no data is available
-    private function generatePlaceholderTrend() {
+    private function generatePlaceholderTrend()
+    {
         $trend = [];
-        $currentWeek = (int)date('W');
-        
+        $currentWeek = (int) date('W');
+
         for ($i = 5; $i >= 0; $i--) {
             $weekNum = $currentWeek - $i;
             if ($weekNum <= 0) {
                 $weekNum += 52; // Adjust for year boundary
             }
-            
+
             $trend[] = [
                 'week' => 'Week ' . $weekNum,
                 'created' => 0,
                 'completed' => 0
             ];
         }
-        
+
         return $trend;
     }
 
@@ -481,7 +487,8 @@ class Dash extends Controller
             return $unreadCount;
         });
     }
-    public function dash(Request $request){
+    public function dash(Request $request)
+    {
         // if($request->type){
         //     DB::table("users")->where(["id"=>Auth::id()])->update(["service"=>$request->type]);
         //     return redirect("/dashboard");
@@ -490,7 +497,7 @@ class Dash extends Controller
         // $res = $res->getData("dash");
         // // dd($res);
         // // dd($res['teams']);
-    
+
         // // $res = $data->getData();
         // // dd($res);
         // // dd($res);
@@ -498,7 +505,7 @@ class Dash extends Controller
         // if ($res instanceof \Illuminate\Http\JsonResponse) {
         //     // Extract data from JsonResponse
         //     $responseData = $res->getData('dash');
-            
+
         //     // Check if it's an error response
         //     if (isset($responseData['message']) && ($res->getStatusCode() != 200)) {
         //         // Handle error
@@ -506,7 +513,7 @@ class Dash extends Controller
         //         Log::info("Error Dataaa: $error");
         //         // return view("dash.error", ['error' => $responseData['message']]);
         //     }
-            
+
         //     $res = $responseData;
         // }
 
@@ -514,7 +521,7 @@ class Dash extends Controller
         // $count_ = DB::table("linked")->where(["userid"=>Auth::id()])->count();
 
         // $message_count = 0;
- 
+
         // if($slack && $this->getSlackData() != null){
         //     $message_count = count($this->getSlackData());
         // }
@@ -523,929 +530,942 @@ class Dash extends Controller
 
         // }
         // dd($res['projects']['dashboard_data']);
-          $service = Auth::user()->service;
-    $data = DB::table("linked")->where(["userid" => auth()->id(),"type"=>"$service"])->first();
+        $service = Auth::user()->service;
+        $data = DB::table("linked")->where(["userid" => auth()->id(), "type" => "$service"])->first();
         $id = 1;
-        return view("dash.index",compact("data","id"));
+        return view("dash.index", compact("data", "id"));
     }
- 
+
     public function getTaskCompletionTrend(Request $request)
-{
-    $res = $this->getLinearUser();
-    if ($res instanceof \Illuminate\Http\JsonResponse) {
-        $responseData = $res->getData(true);
-        $res = $responseData;
-    }
+    {
+        $res = $this->getLinearUser();
+        if ($res instanceof \Illuminate\Http\JsonResponse) {
+            $responseData = $res->getData(true);
+            $res = $responseData;
+        }
 
-    $timeframe = $request->input('timeframe', 'monthly');
-    $users = $res['users'] ?? []; // Use users array directly
-    
-    $today = Carbon::today();
-    $chartData = [];
+        $timeframe = $request->input('timeframe', 'monthly');
+        $users = $res['users'] ?? []; // Use users array directly
 
-    // Set time range
-    $startDate = match ($timeframe) {
-        'daily' => $today->copy()->subDays(1),
-        'weekly' => $today->copy()->subDays(7),
-        'monthly' => $today->copy()->subDays(30),
-        default => $today->copy()->subDays(30),
-    };
+        $today = Carbon::today();
+        $chartData = [];
 
-    // Initialize chart data
-    $currentDate = $startDate->copy();
-    while ($currentDate <= $today) {
-        $key = match ($timeframe) {
-            'daily' => $currentDate->format('M d'),
-            'weekly' => 'Week ' . $currentDate->weekOfYear,
-            'monthly' => $currentDate->format('M Y'),
-            default => $currentDate->format('M d'),
+        // Set time range
+        $startDate = match ($timeframe) {
+            'daily' => $today->copy()->subDays(1),
+            'weekly' => $today->copy()->subDays(7),
+            'monthly' => $today->copy()->subDays(30),
+            default => $today->copy()->subDays(30),
         };
-        if (!isset($chartData[$key])) {
-            $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
-        }
-        $currentDate->add(match ($timeframe) {
-            'daily' => '1 day',
-            'weekly' => '7 days',
-            'monthly' => '1 month',
-            default => '1 day',
-        })->startOfDay();
-    }
 
-    // Process user-assigned issues
-    foreach ($users as $user) {
-        if (isset($user['assigned_issues'])) {
-            foreach ($user['assigned_issues'] as $issue) {
-                $createdAt = isset($issue['created_at']) ? Carbon::parse($issue['created_at']) : null;
-                $completedAt = isset($issue['completed_at']) ? Carbon::parse($issue['completed_at']) : null;
-
-                if (!$createdAt) {
-                    \Log::info("Skipping issue due to missing created_at: " . json_encode($issue));
-                    continue;
-                }
-
-                if ($createdAt->gte($startDate)) {
-                    $key = match ($timeframe) {
-                        'daily' => $createdAt->format('M d'),
-                        'weekly' => 'Week ' . $createdAt->weekOfYear,
-                        'monthly' => $createdAt->format('M Y'),
-                        default => $createdAt->format('M d'),
-                    };
-                    if (!isset($chartData[$key])) {
-                        $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
-                    }
-                    $chartData[$key]['created']++;
-                }
-
-                if ($completedAt && $completedAt->gte($startDate) && isset($issue['state_type']) && $issue['state_type'] === 'completed') {
-                    $key = match ($timeframe) {
-                        'daily' => $completedAt->format('M d'),
-                        'weekly' => 'Week ' . $completedAt->weekOfYear,
-                        'monthly' => $completedAt->format('M Y'),
-                        default => $completedAt->format('M d'),
-                    };
-                    if (!isset($chartData[$key])) {
-                        $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
-                    }
-                    $chartData[$key]['completed']++;
-                }
+        // Initialize chart data
+        $currentDate = $startDate->copy();
+        while ($currentDate <= $today) {
+            $key = match ($timeframe) {
+                'daily' => $currentDate->format('M d'),
+                'weekly' => 'Week ' . $currentDate->weekOfYear,
+                'monthly' => $currentDate->format('M Y'),
+                default => $currentDate->format('M d'),
+            };
+            if (!isset($chartData[$key])) {
+                $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
             }
+            $currentDate->add(match ($timeframe) {
+                'daily' => '1 day',
+                'weekly' => '7 days',
+                'monthly' => '1 month',
+                default => '1 day',
+            })->startOfDay();
         }
-    }
 
-    $result = array_values($chartData);
-    usort($result, fn($a, $b) => strtotime($a['week']) <=> strtotime($b['week']));
-    
-    \Log::info("Task Completion Trend Result: " . json_encode($result));
-    return response()->json($result);
-}
- 
-public function getTaskDistribution(Request $request)
-{
-    $res = new FetchData();
-    $res = $res->getData("dash");
-
-    $service = Auth::user()->service;
-    
-    $users = $res['users'] ?? [];
-    $teamFilter = $request->input('team');
-    $withTeams = $request->boolean('with_teams');
-    
-    if ($service === 'trello') {
-        $statusCounts = ['Done' => 0, 'Doing' => 0, 'To Do' => 0];
-        $teams = [];
-
-   
-
+        // Process user-assigned issues
         foreach ($users as $user) {
             if (isset($user['assigned_issues'])) {
                 foreach ($user['assigned_issues'] as $issue) {
-                    $issueTeams = array_column($user['teams'] ?? [], 'name');
-                    if ($withTeams) {
-                        foreach ($issueTeams as $team) {
-                            if (!in_array($team, $teams)) {
-                                $teams[] = $team;
-                            }
-                        }
-                    }
+                    $createdAt = isset($issue['created_at']) ? Carbon::parse($issue['created_at']) : null;
+                    $completedAt = isset($issue['completed_at']) ? Carbon::parse($issue['completed_at']) : null;
 
-                    if ($teamFilter && !in_array($teamFilter, $issueTeams)) {
+                    if (!$createdAt) {
+                        \Log::info("Skipping issue due to missing created_at: " . json_encode($issue));
                         continue;
                     }
 
-                    if (isset($issue['state_type'])) {
-                        switch ($issue['state_type']) {
-                            case 'done':
-                                $statusCounts['Done']++;
-                                break;
-                            case 'doing':
-                                $statusCounts['Doing']++;
-                                break;
-                            case 'to_do':
-                                $statusCounts['To Do']++;
-                                break;
+                    if ($createdAt->gte($startDate)) {
+                        $key = match ($timeframe) {
+                            'daily' => $createdAt->format('M d'),
+                            'weekly' => 'Week ' . $createdAt->weekOfYear,
+                            'monthly' => $createdAt->format('M Y'),
+                            default => $createdAt->format('M d'),
+                        };
+                        if (!isset($chartData[$key])) {
+                            $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
                         }
+                        $chartData[$key]['created']++;
+                    }
+
+                    if ($completedAt && $completedAt->gte($startDate) && isset($issue['state_type']) && $issue['state_type'] === 'completed') {
+                        $key = match ($timeframe) {
+                            'daily' => $completedAt->format('M d'),
+                            'weekly' => 'Week ' . $completedAt->weekOfYear,
+                            'monthly' => $completedAt->format('M Y'),
+                            default => $completedAt->format('M d'),
+                        };
+                        if (!isset($chartData[$key])) {
+                            $chartData[$key] = ['week' => $key, 'completed' => 0, 'created' => 0];
+                        }
+                        $chartData[$key]['completed']++;
                     }
                 }
             }
         }
 
-        $chartData = [
-            'labels' => array_keys($statusCounts),
-            'datasets' => [[
-                'data' => array_values($statusCounts),
-                'backgroundColor' => ['#22c55e', '#3b82f6', '#f59e0b'],
-                'borderWidth' => 0,
-                'hoverOffset' => 4,
-            ]],
-        ];
-    } else {
-        $statusCounts = ['Completed' => 0, 'In Progress' => 0, 'Backlog' => 0, 'Canceled' => 0];
-        $teams = [];
+        $result = array_values($chartData);
+        usort($result, fn($a, $b) => strtotime($a['week']) <=> strtotime($b['week']));
 
-        foreach ($users as $user) {
-            if (isset($user['assigned_issues'])) {
-                foreach ($user['assigned_issues'] as $issue) {
-                    $issueTeams = array_column($user['teams'] ?? [], 'name');
-                    if ($withTeams) {
-                        foreach ($issueTeams as $team) {
-                            if (!in_array($team, $teams)) {
-                                $teams[] = $team;
+        \Log::info("Task Completion Trend Result: " . json_encode($result));
+        return response()->json($result);
+    }
+
+    public function getTaskDistribution(Request $request)
+    {
+        $res = new FetchData();
+        $res = $res->getData("dash");
+
+        $service = Auth::user()->service;
+
+        $users = $res['users'] ?? [];
+        $teamFilter = $request->input('team');
+        $withTeams = $request->boolean('with_teams');
+
+        if ($service === 'trello') {
+            $statusCounts = ['Done' => 0, 'Doing' => 0, 'To Do' => 0];
+            $teams = [];
+
+
+
+            foreach ($users as $user) {
+                if (isset($user['assigned_issues'])) {
+                    foreach ($user['assigned_issues'] as $issue) {
+                        $issueTeams = array_column($user['teams'] ?? [], 'name');
+                        if ($withTeams) {
+                            foreach ($issueTeams as $team) {
+                                if (!in_array($team, $teams)) {
+                                    $teams[] = $team;
+                                }
                             }
                         }
-                    }
 
-                    if ($teamFilter && !in_array($teamFilter, $issueTeams)) {
-                        continue;
-                    }
+                        if ($teamFilter && !in_array($teamFilter, $issueTeams)) {
+                            continue;
+                        }
 
-                    if (isset($issue['state_type'])) {
-                        switch ($issue['state_type']) {
-                            case 'completed':
-                                $statusCounts['Completed']++;
-                                break;
-                            case 'started':
-                                $statusCounts['In Progress']++;
-                                break;
-                            case 'backlog':
-                                $statusCounts['Backlog']++;
-                                break;
-                            case 'canceled':
-                                $statusCounts['Canceled']++;
-                                break;
+                        if (isset($issue['state_type'])) {
+                            switch ($issue['state_type']) {
+                                case 'done':
+                                    $statusCounts['Done']++;
+                                    break;
+                                case 'doing':
+                                    $statusCounts['Doing']++;
+                                    break;
+                                case 'to_do':
+                                    $statusCounts['To Do']++;
+                                    break;
+                            }
                         }
                     }
                 }
             }
-        }
 
-        $chartData = [
-            'labels' => array_keys($statusCounts),
-            'datasets' => [[
-                'data' => array_values($statusCounts),
-                'backgroundColor' => ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444'],
-                'borderWidth' => 0,
-                'hoverOffset' => 4,
-            ]],
-        ];
-    }
+            $chartData = [
+                'labels' => array_keys($statusCounts),
+                'datasets' => [
+                    [
+                        'data' => array_values($statusCounts),
+                        'backgroundColor' => ['#22c55e', '#3b82f6', '#f59e0b'],
+                        'borderWidth' => 0,
+                        'hoverOffset' => 4,
+                    ]
+                ],
+            ];
+        } else {
+            $statusCounts = ['Completed' => 0, 'In Progress' => 0, 'Backlog' => 0, 'Canceled' => 0];
+            $teams = [];
 
-    if ($withTeams) {
-        $chartData['teams'] = $teams;
-    }
+            foreach ($users as $user) {
+                if (isset($user['assigned_issues'])) {
+                    foreach ($user['assigned_issues'] as $issue) {
+                        $issueTeams = array_column($user['teams'] ?? [], 'name');
+                        if ($withTeams) {
+                            foreach ($issueTeams as $team) {
+                                if (!in_array($team, $teams)) {
+                                    $teams[] = $team;
+                                }
+                            }
+                        }
 
-    \Log::info("Task Distribution Result: " . json_encode($chartData));
-    return response()->json($chartData);
-}
-public function getProjectStatus()
-{
-    $res = $this->getLinearUser();
-    if ($res instanceof \Illuminate\Http\JsonResponse) {
-        $responseData = $res->getData(true);
-        $res = $responseData;
-    }
-    
-    $projects = $res['projects'] ?? []; // Use projects for labels
-    $users = $res['users'] ?? []; // Use users for issue details
-    $projectData = [];
-    
-    // Initialize project counts
-    foreach ($projects as $project) {
-        $projectName = $project['name'] ?? 'Unnamed Project';
-        // Team name from first associated issue or project data
-        $teamName = isset($project['issues']['nodes'][0]['team']) ? $project['issues']['nodes'][0]['team']['name'] : '';
-        $label = $teamName ? "$projectName ($teamName)" : $projectName;
-        $projectData[$label] = ['Completed' => 0, 'In Progress' => 0, 'Backlog' => 0];
-    }
+                        if ($teamFilter && !in_array($teamFilter, $issueTeams)) {
+                            continue;
+                        }
 
-    // Count issues from users.assigned_issues, mapping to projects
-    foreach ($users as $user) {
-        if (isset($user['assigned_issues'])) {
-            foreach ($user['assigned_issues'] as $issue) {
-                // Find matching project (simplified: match by title substring or ID if available)
-                foreach ($projects as $project) {
-                    $projectName = $project['name'] ?? 'Unnamed Project';
-                    $teamName = isset($user['teams'][0]['name']) ? $user['teams'][0]['name'] : '';
-                    $label = $teamName ? "$projectName ($teamName)" : $projectName;
-                    
-                    if (str_contains($projectName, explode(' ', $issue['title'])[0])) { // Rough match
                         if (isset($issue['state_type'])) {
                             switch ($issue['state_type']) {
                                 case 'completed':
-                                    $projectData[$label]['Completed']++;
+                                    $statusCounts['Completed']++;
                                     break;
                                 case 'started':
-                                    $projectData[$label]['In Progress']++;
+                                    $statusCounts['In Progress']++;
                                     break;
                                 case 'backlog':
-                                    $projectData[$label]['Backlog']++;
+                                    $statusCounts['Backlog']++;
+                                    break;
+                                case 'canceled':
+                                    $statusCounts['Canceled']++;
                                     break;
                             }
                         }
-                        break;
+                    }
+                }
+            }
+
+            $chartData = [
+                'labels' => array_keys($statusCounts),
+                'datasets' => [
+                    [
+                        'data' => array_values($statusCounts),
+                        'backgroundColor' => ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444'],
+                        'borderWidth' => 0,
+                        'hoverOffset' => 4,
+                    ]
+                ],
+            ];
+        }
+
+        if ($withTeams) {
+            $chartData['teams'] = $teams;
+        }
+
+        \Log::info("Task Distribution Result: " . json_encode($chartData));
+        return response()->json($chartData);
+    }
+    public function getProjectStatus()
+    {
+        $res = $this->getLinearUser();
+        if ($res instanceof \Illuminate\Http\JsonResponse) {
+            $responseData = $res->getData(true);
+            $res = $responseData;
+        }
+
+        $projects = $res['projects'] ?? []; // Use projects for labels
+        $users = $res['users'] ?? []; // Use users for issue details
+        $projectData = [];
+
+        // Initialize project counts
+        foreach ($projects as $project) {
+            $projectName = $project['name'] ?? 'Unnamed Project';
+            // Team name from first associated issue or project data
+            $teamName = isset($project['issues']['nodes'][0]['team']) ? $project['issues']['nodes'][0]['team']['name'] : '';
+            $label = $teamName ? "$projectName ($teamName)" : $projectName;
+            $projectData[$label] = ['Completed' => 0, 'In Progress' => 0, 'Backlog' => 0];
+        }
+
+        // Count issues from users.assigned_issues, mapping to projects
+        foreach ($users as $user) {
+            if (isset($user['assigned_issues'])) {
+                foreach ($user['assigned_issues'] as $issue) {
+                    // Find matching project (simplified: match by title substring or ID if available)
+                    foreach ($projects as $project) {
+                        $projectName = $project['name'] ?? 'Unnamed Project';
+                        $teamName = isset($user['teams'][0]['name']) ? $user['teams'][0]['name'] : '';
+                        $label = $teamName ? "$projectName ($teamName)" : $projectName;
+
+                        if (str_contains($projectName, explode(' ', $issue['title'])[0])) { // Rough match
+                            if (isset($issue['state_type'])) {
+                                switch ($issue['state_type']) {
+                                    case 'completed':
+                                        $projectData[$label]['Completed']++;
+                                        break;
+                                    case 'started':
+                                        $projectData[$label]['In Progress']++;
+                                        break;
+                                    case 'backlog':
+                                        $projectData[$label]['Backlog']++;
+                                        break;
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }
         }
+
+        $labels = array_keys($projectData);
+        $chartData = [
+            'labels' => $labels,
+            'datasets' => [
+                ['label' => 'Completed', 'data' => array_column($projectData, 'Completed'), 'backgroundColor' => 'rgba(34, 197, 94, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
+                ['label' => 'In Progress', 'data' => array_column($projectData, 'In Progress'), 'backgroundColor' => 'rgba(59, 130, 246, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
+                ['label' => 'Backlog', 'data' => array_column($projectData, 'Backlog'), 'backgroundColor' => 'rgba(245, 158, 11, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
+            ],
+        ];
+
+        \Log::info("Project Status Result: " . json_encode($chartData));
+        return response()->json($chartData);
     }
-    
-    $labels = array_keys($projectData);
-    $chartData = [
-        'labels' => $labels,
-        'datasets' => [
-            ['label' => 'Completed', 'data' => array_column($projectData, 'Completed'), 'backgroundColor' => 'rgba(34, 197, 94, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
-            ['label' => 'In Progress', 'data' => array_column($projectData, 'In Progress'), 'backgroundColor' => 'rgba(59, 130, 246, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
-            ['label' => 'Backlog', 'data' => array_column($projectData, 'Backlog'), 'backgroundColor' => 'rgba(245, 158, 11, 0.7)', 'borderRadius' => 4, 'stack' => 'Stack 0'],
-        ],
-    ];
-    
-    \Log::info("Project Status Result: " . json_encode($chartData));
-    return response()->json($chartData);
-}
-public function getSlackActivity($oauthToken, $userEmail)
-{
-    // Step 1: Get user ID by email
-    $userResponse = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $oauthToken,
-    ])->get('https://slack.com/api/users.lookupByEmail', [
-        'email' => $userEmail,
-    ]);
+    public function getSlackActivity($oauthToken, $userEmail)
+    {
+        // Step 1: Get user ID by email
+        $userResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $oauthToken,
+        ])->get('https://slack.com/api/users.lookupByEmail', [
+                    'email' => $userEmail,
+                ]);
 
-    if (!$userResponse->successful()) {
-        return response()->json(['error' => 'Failed to fetch user data from Slack'], 400);
+        if (!$userResponse->successful()) {
+            return response()->json(['error' => 'Failed to fetch user data from Slack'], 400);
+        }
+
+        $userData = $userResponse->json();
+
+        if (!$userData['ok']) {
+            return response()->json(['error' => 'Slack API error: ' . $userData['error']], 400);
+        }
+
+        $userId = $userData['user']['id']; // Get the user ID for further API calls
+
+        // Step 2: Get user activity data (e.g., message count in channels)
+        $activityResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $oauthToken,
+        ])->get('https://slack.com/api/conversations.list', [
+                    'user' => $userId,  // You can use this to get the channels user is part of
+                ]);
+
+        if (!$activityResponse->successful()) {
+            return response()->json(['error' => 'Failed to fetch activity data from Slack'], 400);
+        }
+
+        $activityData = $activityResponse->json();
+
+        if (!$activityData['ok']) {
+            return response()->json(['error' => 'Slack API error: ' . $activityData['error']], 400);
+        }
+
+        // Calculate activity percentage based on message count in active channels
+        $activeChannels = count($activityData['channels']);
+        $messageCount = 0;
+
+        foreach ($activityData['channels'] as $channel) {
+            // Assume 'message_count' is a field returned in the channel data
+            // Adjust the logic as per your actual response structure
+            $messageCount += $channel['message_count'];
+        }
+
+        // If there are no active channels, assume no activity
+        $activityPercentage = $activeChannels > 0 ? ($messageCount / $activeChannels) * 100 : 0;
+
+        return round($activityPercentage, 2);
     }
 
-    $userData = $userResponse->json();
-
-    if (!$userData['ok']) {
-        return response()->json(['error' => 'Slack API error: ' . $userData['error']], 400);
-    }
-
-    $userId = $userData['user']['id']; // Get the user ID for further API calls
-
-    // Step 2: Get user activity data (e.g., message count in channels)
-    $activityResponse = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $oauthToken,
-    ])->get('https://slack.com/api/conversations.list', [
-        'user' => $userId,  // You can use this to get the channels user is part of
-    ]);
-
-    if (!$activityResponse->successful()) {
-        return response()->json(['error' => 'Failed to fetch activity data from Slack'], 400);
-    }
-
-    $activityData = $activityResponse->json();
-
-    if (!$activityData['ok']) {
-        return response()->json(['error' => 'Slack API error: ' . $activityData['error']], 400);
-    }
-
-    // Calculate activity percentage based on message count in active channels
-    $activeChannels = count($activityData['channels']);
-    $messageCount = 0;
-
-    foreach ($activityData['channels'] as $channel) {
-        // Assume 'message_count' is a field returned in the channel data
-        // Adjust the logic as per your actual response structure
-        $messageCount += $channel['message_count']; 
-    }
-
-    // If there are no active channels, assume no activity
-    $activityPercentage = $activeChannels > 0 ? ($messageCount / $activeChannels) * 100 : 0;
-
-    return  round($activityPercentage, 2);
-}
-
- 
 
 
 
 
 
-public function get_template(Request $request){
-    $des = $request->des;
-    $id = $request->id;
-    $sql = $request->sql;
-    $owner_id = Auth::user()->id;
-    $chat_id = $request->chat_id;
+
+    public function get_template(Request $request)
+    {
+        $des = $request->des;
+        $id = $request->id;
+        $sql = $request->sql;
+        $owner_id = Auth::user()->id;
+        $chat_id = $request->chat_id;
 
 
         $key = hex2bin(env('SODIUM_KEY')); // 32-byte key from env
-    $nonceUser = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES); 
+        $nonceUser = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
-    $encryptedUser = sodium_crypto_secretbox(Auth::id(), $nonceUser, $key); 
+        $encryptedUser = sodium_crypto_secretbox(Auth::id(), $nonceUser, $key);
 
-    // combine nonce + ciphertext then base64 encode for safe JS embedding
-    $user_id_encrypted = base64_encode($nonceUser . $encryptedUser); 
+        // combine nonce + ciphertext then base64 encode for safe JS embedding
+        $user_id_encrypted = base64_encode($nonceUser . $encryptedUser);
 
 
-   $res =  Http::post('https://temp.reviewbod.com/generate-template',[
-        "description"=>$des,
-        "id"=>$id,
-        "sql"=>$sql,
-        "owner_id"=>$user_id_encrypted,
-        "chat_id"=>$chat_id
-    ])->json();
+        $res = Http::post('https://temp.reviewbod.com/generate-template', [
+            "description" => $des,
+            "id" => $id,
+            "sql" => $sql,
+            "owner_id" => $user_id_encrypted,
+            "chat_id" => $chat_id
+        ])->json();
 
-    
-   return response()->json($res);
 
-}
-public function chat(Request $request) {
-    try {
-        $client = new Client("wss://api.reviewbod.com/ws", [
-            'timeout' => 30,  // Longer timeout
-            'persistent' => true
-        ]);
-        
-        echo "Connected!\n";
-        
-        $message = json_encode([
-            'type' => 'test',
-            'user_id' => 1,
-            'chat_id' => 1,
-            'message' => 'Hello from PHP'
-        ]);
-        
-        $client->send($message);
-        echo "Message sent: " . $message . "\n";
-        
-        // Add a small delay
-        usleep(100000); // 100ms
-        
-        // Try to receive with a loop
-        for ($i = 0; $i < 10; $i++) {
-            try {
-                $response = $client->receive();
-                echo "Received: " . $response . "\n";
-                break;
-            } catch (\WebSocket\TimeoutException $e) {
-                echo "Timeout waiting for response, attempt " . ($i + 1) . "\n";
-                usleep(500000); // Wait 500ms between attempts
-            }
-        }
-        
-        $client->close();
-        
-    } catch (\WebSocket\ConnectionException $e) {
-        echo "Connection error: " . $e->getMessage() . "\n";
-        echo "Error code: " . $e->getCode() . "\n";
-    } catch (Exception $e) {
-        echo "General error: " . $e->getMessage() . "\n";
+        return response()->json($res);
+
     }
-}
+    public function chat(Request $request)
+    {
+        try {
+            $client = new Client("wss://api.reviewbod.com/ws", [
+                'timeout' => 30,  // Longer timeout
+                'persistent' => true
+            ]);
 
-/**
- * Extract only essential data from the user data
- */
-private function extractEssentialData($data)
-{
-    // Example implementation - modify according to your actual data structure
-    $essential = [];
-    
-    // Only include key information needed for responses
-    if (isset($data['issues'])) {
-        $essential['issues'] = array_map(function($issue) {
-            return [
-                'id' => $issue['id'] ?? null,
-                'title' => $issue['title'] ?? null,
-                'status' => $issue['status'] ?? null,
-                'priority' => $issue['priority'] ?? null,
-            ];
-        }, array_slice($data['issues'], 0, 10)); // Limit to 10 most recent issues
-    }
-    
-    if (isset($data['projects'])) {
-        $essential['projects'] = array_map(function($project) {
-            return [
-                'id' => $project['id'] ?? null,
-                'name' => $project['name'] ?? null,
-                'status' => $project['status'] ?? null,
-            ];
-        }, array_slice($data['projects'], 0, 5)); // Limit to 5 projects
-    }
-    
-    return $essential;
-}
+            echo "Connected!\n";
 
-/**
- * Store user message in the database
- */
-private function storeUserMessage(Request $request, $message)
-{
-    $data = [
-        'user_id' => auth()->id(),
-        'sender_type' => 'user',
-        'message' => $message,
-        'created_at' => now(),
-    ];
-    
-    if ($request->user_id) {
-        $data['userid'] = $request->user_id;
-    }
-    
-    DB::table('chat_messages')->insert($data);
-}
+            $message = json_encode([
+                'type' => 'test',
+                'user_id' => 1,
+                'chat_id' => 1,
+                'message' => 'Hello from PHP'
+            ]);
 
-/**
- * Prepare messages for the OpenAI API
- */
-private function prepareMessages(Request $request, $userData, $history, $message)
-{
-    $userDataSummary = json_encode($userData);
-    $name = $request->name ?? Auth::user()->name ?? 'user';
-    $service = Auth::user()->service;
-    
-    $systemPrompt = "You are reviewBOT, a personal assistant for $name. ";
-    $systemPrompt .= "You have access to the user's $service data summary: $userDataSummary. ";
-    $systemPrompt .= "When asked about $service data, refer to this data and be specific. ";
-    $systemPrompt .= "Respond in a friendly, conversational tone. ";
-    $systemPrompt .= "If showing usage stats or counts, represent the actual names or keys from the data — do NOT use labels like 'Array 1', 'Array 2'. ";
-    $systemPrompt .= "Use plain text Unicode bar charts like: 'Daniel █████ (5 messages)'. ";
-    $systemPrompt .= "Each bar should visually represent the value. Show a total at the end. ";
-    $systemPrompt .= "Use Markdown-style formatting. Only show images if relevant.";
-    
-    
-    $messages = [
-        ['role' => 'system', 'content' => $systemPrompt]
-    ];
-    
-    // Add conversation history
-    foreach ($history as $entry) {
-        // Only include the last 5 exchanges to save tokens
-        if (count($messages) > 10) break;
-        
-        $messages[] = [
-            'role' => $entry['role'],
-            'content' => $entry['content']
-        ];
-    }
-    
-    // Add user's message
-    $messages[] = [
-        'role' => 'user',
-        'content' => $message
-    ];
-    
-    return $messages;
-}
+            $client->send($message);
+            echo "Message sent: " . $message . "\n";
 
-/**
- * Estimate token count for a message array
- */
-private function estimateTokenCount($messages)
-{
-    // Rough estimate: 4 characters ~= 1 token
-    $json = json_encode($messages);
-    return strlen($json) / 4;
-}
+            // Add a small delay
+            usleep(100000); // 100ms
 
-/**
- * Truncate messages to reduce token count
- */
-private function truncateMessages($messages)
-{
-    // Keep system message and last 3 exchanges
-    $systemMessage = $messages[0];
-    $recentMessages = array_slice($messages, -6);
-    return array_merge([$systemMessage], $recentMessages);
-}
-
-/**
- * Make a request to the OpenAI API
- */
-private function makeOpenAIRequest($messages)
-{
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer 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',
-        'Content-Type' => 'application/json',
-    ])->post('https://api.openai.com/v1/chat/completions', [
-        'model' => 'gpt-4o-mini',
-        'messages' => $messages,
-        'max_tokens' => 1000,
-        'temperature' => 0.7,
-    ]);
-
-    if ($response->successful()) {
-        $responseData = $response->json();
-        return $responseData['choices'][0]['message']['content'] ?? 'I\'m not sure how to respond to that.';
-    } else {
-        Log::error('OpenAI API error: ' . $response->body());
-        throw new \Exception('API request failed: ' . $response->status());
-    }
-}
-
-/**
- * Store bot reply in the database
- */
-private function storeBotReply(Request $request, $botReply)
-{
-    $data = [
-        'user_id' => auth()->id(),
-        'sender_type' => 'bot',
-        'message' => $botReply,
-        'created_at' => now(),
-    ];
-    
-    if ($request->user_id) {
-        $data['userid'] = $request->user_id;
-    }
-    
-    DB::table('chat_messages')->insert($data);
-}
-/**
- * Determine possible actions based on the message and response.
- *
- * @param  string  $message
- * @param  string  $response
- * @return array
- */
-private function determineActions($message, $response)
-{
-    $actions = [];
-
-    // Simple keyword-based action suggestions
-    // if (str_contains(strtolower($message), 'project') || 
-    //     str_contains(strtolower($response), 'project')) {
-    //     $actions[] = [
-    //         'text' => 'Show me other options',
-    //         'action' => 'sendQuickQuestion(\'Show me project options\')'
-    //     ];
-    // }
-
-    // if (str_contains(strtolower($message), 'issue') || 
-    //     str_contains(strtolower($response), 'issue')) {
-    //     $actions[] = [
-    //         'text' => 'View all issues',
-    //         'action' => 'sendQuickQuestion(\'List all issues\')'
-    //     ];
-    // }
-
-    return $actions;
-}
-
-
-
-public function getSlackData()
-{
-    // Get user's Slack connection from DB
-    $slack = DB::table("linked")->where(["type" => "slack", "userid" => Auth::id()])->first();
-    
-    if (!$slack || empty($slack->token)) {
-        return ['error' => 'No Slack connection found'];
-    }
-    
-    $token = $slack->token;
-    $userId = Auth::id();
-    $channelsCacheKey = 'slack_channels_' . $userId;
-    
-    // Get all channels
-    $channels = Cache::remember($channelsCacheKey, 3600, function () use ($token) {
-        $channels = [];
-        $cursor = null;
-        $attempts = 0;
-        $maxAttempts = 5;
-        
-        do {
-            try {
-                $params = [
-                    'types' => 'public_channel,private_channel',
-                    'limit' => 1000,
-                ];
-                
-                if ($cursor) {
-                    $params['cursor'] = $cursor;
+            // Try to receive with a loop
+            for ($i = 0; $i < 10; $i++) {
+                try {
+                    $response = $client->receive();
+                    echo "Received: " . $response . "\n";
+                    break;
+                } catch (\WebSocket\TimeoutException $e) {
+                    echo "Timeout waiting for response, attempt " . ($i + 1) . "\n";
+                    usleep(500000); // Wait 500ms between attempts
                 }
-                
-                $response = Http::withToken($token)
-                    ->timeout(10)
-                    ->retry(3, 100)
-                    ->get('https://slack.com/api/conversations.list', $params);
-                
-                $data = $response->json();
-                
-                if (!$data['ok']) {
-                    if (isset($data['error']) && $data['error'] === 'ratelimited') {
-                        $attempts++;
-                        if ($attempts >= $maxAttempts) {
-                            break;
-                        }
-                        $retryAfter = $response->header('Retry-After') ?? (1 << $attempts);
-                        sleep($retryAfter);
-                        continue;
+            }
+
+            $client->close();
+
+        } catch (\WebSocket\ConnectionException $e) {
+            echo "Connection error: " . $e->getMessage() . "\n";
+            echo "Error code: " . $e->getCode() . "\n";
+        } catch (Exception $e) {
+            echo "General error: " . $e->getMessage() . "\n";
+        }
+    }
+
+    /**
+     * Extract only essential data from the user data
+     */
+    private function extractEssentialData($data)
+    {
+        // Example implementation - modify according to your actual data structure
+        $essential = [];
+
+        // Only include key information needed for responses
+        if (isset($data['issues'])) {
+            $essential['issues'] = array_map(function ($issue) {
+                return [
+                    'id' => $issue['id'] ?? null,
+                    'title' => $issue['title'] ?? null,
+                    'status' => $issue['status'] ?? null,
+                    'priority' => $issue['priority'] ?? null,
+                ];
+            }, array_slice($data['issues'], 0, 10)); // Limit to 10 most recent issues
+        }
+
+        if (isset($data['projects'])) {
+            $essential['projects'] = array_map(function ($project) {
+                return [
+                    'id' => $project['id'] ?? null,
+                    'name' => $project['name'] ?? null,
+                    'status' => $project['status'] ?? null,
+                ];
+            }, array_slice($data['projects'], 0, 5)); // Limit to 5 projects
+        }
+
+        return $essential;
+    }
+
+    /**
+     * Store user message in the database
+     */
+    private function storeUserMessage(Request $request, $message)
+    {
+        $data = [
+            'user_id' => auth()->id(),
+            'sender_type' => 'user',
+            'message' => $message,
+            'created_at' => now(),
+        ];
+
+        if ($request->user_id) {
+            $data['userid'] = $request->user_id;
+        }
+
+        DB::table('chat_messages')->insert($data);
+    }
+
+    /**
+     * Prepare messages for the OpenAI API
+     */
+    private function prepareMessages(Request $request, $userData, $history, $message)
+    {
+        $userDataSummary = json_encode($userData);
+        $name = $request->name ?? Auth::user()->name ?? 'user';
+        $service = Auth::user()->service;
+
+        $systemPrompt = "You are reviewBOT, a personal assistant for $name. ";
+        $systemPrompt .= "You have access to the user's $service data summary: $userDataSummary. ";
+        $systemPrompt .= "When asked about $service data, refer to this data and be specific. ";
+        $systemPrompt .= "Respond in a friendly, conversational tone. ";
+        $systemPrompt .= "If showing usage stats or counts, represent the actual names or keys from the data — do NOT use labels like 'Array 1', 'Array 2'. ";
+        $systemPrompt .= "Use plain text Unicode bar charts like: 'Daniel █████ (5 messages)'. ";
+        $systemPrompt .= "Each bar should visually represent the value. Show a total at the end. ";
+        $systemPrompt .= "Use Markdown-style formatting. Only show images if relevant.";
+
+
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt]
+        ];
+
+        // Add conversation history
+        foreach ($history as $entry) {
+            // Only include the last 5 exchanges to save tokens
+            if (count($messages) > 10)
+                break;
+
+            $messages[] = [
+                'role' => $entry['role'],
+                'content' => $entry['content']
+            ];
+        }
+
+        // Add user's message
+        $messages[] = [
+            'role' => 'user',
+            'content' => $message
+        ];
+
+        return $messages;
+    }
+
+    /**
+     * Estimate token count for a message array
+     */
+    private function estimateTokenCount($messages)
+    {
+        // Rough estimate: 4 characters ~= 1 token
+        $json = json_encode($messages);
+        return strlen($json) / 4;
+    }
+
+    /**
+     * Truncate messages to reduce token count
+     */
+    private function truncateMessages($messages)
+    {
+        // Keep system message and last 3 exchanges
+        $systemMessage = $messages[0];
+        $recentMessages = array_slice($messages, -6);
+        return array_merge([$systemMessage], $recentMessages);
+    }
+
+    /**
+     * Make a request to the OpenAI API
+     */
+    private function makeOpenAIRequest($messages)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer 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',
+            'Content-Type' => 'application/json',
+        ])->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
+                    'messages' => $messages,
+                    'max_tokens' => 1000,
+                    'temperature' => 0.7,
+                ]);
+
+        if ($response->successful()) {
+            $responseData = $response->json();
+            return $responseData['choices'][0]['message']['content'] ?? 'I\'m not sure how to respond to that.';
+        } else {
+            Log::error('OpenAI API error: ' . $response->body());
+            throw new \Exception('API request failed: ' . $response->status());
+        }
+    }
+
+    /**
+     * Store bot reply in the database
+     */
+    private function storeBotReply(Request $request, $botReply)
+    {
+        $data = [
+            'user_id' => auth()->id(),
+            'sender_type' => 'bot',
+            'message' => $botReply,
+            'created_at' => now(),
+        ];
+
+        if ($request->user_id) {
+            $data['userid'] = $request->user_id;
+        }
+
+        DB::table('chat_messages')->insert($data);
+    }
+    /**
+     * Determine possible actions based on the message and response.
+     *
+     * @param  string  $message
+     * @param  string  $response
+     * @return array
+     */
+    private function determineActions($message, $response)
+    {
+        $actions = [];
+
+        // Simple keyword-based action suggestions
+        // if (str_contains(strtolower($message), 'project') || 
+        //     str_contains(strtolower($response), 'project')) {
+        //     $actions[] = [
+        //         'text' => 'Show me other options',
+        //         'action' => 'sendQuickQuestion(\'Show me project options\')'
+        //     ];
+        // }
+
+        // if (str_contains(strtolower($message), 'issue') || 
+        //     str_contains(strtolower($response), 'issue')) {
+        //     $actions[] = [
+        //         'text' => 'View all issues',
+        //         'action' => 'sendQuickQuestion(\'List all issues\')'
+        //     ];
+        // }
+
+        return $actions;
+    }
+
+
+
+    public function getSlackData()
+    {
+        // Get user's Slack connection from DB
+        $slack = DB::table("linked")->where(["type" => "slack", "userid" => Auth::id()])->first();
+
+        if (!$slack || empty($slack->token)) {
+            return ['error' => 'No Slack connection found'];
+        }
+
+        $token = $slack->token;
+        $userId = Auth::id();
+        $channelsCacheKey = 'slack_channels_' . $userId;
+
+        // Get all channels
+        $channels = Cache::remember($channelsCacheKey, 3600, function () use ($token) {
+            $channels = [];
+            $cursor = null;
+            $attempts = 0;
+            $maxAttempts = 5;
+
+            do {
+                try {
+                    $params = [
+                        'types' => 'public_channel,private_channel',
+                        'limit' => 1000,
+                    ];
+
+                    if ($cursor) {
+                        $params['cursor'] = $cursor;
                     }
+
+                    $response = Http::withToken($token)
+                        ->timeout(10)
+                        ->retry(3, 100)
+                        ->get('https://slack.com/api/conversations.list', $params);
+
+                    $data = $response->json();
+
+                    if (!$data['ok']) {
+                        if (isset($data['error']) && $data['error'] === 'ratelimited') {
+                            $attempts++;
+                            if ($attempts >= $maxAttempts) {
+                                break;
+                            }
+                            $retryAfter = $response->header('Retry-After') ?? (1 << $attempts);
+                            sleep($retryAfter);
+                            continue;
+                        }
+                        break;
+                    }
+
+                    $channels = array_merge($channels, $data['channels'] ?? []);
+                    $cursor = $data['response_metadata']['next_cursor'] ?? null;
+
+                } catch (\Exception $e) {
+                    \Log::error('Slack channels fetch error: ' . $e->getMessage());
                     break;
                 }
-                
-                $channels = array_merge($channels, $data['channels'] ?? []);
-                $cursor = $data['response_metadata']['next_cursor'] ?? null;
-                
-            } catch (\Exception $e) {
-                \Log::error('Slack channels fetch error: ' . $e->getMessage());
-                break;
-            }
-            
-        } while ($cursor);
-        
-        return $channels;
-    });
-    
-    if (empty($channels)) {
-        return ['error' => 'No channels found or access denied'];
+
+            } while ($cursor);
+
+            return $channels;
+        });
+
+        if (empty($channels)) {
+            return ['error' => 'No channels found or access denied'];
+        }
+
+        // Format channels for output
+        $result = array_map(function ($channel) {
+            return [
+                'id' => $channel['id'],
+                'name' => $channel['name'],
+                'topic' => $channel['topic']['value'] ?? '',
+                'member_count' => $channel['num_members'] ?? 0,
+            ];
+        }, $channels);
+
+        return $result;
     }
-    
-    // Format channels for output
-    $result = array_map(function ($channel) {
-        return [
-            'id' => $channel['id'],
-            'name' => $channel['name'],
-            'topic' => $channel['topic']['value'] ?? '',
-            'member_count' => $channel['num_members'] ?? 0,
-        ];
-    }, $channels);
-    
-    return $result;
-}
 
-public function chatuser(){
-    return view("dash.chat");
-}
+    public function chatuser()
+    {
+        return view("dash.chat");
+    }
 
 
-public function chats(){
-    
-    $messages = DB::table('chat_messages')
-    ->where('user_id', auth()->id())
-    ->where("userid",null)
-    ->orderBy('created_at', 'asc')
-    // ->limit(200)
-    ->get();
+    public function chats()
+    {
 
-    if(request()->user_id){
         $messages = DB::table('chat_messages')
-        ->where('user_id', auth()->id())
-        ->where("userid",request()->user_id)
-        ->orderBy('created_at', 'asc')
-        // ->limit(200)
-        ->get();
-    }
+            ->where('user_id', auth()->id())
+            ->where("userid", null)
+            ->orderBy('created_at', 'asc')
+            // ->limit(200)
+            ->get();
 
-    return response()->json(["data"=>$messages]);
-}
-
-
-public function last_chat(){
-    
-    $message = DB::table('chat_messages')
-    ->where('user_id', auth()->id())
-    ->orderBy('created_at', 'desc')
-    ->first();
-
-    return response()->json(["data"=>$message]);
-}
-
-public function members(Request $request)
-{
-    $res = new FetchData();
-    $res = $res->getData("users");
-    
-    // Handle different response types
-    if ($res instanceof \Illuminate\Http\JsonResponse) {
-        // Extract data from JsonResponse
-        $responseData = $res->getData("users");
-        
-        // Check if it's an error response
-        if (isset($responseData['message']) && ($res->getStatusCode() != 200)) {
-            // Handle error
-            $error = $responseData['message'];
-            Log::info("Error Data: $error");
-            return view("dash.error", ['error' => $responseData['message']]);
+        if (request()->user_id) {
+            $messages = DB::table('chat_messages')
+                ->where('user_id', auth()->id())
+                ->where("userid", request()->user_id)
+                ->orderBy('created_at', 'asc')
+                // ->limit(200)
+                ->get();
         }
-        
-        $res = $responseData;
+
+        return response()->json(["data" => $messages]);
     }
 
-    
-    $service = Auth::user()->service;
-    // dd($res);
-    if($service == "linear"){
-        $allMembers = $res;
 
-    }elseif($service = "trello"){
+    public function last_chat()
+    {
+
+        $message = DB::table('chat_messages')
+            ->where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json(["data" => $message]);
+    }
+
+    public function members(Request $request)
+    {
+        $res = new FetchData();
+        $res = $res->getData("users");
+
+        // Handle different response types
+        if ($res instanceof \Illuminate\Http\JsonResponse) {
+            // Extract data from JsonResponse
+            $responseData = $res->getData("users");
+
+            // Check if it's an error response
+            if (isset($responseData['message']) && ($res->getStatusCode() != 200)) {
+                // Handle error
+                $error = $responseData['message'];
+                Log::info("Error Data: $error");
+                return view("dash.error", ['error' => $responseData['message']]);
+            }
+
+            $res = $responseData;
+        }
+
+
+        $service = Auth::user()->service;
         // dd($res);
-        $allMembers = $res;
-        
+        if ($service == "linear") {
+            $allMembers = $res;
 
-    }
+        } elseif ($service = "trello") {
+            // dd($res);
+            $allMembers = $res;
+
+
+        }
 
 
 
- 
-    
-    // Get linked user data
-    $linkedUsers = DB::table('linked_users')->where(["userid"=>Auth::id()])->select('email', 'blocked', 'verified')->get();
-    $linkedUsersMap = [];
-    
-    foreach ($linkedUsers as $user) {
-        $linkedUsersMap[$user->email] = [
-            'blocked' => $user->blocked,
-            'verified' => $user->verified
-        ];
-    }
-    
-    // Apply search filter if search query exists
-    $search = $request->input('search');
-    $status = $request->input('status');
-    
-    if ($search) {
-        $allMembers = array_filter($allMembers, function($member) use ($search) {
-            $searchInName = stripos($member['name'] ?? '', $search) !== false;
-            $searchInEmail = stripos($member['email'] ?? '', $search) !== false;
-            
-            if (Auth::user()->service == "trello") {
-                $searchInDisplayName = stripos($member['displayName'] ?? '', $search) !== false;
-                return $searchInEmail || $searchInDisplayName || $searchInName;
-            }
-    
-            return $searchInEmail || $searchInName;
-        });
-    }
-    
-    // dd($allMembers);
-    
-    // Filter by status
-    if ($status) {
-        $allMembers = array_filter($allMembers, function($member) use ($status, $linkedUsersMap) {
+
+
+        // Get linked user data
+        $linkedUsers = DB::table('linked_users')->where(["userid" => Auth::id()])->select('email', 'blocked', 'verified')->get();
+        $linkedUsersMap = [];
+
+        foreach ($linkedUsers as $user) {
+            $linkedUsersMap[$user->email] = [
+                'blocked' => $user->blocked,
+                'verified' => $user->verified
+            ];
+        }
+
+        // Apply search filter if search query exists
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        if ($search) {
+            $allMembers = array_filter($allMembers, function ($member) use ($search) {
+                $searchInName = stripos($member['name'] ?? '', $search) !== false;
+                $searchInEmail = stripos($member['email'] ?? '', $search) !== false;
+
+                if (Auth::user()->service == "trello") {
+                    $searchInDisplayName = stripos($member['displayName'] ?? '', $search) !== false;
+                    return $searchInEmail || $searchInDisplayName || $searchInName;
+                }
+
+                return $searchInEmail || $searchInName;
+            });
+        }
+
+        // dd($allMembers);
+
+        // Filter by status
+        if ($status) {
+            $allMembers = array_filter($allMembers, function ($member) use ($status, $linkedUsersMap) {
+                $email = $member['email'] ?? '';
+
+                // Check if we have this user in our linked_users table
+                if (isset($linkedUsersMap[$email])) {
+                    if ($status === 'blocked' && $linkedUsersMap[$email]['blocked'] == 1) {
+                        return true;
+                    }
+
+                    if ($status === 'pending' && $linkedUsersMap[$email]['verified'] === null) {
+                        return true;
+                    }
+                }
+
+
+
+                // If status is not blocked or pending, use the original status filter
+                return $status !== 'blocked' && $status !== 'pending' &&
+                    stripos($member['status'] ?? '', $status) !== false;
+            });
+
+
+
+        }
+
+        // Setup pagination
+        $perPage = 10;
+        $currentPage = $request->input('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $totalMembers = count($allMembers);
+
+        // Create a LengthAwarePaginator instance
+        $members = array_slice($allMembers, $offset, $perPage);
+
+        $paginator = new LengthAwarePaginator(
+            $members,
+            $totalMembers,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Add status info to each member for display
+        foreach ($members as &$member) {
             $email = $member['email'] ?? '';
-            
-            // Check if we have this user in our linked_users table
             if (isset($linkedUsersMap[$email])) {
-                if ($status === 'blocked' && $linkedUsersMap[$email]['blocked'] == 1) {
-                    return true;
-                }
-                
-                if ($status === 'pending' && $linkedUsersMap[$email]['verified'] === null) {
-                    return true;
-                }
+                $member['is_blocked'] = $linkedUsersMap[$email]['blocked'] == 1;
+                $member['is_pending'] = $linkedUsersMap[$email]['verified'] === null;
+            } else {
+                $member['is_blocked'] = false;
+                $member['is_pending'] = false;
+            }
+        }
+
+        return view('dash.members', [
+            'members' => $paginator,
+            'totalMembers' => $totalMembers,
+            'search' => $search,
+            'status' => $status,
+            'res' => $res,
+        ]);
+
+    }
+
+
+    public function users()
+    {
+        $data = DB::table("platform_users")
+            ->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
+            ->select('platform_users.*', 'linked_users.status as user_status', 'linked_users.id as iid')
+            ->where(["platform_users.owner_id" => Auth::id()])->distinct()->get();
+        return view("dash.members", compact("data"));
+    }
+    public function teams(Request $request)
+    {
+        $res = new FetchData();
+        $res = $res->getData("teams");
+        // dd($res);
+        // Handle different response types
+        if ($res instanceof \Illuminate\Http\JsonResponse) {
+            // Extract data from JsonResponse
+            $responseData = $res->getData("teams");
+
+            // Check if it's an error response
+            if (isset($responseData['message']) && ($res->getStatusCode() != 200)) {
+                // Handle error
+                $error = $responseData['message'];
+                Log::info("Error Data: $error");
+                return view("dash.error", ['error' => $responseData['message']]);
             }
 
-         
-            
-            // If status is not blocked or pending, use the original status filter
-            return $status !== 'blocked' && $status !== 'pending' && 
-                   stripos($member['status'] ?? '', $status) !== false;
-        });
-
-      
-   
-    }
-    
-    // Setup pagination
-    $perPage = 10;
-    $currentPage = $request->input('page', 1);
-    $offset = ($currentPage - 1) * $perPage;
-    $totalMembers = count($allMembers);
-    
-    // Create a LengthAwarePaginator instance
-    $members = array_slice($allMembers, $offset, $perPage);
-    
-    $paginator = new LengthAwarePaginator(
-        $members,
-        $totalMembers,
-        $perPage,
-        $currentPage,
-        ['path' => $request->url(), 'query' => $request->query()]
-    );
-    
-    // Add status info to each member for display
-    foreach ($members as &$member) {
-        $email = $member['email'] ?? '';
-        if (isset($linkedUsersMap[$email])) {
-            $member['is_blocked'] = $linkedUsersMap[$email]['blocked'] == 1;
-            $member['is_pending'] = $linkedUsersMap[$email]['verified'] === null;
-        } else {
-            $member['is_blocked'] = false;
-            $member['is_pending'] = false;
+            $res = $responseData;
         }
-    }
-    
-    return view('dash.members', [
-        'members' => $paginator,
-        'totalMembers' => $totalMembers,
-        'search' => $search,
-        'status' => $status,
-        'res' => $res,
-    ]);
 
-}
-
-
-public function users(){
-    $data = DB::table("platform_users")
-  ->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
-  ->select('platform_users.*','linked_users.status as user_status','linked_users.id as iid')  
-  ->where(["platform_users.owner_id"=>Auth::id()])->distinct()->get();
-    return view("dash.members",compact("data"));
-}
-public function teams(Request $request){
-    $res = new FetchData();
-    $res = $res->getData("teams");
-    // dd($res);
-    // Handle different response types
-    if ($res instanceof \Illuminate\Http\JsonResponse) {
-        // Extract data from JsonResponse
-        $responseData = $res->getData("teams");
- 
-        // Check if it's an error response
-        if (isset($responseData['message']) && ($res->getStatusCode() != 200)) {
-            // Handle error
-            $error =  $responseData['message'];
-            Log::info("Error Data: $error");
-            return view("dash.error", ['error' => $responseData['message']]);
+        // Access the nodes array from the response
+        $allTeams = $res;
+        // dd($allTeams);
+        // Apply search filter if search query exists
+        $search = $request->input('search');
+        if ($search) {
+            $allTeams = array_filter($allTeams, function ($team) use ($search) {
+                return stripos($team['name'] ?? '', $search) !== false;
+            });
         }
-        
-        $res = $responseData;
+
+        // Setup pagination
+        $perPage = 10;
+        $currentPage = $request->input('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $totalTeams = count($allTeams);
+
+        // Create a LengthAwarePaginator instance
+        $teams = array_slice($allTeams, $offset, $perPage);
+        $paginator = new LengthAwarePaginator(
+            $teams,
+            $totalTeams,
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('dash.teams', [
+            'members' => $paginator,
+            'totalTeams' => $totalTeams,
+            'search' => $search,
+            'res' => $res,
+        ]);
     }
 
-    // Access the nodes array from the response
-    $allTeams = $res;
-    // dd($allTeams);
-    // Apply search filter if search query exists
-    $search = $request->input('search');
-    if ($search) {
-        $allTeams = array_filter($allTeams, function($team) use ($search) {
-            return stripos($team['name'] ?? '', $search) !== false;
-        });
-    }
-    
-    // Setup pagination
-    $perPage = 10;
-    $currentPage = $request->input('page', 1);
-    $offset = ($currentPage - 1) * $perPage;
-    $totalTeams = count($allTeams);
-    
-    // Create a LengthAwarePaginator instance
-    $teams = array_slice($allTeams, $offset, $perPage);
-    $paginator = new LengthAwarePaginator(
-        $teams,
-        $totalTeams,
-        $perPage,
-        $currentPage,
-        ['path' => $request->url(), 'query' => $request->query()]
-    );
-    
-    return view('dash.teams', [
-        'members' => $paginator,
-        'totalTeams' => $totalTeams,
-        'search' => $search,
-        'res'=> $res,
-    ]);
-}
 
-
-public function getUserLinear($accessToken){
-    $response = Http::withToken($accessToken)
-    ->post('https://api.linear.app/graphql', [
-        'query' => '
+    public function getUserLinear($accessToken)
+    {
+        $response = Http::withToken($accessToken)
+            ->post('https://api.linear.app/graphql', [
+                'query' => '
           
 
             query GetTeams {
@@ -1457,24 +1477,24 @@ public function getUserLinear($accessToken){
                 }
             }
         '
-    ]);
+            ]);
 
-    if ($response->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Linear API request failed.',
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ];
+        if ($response->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Linear API request failed.',
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ];
+        }
+
+        $data = $response->json();
+        dd($data);
+
     }
-
-    $data = $response->json();
-    dd($data);
-
-}
-public function  getFullLinearUserData($accessToken, $userId)
-{
-    $query = <<<GQL
+    public function getFullLinearUserData($accessToken, $userId)
+    {
+        $query = <<<GQL
  
     query GetUserDetails {
         user(id: "$userId") {
@@ -1556,657 +1576,665 @@ public function  getFullLinearUserData($accessToken, $userId)
     }
     GQL;
 
-    $response = Http::withToken($accessToken)
-        ->post('https://api.linear.app/graphql', [
-            'query' => $query,
-        ]);
-
-    if ($response->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Linear API request failed.',
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ];
-    }
-
-    $data = $response->json();
-
-    if (isset($data['errors'])) {
-        return [
-            'success' => false,
-            'message' => 'Linear returned errors.',
-            'errors' => $data['errors']
-        ];
-    }
-
-    return [
-        'success' => true,
-        'user' => $data['data']['user'] ?? null
-    ];
-}
-
-public function getFullTrelloUserData($apiKey, $token, $username)
-{
-    // Trello uses REST API instead of GraphQL, so we'll make multiple requests to get similar data
-    $baseUrl = 'https://api.trello.com/1';
-    
-    // Get user details - note the authentication parameters
-    $userResponse = Http::get("{$baseUrl}/members/{$username}", [
-        'key' => $apiKey,
-        'token' => $token,
-        'fields' => 'id,fullName,username,email,avatarUrl,idBoards,url,bio,initials,memberType,confirmed,status,dateCreated'
-    ]);
-// dd($token);
- 
-
-    if ($userResponse->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Trello API user request failed.',
-            'status' => $userResponse->status(),
-            'body' => $userResponse->body(),
-        ];
-    }
-
-    $userData = $userResponse->json();
-    
-    // Get boards (teams equivalent)
-    $boardsResponse = Http::get("{$baseUrl}/members/{$username}/boards", [
-        'key' => $apiKey,
-        'token' => $token,
-        'fields' => 'id,name,shortLink,dateLastActivity,url,prefs'
-    ]);
-    
-    if ($boardsResponse->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Trello API boards request failed.',
-            'status' => $boardsResponse->status(),
-            'body' => $boardsResponse->body(),
-        ];
-    }
-    
-    $boards = $boardsResponse->json();
-    
-    // Get cards assigned to the user (issues equivalent)
-    $cardsResponse = Http::get("{$baseUrl}/members/{$username}/cards", [
-        'key' => $apiKey,
-        'token' => $token,
-        'fields' => 'id,name,idBoard,idList,url,due,dateLastActivity,desc,shortUrl',
-        'members' => true,
-        'member_fields' => 'id,fullName,username',
-        'board' => true,
-        'board_fields' => 'id,name',
-        'list' => true,
-        'list_fields' => 'id,name'
-    ]);
-    
-    if ($cardsResponse->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Trello API cards request failed.',
-            'status' => $cardsResponse->status(),
-            'body' => $cardsResponse->body(),
-        ];
-    }
-    
-    $cards = $cardsResponse->json();
-
-    // Get cards created by the user
-    $createdCardsResponse = Http::get("{$baseUrl}/members/{$username}/actions", [
-        'key' => $apiKey,
-        'token' => $token,
-        'filter' => 'createCard',
-        'fields' => 'id,date,data',
-        'limit' => 100
-    ]);
-    
-    if ($createdCardsResponse->failed()) {
-        return [
-            'success' => false,
-            'message' => 'Trello API created cards request failed.',
-            'status' => $createdCardsResponse->status(),
-            'body' => $createdCardsResponse->body(),
-        ];
-    }
-    
-    $createdCards = $createdCardsResponse->json();
-    
-    // Format response to match the Linear API response structure
-    $formattedData = [
-        'id' => $userData['id'],
-        'name' => $userData['fullName'],
-        'displayName' => $userData['username'],
-        'email' => $userData['email'] ?? null,
-        'avatarUrl' => $userData['avatarUrl'] ?? null,
-        'createdAt' => $userData['dateCreated'] ?? null,
-        'updatedAt' => $userData['dateLastActivity'] ?? null,
-        'active' => $userData['confirmed'] ?? false,
-        'admin' => $userData['memberType'] === 'admin',
-        'archivedAt' => null,
-        'statusEmoji' => null,
-        'description' => $userData['bio'] ?? null,
-        'url' => $userData['url'] ?? null,
-        'timezone' => null,
-        'lastSeen' => null,
-        'isMe' => true,
-        
-        // Team memberships (boards in Trello)
-        'teamMemberships' => [
-            'nodes' => array_map(function($board) {
-                return [
-                    'id' => $board['id'],
-                    'createdAt' => null, // Trello doesn't provide creation date for boards in this endpoint
-                    'updatedAt' => $board['dateLastActivity'] ?? null,
-                    'team' => [
-                        'id' => $board['id'],
-                        'name' => $board['name'],
-                        'key' => $board['shortLink'] ?? null,
-                        'color' => $board['prefs']['backgroundColor'] ?? null,
-                        'createdAt' => null
-                    ]
-                ];
-            }, $boards)
-        ],
-        
-        // Assigned issues (cards in Trello)
-        'assignedIssues' => [
-            'nodes' => array_map(function($card) {
-                return [
-                    'id' => $card['id'],
-                    'title' => $card['name'],
-                    'identifier' => $card['shortUrl'] ?? null,
-                    'state' => [
-                        'id' => $card['idList'],
-                        'name' => $card['list']['name'] ?? 'Unknown',
-                        'type' => null
-                    ],
-                    'priority' => null,
-                    'url' => $card['url'] ?? null,
-                    'dueDate' => $card['due'] ?? null,
-                    'createdAt' => null, // Trello doesn't provide creation date in this endpoint
-                    'updatedAt' => $card['dateLastActivity'] ?? null,
-                    'project' => [
-                        'id' => $card['idBoard'],
-                        'name' => $card['board']['name'] ?? 'Unknown'
-                    ]
-                ];
-            }, $cards)
-        ],
-        
-        // Created issues (cards created by user in Trello)
-        'createdIssues' => [
-            'nodes' => array_map(function($action) {
-                return [
-                    'id' => $action['data']['card']['id'] ?? null,
-                    'title' => $action['data']['card']['name'] ?? null,
-                    'identifier' => null,
-                    'state' => [
-                        'name' => null
-                    ],
-                    'createdAt' => $action['date'] ?? null,
-                    'priority' => null
-                ];
-            }, $createdCards)
-        ]
-    ];
-
-    return [
-        'success' => true,
-        'user' => $formattedData
-    ];
-}
-public function member($id, Request $request){              
-    $data = DB::table("platform_users")->where(["id"=>$id])->first();
-    if(!$data){
-        return redirect()->back();
-    }     
-    
-    // Get tasks with more detailed information
-    $tasks = DB::table("tasks")
-        ->where(["user_id"=>$data->user_id])
-        ->select('id', 'title', 'description', 'status', 'priority', 'due_date', 'created_at', 'updated_at')
-        ->orderBy('updated_at', 'desc')
-        ->where('is_deleted',null)
-        ->get();
-    
-    // Convert to array for JavaScript
-    $tasksArray = $tasks->toArray();
-    
-    return view("dash.user", [
-        'data' => $data,
-        "tasks" => $tasks,
-        "tasksJson" => json_encode($tasksArray) // Pass JSON for JavaScript
-    ]);      
-}
-public function settings(){
-    // $users = DB::table("linked_users")->where(["userid" => auth()->id()])->get();
-    $slack =  DB::table("linked")->where(["userid"=>auth()->id(),"type"=>"slack"])->first();
-    $notifications = DB::table("notification_channel")->where(["userid"=>auth()->id()])->get();
-    $metrics_category = DB::table("metrics_category")->get();
-    return view("dash.settings",compact("slack","notifications","metrics_category"));
-}
-
-public function new_user(Request $request){
-    return view("dash.add");
-}
-
-public function delete_linked(Request $request)
-{
-    $id = $request->input("id");
-
-    // Verify the link exists and belongs to the user
-    $linked = DB::table("linked")
-        ->where(["userid" => auth()->id(), "id" => $id])
-        ->first();
-
-    if (!$linked) {
-        return response()->json(["message" => "Link not found"], 404);
-    }
-
-    // Delete the link
-    DB::table("linked")->where(["userid" => auth()->id(), "id" => $id])->delete();
-
-    // Get another linked entry (if any)
-    $remaining = DB::table("linked")
-        ->where("userid", auth()->id())
-        ->first();
-
-    // Update user's service based on remaining linked entry
-    // $newService = ($remaining && $remaining->type == auth()->user()->service && $remaining->type != "slack")
-    //     ? $remaining->type
-    //     : null;
-
-    if($remaining && $remaining->type != "slack"){
-        DB::table("users")->where("id", auth()->id())->update(["service" => $remaining->type]);
-
-    }
-    Cache::flush();
-    return response()->json(["message" => "Deleted"]);
-}
-
-
-public function update_user(Request $request){
-    $userId = auth()->id();
-    $name = $request->input("name");
-    $email = $request->input("email");
-    $phone = $request->input("phone");
-    $company_name = $request->input("company_name");
-
-    // Check if email exists for another user
-    $emailExists = DB::table("users")
-        ->where("email", $email)
-        ->where("id", "!=", $userId)
-        ->exists();
-
-    if ($emailExists) {
-        return response()->json(["message" => "Email already in use"], 400);
-    }
-
-    // Check if phone exists for another user
-    $phoneExists = DB::table("users")
-        ->where("phone", $phone)
-        ->where("id", "!=", $userId)
-        ->exists();
-
-    if ($phoneExists) {
-        return response()->json(["message" => "Phone number already in use"], 400);
-    }
-
-    DB::table("users")->where("id", $userId)->update([
-        "name" => $name,
-        "email" => $email,
-        "phone" => $phone,
-        "company_name" => $company_name
-    ]);
-
-    return response()->json(["message" => "Updated"]);
-}
-
-public function update_password(){
-    $password = request()->input("password");
-    $confirm_password = request()->input("password_confirmation");
-    if($password != $confirm_password){
-        return response()->json(["message"=>"Password not matched"],422);
-    }
-    DB::table("users")->where(["id" => auth()->id()])->update([
-        "password"=>Hash::make($password)
-    ]);
-    return response()->json(["message"=>"Updated"]);
-
-}
-
-public function delete_invitation(Request $request){
-    $id = $request->input("id");
-    DB::table("linked_users")->where(["userid" => auth()->id(),"id"=>$id])->delete();
-    return response()->json(["message"=>"Deleted"]);
-}
-
-public function save_notification(Request $request){
-    // Handle email notifications
-    if($request->email_notifications != "0"){
-        // Check if the record already exists to avoid duplicates
-        $exists = DB::table("notification_channel")
-            ->where("channel", "email")
-            ->where("userid", Auth::id())
-            ->exists();
-            
-        if(!$exists) {
-            DB::table("notification_channel")->insert([
-                "channel" => "email",
-                "userid" => Auth::id(),
-                "created_at" => now(), 
-            ]);
-        }
-    } else {
-        // Remove email notification preference
-        DB::table("notification_channel")
-            ->where("channel", "email")
-            ->where("userid", Auth::id())
-            ->delete();
-    }
-
-    // Handle slack notifications
-    if($request->slack_notifications != "0"){
-        // Check if the record already exists to avoid duplicates
-        $exists = DB::table("notification_channel")
-            ->where("channel", "slack")
-            ->where("userid", Auth::id())
-            ->exists();
-            
-        if(!$exists) {
-            DB::table("notification_channel")->insert([
-                "channel" => "slack",
-                "userid" => Auth::id(),
-                "created_at" => now(), 
-            ]);
-        }
-    } else {
-        // Remove slack notification preference
-        DB::table("notification_channel")
-            ->where("channel", "slack")
-            ->where("userid", Auth::id())
-            ->delete();
-    }
-    
-    return response()->json([
-        'success' => true,
-        'message' => 'Notification preferences updated successfully'
-    ]);
-}
-
-public function chat_data(Request $request)
-{
-    $userId = Auth::id();
-    $perPage = 10;
-
-    // Get user's chats (most recently updated first)
-    $chats = DB::table('chats')
-        ->where('user_id', $userId)
-        ->where(["uuid" => $request->chat_id])
-        ->orderBy('updated_at', 'desc')
-        ->first();
-
-    // Get messages for selected chat or first chat
-    $chatId = $chats->uuid;
-    
-    if ($chatId) {
-        // Get messages in reverse order (newest first) for pagination
-        $messages = DB::table('chat_messages')
-            ->where('chat_id', $chatId)
-            ->where('user_id', Auth::id())
-            ->orderBy('id', 'desc')
-            ->simplePaginate($perPage);
-        
-        foreach($messages as $m){
-            $temp = DB::table("templates")->where(["chat_id" => $m->chat_id])->get();
-            $m->template = $temp;
-        }
-        
-        $messagesData = $messages->items();
-        
-        // Get pagination info
-        $currentPage = $messages->currentPage();
-        // Remove total() - not available with simplePaginate
-        $hasMore = $messages->hasMorePages();
-    } else {
-        $messagesData = [];
-        $currentPage = 1;
-        $hasMore = false;
-    }
-
-    return response()->json([
-        'messages' => [
-            'data' => $messagesData,
-            'current_page' => $currentPage,
-            // 'total' => $total, // Remove this line
-            'hasMore' => $hasMore
-        ],
-        'hasMore' => $hasMore
-    ]);
-}
-
-public function getSidebarChats(Request $request)
-{
-    try {
-        // Get user's chats without messages
-       $chats = DB::table('chats')
-        ->where('user_id', Auth::id())
-        ->orderBy('updated_at', 'desc')
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'chats' => $chats
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => 'Failed to load chats'
-        ], 500);
-    }
-}
-
-public function getSidebarChatsLast(Request $request){
-      try {
-        // Get user's chats without messages
-       $chats = DB::table('chats')
-        ->where('user_id', Auth::id())
-        ->orderBy('updated_at', 'desc')
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'chats' => $chats
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => 'Failed to load chats'
-        ], 500);
-    }
-}
-
- public function createChat(Request $request)
-{
-    $context = $request->input('context', ''); // Get context from request
-    
-    // Generate title and description using OpenAI if context provided
-    if (!empty($context)) {
-        try {
-            $client = new \OpenAI\Client(env('OPENAI_API_KEY'));
-            
-            $response = $client->chat()->create([
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                [
-    'role' => 'system',
-    'content' => 'You are ReviewBot. Your task is to read the following input text and generate a JSON response with two keys: "title" (max 50 characters) and "description" (max 100 characters). ONLY use the actual content from the input. Do NOT include timestamps, roles, summaries, or anything that is not explicitly in the text. Do NOT invent or assume any context.'
-],
-
-                    [
-                        'role' => 'user',
-                        'content' => $context
-                    ]
-                ],
-                'max_tokens' => 100,
-                'temperature' => 0.7,
+        $response = Http::withToken($accessToken)
+            ->post('https://api.linear.app/graphql', [
+                'query' => $query,
             ]);
 
-            $result = json_decode($response->choices[0]->message->content, true);
-            $title = $result['title'] ?? 'New Chat';
-            $description = $result['description'] ?? '';
-            
-        } catch (\Exception $e) {
-            $title = 'New Chat';
-            $description = '';
-        }
-    } else {
-        $title = 'New Chat';
-        $description = '';
-    }
-
-    $chatId = DB::table('chats')->insertGetId([
-        'user_id' => Auth::id(),
-        'title' => $title,
-        'description' => $description,
-        'created_at' => now(),
-        'updated_at' => now()
-    ]);
-
-    $chat = DB::table('chats')->find($chatId);
-
-    return response()->json([
-        'success' => true,
-        'chat' => $chat
-    ]);
-}
-
- public function createChat2($title)
-{
-    $context = $title; // Get context from request
-    
-    // Generate title and description using OpenAI if context provided
-    if (!empty($context)) {
-        try {
-            $apiKey = env('OPENAI_API_KEY');
-            
-            $data = [
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => 'Youre a conversation context provider, Based on the following context, generate a concise title (max 50 characters) and brief description (max 100 characters). Return as JSON with "title" and "description" keys.'
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $context
-                    ]
-                ],
-                'max_tokens' => 100,
-                'temperature' => 0.7,
+        if ($response->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Linear API request failed.',
+                'status' => $response->status(),
+                'body' => $response->body(),
             ];
+        }
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://api.openai.com/v1/chat/completions');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $apiKey
+        $data = $response->json();
+
+        if (isset($data['errors'])) {
+            return [
+                'success' => false,
+                'message' => 'Linear returned errors.',
+                'errors' => $data['errors']
+            ];
+        }
+
+        return [
+            'success' => true,
+            'user' => $data['data']['user'] ?? null
+        ];
+    }
+
+    public function getFullTrelloUserData($apiKey, $token, $username)
+    {
+        // Trello uses REST API instead of GraphQL, so we'll make multiple requests to get similar data
+        $baseUrl = 'https://api.trello.com/1';
+
+        // Get user details - note the authentication parameters
+        $userResponse = Http::get("{$baseUrl}/members/{$username}", [
+            'key' => $apiKey,
+            'token' => $token,
+            'fields' => 'id,fullName,username,email,avatarUrl,idBoards,url,bio,initials,memberType,confirmed,status,dateCreated'
+        ]);
+        // dd($token);
+
+
+        if ($userResponse->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Trello API user request failed.',
+                'status' => $userResponse->status(),
+                'body' => $userResponse->body(),
+            ];
+        }
+
+        $userData = $userResponse->json();
+
+        // Get boards (teams equivalent)
+        $boardsResponse = Http::get("{$baseUrl}/members/{$username}/boards", [
+            'key' => $apiKey,
+            'token' => $token,
+            'fields' => 'id,name,shortLink,dateLastActivity,url,prefs'
+        ]);
+
+        if ($boardsResponse->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Trello API boards request failed.',
+                'status' => $boardsResponse->status(),
+                'body' => $boardsResponse->body(),
+            ];
+        }
+
+        $boards = $boardsResponse->json();
+
+        // Get cards assigned to the user (issues equivalent)
+        $cardsResponse = Http::get("{$baseUrl}/members/{$username}/cards", [
+            'key' => $apiKey,
+            'token' => $token,
+            'fields' => 'id,name,idBoard,idList,url,due,dateLastActivity,desc,shortUrl',
+            'members' => true,
+            'member_fields' => 'id,fullName,username',
+            'board' => true,
+            'board_fields' => 'id,name',
+            'list' => true,
+            'list_fields' => 'id,name'
+        ]);
+
+        if ($cardsResponse->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Trello API cards request failed.',
+                'status' => $cardsResponse->status(),
+                'body' => $cardsResponse->body(),
+            ];
+        }
+
+        $cards = $cardsResponse->json();
+
+        // Get cards created by the user
+        $createdCardsResponse = Http::get("{$baseUrl}/members/{$username}/actions", [
+            'key' => $apiKey,
+            'token' => $token,
+            'filter' => 'createCard',
+            'fields' => 'id,date,data',
+            'limit' => 100
+        ]);
+
+        if ($createdCardsResponse->failed()) {
+            return [
+                'success' => false,
+                'message' => 'Trello API created cards request failed.',
+                'status' => $createdCardsResponse->status(),
+                'body' => $createdCardsResponse->body(),
+            ];
+        }
+
+        $createdCards = $createdCardsResponse->json();
+
+        // Format response to match the Linear API response structure
+        $formattedData = [
+            'id' => $userData['id'],
+            'name' => $userData['fullName'],
+            'displayName' => $userData['username'],
+            'email' => $userData['email'] ?? null,
+            'avatarUrl' => $userData['avatarUrl'] ?? null,
+            'createdAt' => $userData['dateCreated'] ?? null,
+            'updatedAt' => $userData['dateLastActivity'] ?? null,
+            'active' => $userData['confirmed'] ?? false,
+            'admin' => $userData['memberType'] === 'admin',
+            'archivedAt' => null,
+            'statusEmoji' => null,
+            'description' => $userData['bio'] ?? null,
+            'url' => $userData['url'] ?? null,
+            'timezone' => null,
+            'lastSeen' => null,
+            'isMe' => true,
+
+            // Team memberships (boards in Trello)
+            'teamMemberships' => [
+                'nodes' => array_map(function ($board) {
+                    return [
+                        'id' => $board['id'],
+                        'createdAt' => null, // Trello doesn't provide creation date for boards in this endpoint
+                        'updatedAt' => $board['dateLastActivity'] ?? null,
+                        'team' => [
+                            'id' => $board['id'],
+                            'name' => $board['name'],
+                            'key' => $board['shortLink'] ?? null,
+                            'color' => $board['prefs']['backgroundColor'] ?? null,
+                            'createdAt' => null
+                        ]
+                    ];
+                }, $boards)
+            ],
+
+            // Assigned issues (cards in Trello)
+            'assignedIssues' => [
+                'nodes' => array_map(function ($card) {
+                    return [
+                        'id' => $card['id'],
+                        'title' => $card['name'],
+                        'identifier' => $card['shortUrl'] ?? null,
+                        'state' => [
+                            'id' => $card['idList'],
+                            'name' => $card['list']['name'] ?? 'Unknown',
+                            'type' => null
+                        ],
+                        'priority' => null,
+                        'url' => $card['url'] ?? null,
+                        'dueDate' => $card['due'] ?? null,
+                        'createdAt' => null, // Trello doesn't provide creation date in this endpoint
+                        'updatedAt' => $card['dateLastActivity'] ?? null,
+                        'project' => [
+                            'id' => $card['idBoard'],
+                            'name' => $card['board']['name'] ?? 'Unknown'
+                        ]
+                    ];
+                }, $cards)
+            ],
+
+            // Created issues (cards created by user in Trello)
+            'createdIssues' => [
+                'nodes' => array_map(function ($action) {
+                    return [
+                        'id' => $action['data']['card']['id'] ?? null,
+                        'title' => $action['data']['card']['name'] ?? null,
+                        'identifier' => null,
+                        'state' => [
+                            'name' => null
+                        ],
+                        'createdAt' => $action['date'] ?? null,
+                        'priority' => null
+                    ];
+                }, $createdCards)
+            ]
+        ];
+
+        return [
+            'success' => true,
+            'user' => $formattedData
+        ];
+    }
+    public function member($id, Request $request)
+    {
+        $data = DB::table("platform_users")->where(["id" => $id])->first();
+        if (!$data) {
+            return redirect()->back();
+        }
+
+        // Get tasks with more detailed information
+        $tasks = DB::table("tasks")
+            ->where(["user_id" => $data->user_id])
+            ->select('id', 'title', 'description', 'status', 'priority', 'due_date', 'created_at', 'updated_at')
+            ->orderBy('updated_at', 'desc')
+            ->where('is_deleted', null)
+            ->get();
+
+        // Convert to array for JavaScript
+        $tasksArray = $tasks->toArray();
+
+        return view("dash.user", [
+            'data' => $data,
+            "tasks" => $tasks,
+            "tasksJson" => json_encode($tasksArray) // Pass JSON for JavaScript
+        ]);
+    }
+    public function settings()
+    {
+        // $users = DB::table("linked_users")->where(["userid" => auth()->id()])->get();
+        $slack = DB::table("linked")->where(["userid" => auth()->id(), "type" => "slack"])->first();
+        $notifications = DB::table("notification_channel")->where(["userid" => auth()->id()])->get();
+        $metrics_category = DB::table("metrics_category")->get();
+        return view("dash.settings", compact("slack", "notifications", "metrics_category"));
+    }
+
+    public function new_user(Request $request)
+    {
+        return view("dash.add");
+    }
+
+    public function delete_linked(Request $request)
+    {
+        $id = $request->input("id");
+
+        // Verify the link exists and belongs to the user
+        $linked = DB::table("linked")
+            ->where(["userid" => auth()->id(), "id" => $id])
+            ->first();
+
+        if (!$linked) {
+            return response()->json(["message" => "Link not found"], 404);
+        }
+
+        // Delete the link
+        DB::table("linked")->where(["userid" => auth()->id(), "id" => $id])->delete();
+
+        // Get another linked entry (if any)
+        $remaining = DB::table("linked")
+            ->where("userid", auth()->id())
+            ->first();
+
+        // Update user's service based on remaining linked entry
+        // $newService = ($remaining && $remaining->type == auth()->user()->service && $remaining->type != "slack")
+        //     ? $remaining->type
+        //     : null;
+
+        if ($remaining && $remaining->type != "slack") {
+            DB::table("users")->where("id", auth()->id())->update(["service" => $remaining->type]);
+
+        }
+        Cache::flush();
+        return response()->json(["message" => "Deleted"]);
+    }
+
+
+    public function update_user(Request $request)
+    {
+        $userId = auth()->id();
+        $name = $request->input("name");
+        $email = $request->input("email");
+        $phone = $request->input("phone");
+        $company_name = $request->input("company_name");
+
+        // Check if email exists for another user
+        $emailExists = DB::table("users")
+            ->where("email", $email)
+            ->where("id", "!=", $userId)
+            ->exists();
+
+        if ($emailExists) {
+            return response()->json(["message" => "Email already in use"], 400);
+        }
+
+        // Check if phone exists for another user
+        $phoneExists = DB::table("users")
+            ->where("phone", $phone)
+            ->where("id", "!=", $userId)
+            ->exists();
+
+        if ($phoneExists) {
+            return response()->json(["message" => "Phone number already in use"], 400);
+        }
+
+        DB::table("users")->where("id", $userId)->update([
+            "name" => $name,
+            "email" => $email,
+            "phone" => $phone,
+            "company_name" => $company_name
+        ]);
+
+        return response()->json(["message" => "Updated"]);
+    }
+
+    public function update_password()
+    {
+        $password = request()->input("password");
+        $confirm_password = request()->input("password_confirmation");
+        if ($password != $confirm_password) {
+            return response()->json(["message" => "Password not matched"], 422);
+        }
+        DB::table("users")->where(["id" => auth()->id()])->update([
+            "password" => Hash::make($password)
+        ]);
+        return response()->json(["message" => "Updated"]);
+
+    }
+
+    public function delete_invitation(Request $request)
+    {
+        $id = $request->input("id");
+        DB::table("linked_users")->where(["userid" => auth()->id(), "id" => $id])->delete();
+        return response()->json(["message" => "Deleted"]);
+    }
+
+    public function save_notification(Request $request)
+    {
+        // Handle email notifications
+        if ($request->email_notifications != "0") {
+            // Check if the record already exists to avoid duplicates
+            $exists = DB::table("notification_channel")
+                ->where("channel", "email")
+                ->where("userid", Auth::id())
+                ->exists();
+
+            if (!$exists) {
+                DB::table("notification_channel")->insert([
+                    "channel" => "email",
+                    "userid" => Auth::id(),
+                    "created_at" => now(),
+                ]);
+            }
+        } else {
+            // Remove email notification preference
+            DB::table("notification_channel")
+                ->where("channel", "email")
+                ->where("userid", Auth::id())
+                ->delete();
+        }
+
+        // Handle slack notifications
+        if ($request->slack_notifications != "0") {
+            // Check if the record already exists to avoid duplicates
+            $exists = DB::table("notification_channel")
+                ->where("channel", "slack")
+                ->where("userid", Auth::id())
+                ->exists();
+
+            if (!$exists) {
+                DB::table("notification_channel")->insert([
+                    "channel" => "slack",
+                    "userid" => Auth::id(),
+                    "created_at" => now(),
+                ]);
+            }
+        } else {
+            // Remove slack notification preference
+            DB::table("notification_channel")
+                ->where("channel", "slack")
+                ->where("userid", Auth::id())
+                ->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification preferences updated successfully'
+        ]);
+    }
+
+    public function chat_data(Request $request)
+    {
+        $userId = Auth::id();
+        $perPage = 10;
+
+        // Get user's chats (most recently updated first)
+        $chats = DB::table('chats')
+            ->where('user_id', $userId)
+            ->where(["uuid" => $request->chat_id])
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        // Get messages for selected chat or first chat
+        $chatId = $chats->uuid;
+
+        if ($chatId) {
+            // Get messages in reverse order (newest first) for pagination
+            $messages = DB::table('chat_messages')
+                ->where('chat_id', $chatId)
+                ->where('user_id', Auth::id())
+                ->orderBy('id', 'desc')
+                ->simplePaginate($perPage);
+
+            foreach ($messages as $m) {
+                $temp = DB::table("templates")->where(["chat_id" => $m->chat_id])->get();
+                $m->template = $temp;
+            }
+
+            $messagesData = $messages->items();
+
+            // Get pagination info
+            $currentPage = $messages->currentPage();
+            // Remove total() - not available with simplePaginate
+            $hasMore = $messages->hasMorePages();
+        } else {
+            $messagesData = [];
+            $currentPage = 1;
+            $hasMore = false;
+        }
+
+        return response()->json([
+            'messages' => [
+                'data' => $messagesData,
+                'current_page' => $currentPage,
+                // 'total' => $total, // Remove this line
+                'hasMore' => $hasMore
+            ],
+            'hasMore' => $hasMore
+        ]);
+    }
+
+    public function getSidebarChats(Request $request)
+    {
+        try {
+            // Get user's chats without messages
+            $chats = DB::table('chats')
+                ->where('user_id', Auth::id())
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'chats' => $chats
             ]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to load chats'
+            ], 500);
+        }
+    }
 
-            if ($httpCode === 200 && $response) {
-                $responseData = json_decode($response, true);
-                $result = json_decode($responseData['choices'][0]['message']['content'], true);
+    public function getSidebarChatsLast(Request $request)
+    {
+        try {
+            // Get user's chats without messages
+            $chats = DB::table('chats')
+                ->where('user_id', Auth::id())
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'chats' => $chats
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to load chats'
+            ], 500);
+        }
+    }
+
+    public function createChat(Request $request)
+    {
+        $context = $request->input('context', ''); // Get context from request
+
+        // Generate title and description using OpenAI if context provided
+        if (!empty($context)) {
+            try {
+                $client = new \OpenAI\Client(env('OPENAI_API_KEY'));
+
+                $response = $client->chat()->create([
+                    'model' => 'gpt-3.5-turbo',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are ReviewBot. Your task is to read the following input text and generate a JSON response with two keys: "title" (max 50 characters) and "description" (max 100 characters). ONLY use the actual content from the input. Do NOT include timestamps, roles, summaries, or anything that is not explicitly in the text. Do NOT invent or assume any context.'
+                        ],
+
+                        [
+                            'role' => 'user',
+                            'content' => $context
+                        ]
+                    ],
+                    'max_tokens' => 100,
+                    'temperature' => 0.7,
+                ]);
+
+                $result = json_decode($response->choices[0]->message->content, true);
                 $title = $result['title'] ?? 'New Chat';
                 $description = $result['description'] ?? '';
-            } else {
+
+            } catch (\Exception $e) {
                 $title = 'New Chat';
                 $description = '';
             }
-            
-        } catch (\Exception $e) {
+        } else {
             $title = 'New Chat';
             $description = '';
         }
-    } else {
-        $title = 'New Chat';
-        $description = '';
+
+        $chatId = DB::table('chats')->insertGetId([
+            'user_id' => Auth::id(),
+            'title' => $title,
+            'description' => $description,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $chat = DB::table('chats')->find($chatId);
+
+        return response()->json([
+            'success' => true,
+            'chat' => $chat
+        ]);
     }
 
-    $chatId = DB::table('chats')->insertGetId([
-        'user_id' => Auth::id(),
-        'title' => $title,
-        'description' => $description,
-        'created_at' => now(),
-        'updated_at' => now()
-    ]);
+    public function createChat2($title)
+    {
+        $context = $title; // Get context from request
 
-    $chat = DB::table('chats')->find($chatId);
+        // Generate title and description using OpenAI if context provided
+        if (!empty($context)) {
+            try {
+                $apiKey = env('OPENAI_API_KEY');
 
-     return $chatId;
-}
-
-// Add this method to re-update after 5 messages
-public function checkAndUpdateChatTitle($chatId)
-{
-    $messageCount = DB::table('chat_messages')->where('chat_id', $chatId)->count();
-    
-    if ($messageCount == 5) {
-        // Get first 5 messages for context
-        $messages = DB::table('chat_messages')
-            ->where('chat_id', $chatId)
-            ->orderBy('created_at', 'asc')
-            ->limit(5)
-            ->get();
-
-        $context = '';
-        foreach ($messages as $message) {
-            $role = $message->is_user ? 'User' : 'Assistant';
-            $context .= "{$role}: {$message->content}\n";
-        }
-
-        try {
-            $client = new \OpenAI\Client(env('OPENAI_API_KEY'));
-            
-            $response = $client->chat()->create([
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => 'Based on this conversation, generate a better title (max 50 characters) and description (max 100 characters). Return as JSON with "title" and "description" keys.'
+                $data = [
+                    'model' => 'gpt-3.5-turbo',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'Youre a conversation context provider, Based on the following context, generate a concise title (max 50 characters) and brief description (max 100 characters). Return as JSON with "title" and "description" keys.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $context
+                        ]
                     ],
-                    [
-                        'role' => 'user',
-                        'content' => $context
-                    ]
-                ],
-                'max_tokens' => 100,
-                'temperature' => 0.7,
-            ]);
+                    'max_tokens' => 100,
+                    'temperature' => 0.7,
+                ];
 
-            $result = json_decode($response->choices[0]->message->content, true);
-            
-            DB::table('chats')->where('uuid', $chatId)->update([
-                'title' => $result['title'] ?? 'New Chat',
-                'description' => $result['description'] ?? '',
-                'updated_at' => now()
-            ]);
-            
-        } catch (\Exception $e) {
-            // Silent fail, keep existing title
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://api.openai.com/v1/chat/completions');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $apiKey
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($httpCode === 200 && $response) {
+                    $responseData = json_decode($response, true);
+                    $result = json_decode($responseData['choices'][0]['message']['content'], true);
+                    $title = $result['title'] ?? 'New Chat';
+                    $description = $result['description'] ?? '';
+                } else {
+                    $title = 'New Chat';
+                    $description = '';
+                }
+
+            } catch (\Exception $e) {
+                $title = 'New Chat';
+                $description = '';
+            }
+        } else {
+            $title = 'New Chat';
+            $description = '';
+        }
+
+        $chatId = DB::table('chats')->insertGetId([
+            'user_id' => Auth::id(),
+            'title' => $title,
+            'description' => $description,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $chat = DB::table('chats')->find($chatId);
+
+        return $chatId;
+    }
+
+    // Add this method to re-update after 5 messages
+    public function checkAndUpdateChatTitle($chatId)
+    {
+        $messageCount = DB::table('chat_messages')->where('chat_id', $chatId)->count();
+
+        if ($messageCount == 5) {
+            // Get first 5 messages for context
+            $messages = DB::table('chat_messages')
+                ->where('chat_id', $chatId)
+                ->orderBy('created_at', 'asc')
+                ->limit(5)
+                ->get();
+
+            $context = '';
+            foreach ($messages as $message) {
+                $role = $message->is_user ? 'User' : 'Assistant';
+                $context .= "{$role}: {$message->content}\n";
+            }
+
+            try {
+                $client = new \OpenAI\Client(env('OPENAI_API_KEY'));
+
+                $response = $client->chat()->create([
+                    'model' => 'gpt-3.5-turbo',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'Based on this conversation, generate a better title (max 50 characters) and description (max 100 characters). Return as JSON with "title" and "description" keys.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $context
+                        ]
+                    ],
+                    'max_tokens' => 100,
+                    'temperature' => 0.7,
+                ]);
+
+                $result = json_decode($response->choices[0]->message->content, true);
+
+                DB::table('chats')->where('uuid', $chatId)->update([
+                    'title' => $result['title'] ?? 'New Chat',
+                    'description' => $result['description'] ?? '',
+                    'updated_at' => now()
+                ]);
+
+            } catch (\Exception $e) {
+                // Silent fail, keep existing title
+            }
         }
     }
-}
     public function loadMoreMessages(Request $request)
     {
         $request->validate([
@@ -2220,8 +2248,8 @@ public function checkAndUpdateChatTitle($chatId)
             ->orderBy('id', 'desc')
             ->paginate($perPage, ['*'], 'page', $request->page);
 
-                foreach($messages as $m){
-            $temp = DB::table("templates")->where(["unique_id_with_template"=>$m->unique_id_with_template])->get();
+        foreach ($messages as $m) {
+            $temp = DB::table("templates")->where(["unique_id_with_template" => $m->unique_id_with_template])->get();
             $m->template = $temp;
         }
         return response()->json([
@@ -2236,179 +2264,221 @@ public function checkAndUpdateChatTitle($chatId)
     }
 
     public function deleteChat(Request $request)
-{
-    try {
-        $request->validate([
-            'chat_id' => 'required|string|exists:chats,uuid'
-        ]);
-
-        $userId = Auth::id();
-        $chatId = $request->input('chat_id');
-
-        // Verify the chat belongs to the authenticated user
-        $chat = DB::table('chats')
-            ->where('uuid', $chatId)
-            ->where('user_id', $userId)
-            ->first();
-
-        if (!$chat) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Chat not found or you do not have permission to delete this chat.'
-            ], 404);
-        }
-
-        // Start a database transaction
-        DB::beginTransaction();
-
+    {
         try {
-            // Delete all messages associated with this chat
-            DB::table('chat_messages')
-                ->where('chat_id', $chatId)
-                ->delete();
+            $request->validate([
+                'chat_id' => 'required|string|exists:chats,uuid'
+            ]);
 
-            // Delete the chat itself
-            DB::table('chats')
+            $userId = Auth::id();
+            $chatId = $request->input('chat_id');
+
+            // Verify the chat belongs to the authenticated user
+            $chat = DB::table('chats')
                 ->where('uuid', $chatId)
                 ->where('user_id', $userId)
-                ->delete();
+                ->first();
 
-            // Commit the transaction
-            DB::commit();
+            if (!$chat) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Chat not found or you do not have permission to delete this chat.'
+                ], 404);
+            }
+
+            // Start a database transaction
+            DB::beginTransaction();
+
+            try {
+                // Delete all messages associated with this chat
+                DB::table('chat_messages')
+                    ->where('chat_id', $chatId)
+                    ->delete();
+
+                // Delete the chat itself
+                DB::table('chats')
+                    ->where('uuid', $chatId)
+                    ->where('user_id', $userId)
+                    ->delete();
+
+                // Commit the transaction
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Chat deleted successfully.'
+                ]);
+
+            } catch (\Exception $e) {
+                // Rollback the transaction on error
+                DB::rollback();
+                throw $e;
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Invalid input data.',
+                'details' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting chat: ' . $e->getMessage(), [
+                'chat_id' => $request->input('chat_id'),
+                'user_id' => Auth::id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while deleting the chat. Please try again.' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function reaction(Request $request)
+    {
+
+        $userId = Auth::id();
+        $chatId = $request->input('id');
+        $reaction = $request->input('type');
+
+
+        // Insert or update the reaction
+        DB::table('chat_messages')->where(["id" => $chatId])->update(
+            ['reaction' => $reaction]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reaction added successfully.'
+        ]);
+    }
+
+    public function save_config_metrics(Request $request)
+    {
+
+        if ($request->update) {
+
+            $json = json_decode($request->input("metrics"), true);
+            foreach ($json as $j) {
+                if (str_contains($j['id'], 'custom')) {
+                    $number = filter_var($j['id'], FILTER_SANITIZE_NUMBER_INT);
+                    $number = str_replace("-", "", $number);
+                    DB::table("user_metrics")->where([
+                        "userid" => Auth::id(),
+                        "id" => (int) $number,
+                    ])->update([
+                                "weight" => $j['weight'],
+                                "percentage" => $j['percentage']
+                            ]);
+                        $yes = "yes";
+                } else {
+                    $number = $j['id'];
+                    if (
+                        DB::table("user_metrics")->where([
+                            "userid" => Auth::id(),
+                            "metric_id" => $number,
+                        ])->exists()
+                    ) {
+                        DB::table("user_metrics")->where([
+                            "userid" => Auth::id(),
+                            "metric_id" => $number,
+                        ])->update([
+                                    "weight" => $j['weight'],
+                                    "percentage" => $j['percentage']
+                                ]);
+                    } else {
+                        $data = DB::table("metrics_type")->where("id", $j['id'])->first();
+
+                        DB::table("user_metrics")->insert([
+                            "title" => $data->title,
+                            "description" => $data->description,
+                            "category" => $data->category,
+                            "metric_id" => $j['id'],
+                               "weight" => $j['weight'],
+                                    "percentage" => $j['percentage'],
+                            'userid' => Auth::id(),
+                        ]);
+                    }
+                      $yes = $number;
+
+                }
+
+                // var_dump($yes);
+
+            }
+
 
             return response()->json([
                 'success' => true,
-                'message' => 'Chat deleted successfully.'
+                'message' => 'Metrics configuration saved successfully.'
             ]);
-
-        } catch (\Exception $e) {
-            // Rollback the transaction on error
-            DB::rollback();
-            throw $e;
         }
+        $data = DB::table("metrics_type")->where("id", $request->input("metric_id"))->first();
+        $checkuser = DB::table("user_metrics")->where([
+            "userid" => Auth::id(),
+            "metric_id" => $request->metric_id
+        ])->first();
 
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return response()->json([
-            'success' => false,
-            'error' => 'Invalid input data.',
-            'details' => $e->errors()
-        ], 422);
-        
-    } catch (\Exception $e) {
-        \Log::error('Error deleting chat: ' . $e->getMessage(), [
-            'chat_id' => $request->input('chat_id'),
-            'user_id' => Auth::id(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'error' => 'An error occurred while deleting the chat. Please try again.'.$e->getMessage()
-        ], 500);
-    }
-}
-
-public function reaction(Request $request)
-{
-   
-    $userId = Auth::id();
-    $chatId = $request->input('id'); 
-    $reaction = $request->input('type');
-
-    
-    // Insert or update the reaction
-    DB::table('chat_messages')->where(["id"=>$chatId])->update(
-        ['reaction'=>$reaction]
-    );
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Reaction added successfully.'
-    ]);
-}
-
-public function save_config_metrics(Request $request){
-
-    if($request->update){
-        $json = json_decode($request->input("metrics"),true);
-        foreach($json as $j){
-  DB::table("user_metrics")->where([
-            "userid"=>Auth::id(),
-            "metric_id"=>$j['id']
-        ])->update([
-            "weight"=>$j['weight'],
-            "percentage"=>$j['percentage']
-        ]);
-        }
-      
-
-         return response()->json([
-        'success' => true,
-        'message' => 'Metrics configuration saved successfully.'
-    ]);
-    }
-    $data = DB::table("metrics_type")->where("id",$request->input("metric_id"))->first();
-    $checkuser = DB::table("user_metrics")->where([
-        "userid"=>Auth::id(),
-        "metric_id"=>$request->metric_id
-    ])->first();
-
-    if($checkuser){
+        if ($checkuser) {
             DB::table("user_metrics")->where([
-        "userid"=>Auth::id(),
-        "metric_id"=>$request->metric_id
-    ])->delete();
-       return response()->json([
-        'success' => true,
-        'message' => 'Metrics configuration saved successfully.'
-    ]);
+                "userid" => Auth::id(),
+                "metric_id" => $request->metric_id
+            ])->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Metrics configuration saved successfully.'
+            ]);
+        }
+
+        if ($request->selected) {
+            DB::table("user_metrics")->insert([
+                "title" => $data->title,
+                "description" => $data->description,
+                "category" => $data->category,
+                "metric_id" => $request->metric_id,
+                'userid' => Auth::id(),
+            ]);
+        } else {
+            DB::table("user_metrics")->where([
+                "userid" => Auth::id(),
+                "metric_id" => $request->metric_id
+            ])->delete();
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Metrics configuration saved successfully.'
+        ]);
     }
 
-  if($request->selected){
-      DB::table("user_metrics")->insert([
-        "title"=>$data->title,
-        "description"=>$data->description  , 
-        "category"=>$data->category,
-            "metric_id"=>$request->metric_id,
-        'userid'=>Auth::id(), 
-    ]);
-  }else{
-    DB::table("user_metrics")->where([
-        "userid"=>Auth::id(),
-        "metric_id"=>$request->metric_id
-    ])->delete();
-  }
-    return response()->json([
-        'success' => true,
-        'message' => 'Metrics configuration saved successfully.'
-    ]);
-  }
+    public function delete_account(Request $request)
+    {
+        DB::table("users")->where(["id" => Auth::id()])->delete();
+        return response()->json(["message" => "Account Deleted!"]);
+    }
 
-  public function delete_account(Request $request){
-    DB::table("users")->where(["id"=>Auth::id()])->delete();
-    return response()->json(["message"=>"Account Deleted!"]);
-  }
+    public function loadusers()
+    {
+        $data = DB::table("platform_users")
+            ->join("linked", "linked.id", "platform_users.platform_id")
+            ->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
+            ->select("platform_users.*", "linked.type", 'linked_users.status as linked_status')
+            ->where(["platform_users.owner_id" => Auth::id()])->get();
+        return response()->json(["users" => $data]);
+    }
 
-  public function loadusers(){
-    $data = DB::table("platform_users")
-    ->join("linked","linked.id","platform_users.platform_id")
-->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
-    ->select("platform_users.*","linked.type",'linked_users.status as linked_status')
-    ->where(["platform_users.owner_id"=>Auth::id()])->get();
-    return response()->json(["users"=>$data]);
-  }
-
-   public function getTaskPerformance(Request $request)
+    public function getTaskPerformance(Request $request)
     {
 
-       
+
 
         $days = $request->input('days', 7);
         $userId = $request->input('user_id');
-        
+
         try {
             $data = $this->getOptimizedTaskData($userId, $days);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $data
@@ -2421,96 +2491,185 @@ public function save_config_metrics(Request $request){
         }
     }
 
-  private function getOptimizedTaskData($userId, $days)
-{
-    if ($days == null) {
-        // Get first created_at date for user
-        $firstTaskDate = DB::table('tasks')
-            ->where('user_id', $userId)
-            ->whereNull('is_deleted')
-            ->orderBy('created_at', 'asc')
-            ->value('created_at');
+    private function getOptimizedTaskData($userId, $days)
+    {
+        if ($days == null) {
+            // Get first created_at date for user
+            $firstTaskDate = DB::table('tasks')
+                ->where('user_id', $userId)
+                ->whereNull('is_deleted')
+                ->orderBy('created_at', 'asc')
+                ->value('created_at');
 
-        if (!$firstTaskDate) {
-            // No tasks found
-            return [
-                'labels' => [],
-                'assigned' => [],
-                'completed' => []
-            ];
+            if (!$firstTaskDate) {
+                // No tasks found
+                return [
+                    'labels' => [],
+                    'assigned' => [],
+                    'completed' => []
+                ];
+            }
+
+            $startDate = Carbon::parse($firstTaskDate)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            $days = $startDate->diffInDays($endDate) + 1;
+        } else {
+            $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
         }
 
-        $startDate = Carbon::parse($firstTaskDate)->startOfDay();
-        $endDate = Carbon::now()->endOfDay();
-        $days = $startDate->diffInDays($endDate) + 1;
-    } else {
-        $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
-        $endDate = Carbon::now()->endOfDay();
+        $taskStats = DB::table('tasks')
+            ->select([
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as total_assigned'),
+                DB::raw('SUM(CASE WHEN status IN ("Done") THEN 1 ELSE 0 END) as total_completed')
+            ])
+            ->where('user_id', $userId)
+            ->whereNull('is_deleted')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy('date', 'asc')
+            ->get();
+
+        // Generate date range and fill missing dates with zeros
+        $dateRange = collect();
+        for ($i = 0; $i < $days; $i++) {
+            $dateRange->push(Carbon::parse($startDate)->addDays($i)->format('Y-m-d'));
+        }
+
+        $labels = [];
+        $assignedData = [];
+        $completedData = [];
+
+        foreach ($dateRange as $date) {
+            $dayStats = $taskStats->firstWhere('date', $date);
+
+            $labels[] = Carbon::parse($date)->format('M j');
+            $assignedData[] = $dayStats ? (int) $dayStats->total_assigned : 0;
+            $completedData[] = $dayStats ? (int) $dayStats->total_completed : 0;
+        }
+
+        return [
+            'labels' => $labels,
+            'assigned' => $assignedData,
+            'completed' => $completedData
+        ];
     }
 
-    $taskStats = DB::table('tasks')
-        ->select([
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as total_assigned'),
-            DB::raw('SUM(CASE WHEN status IN ("Done") THEN 1 ELSE 0 END) as total_completed')
-        ])
-        ->where('user_id', $userId)
-        ->whereNull('is_deleted')
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy(DB::raw('DATE(created_at)'))
-        ->orderBy('date', 'asc')
-        ->get();
+    public function loadusertasks(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $page = $request->input('page', 1);
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
 
-    // Generate date range and fill missing dates with zeros
-    $dateRange = collect();
-    for ($i = 0; $i < $days; $i++) {
-        $dateRange->push(Carbon::parse($startDate)->addDays($i)->format('Y-m-d'));
+        $tasks = DB::table('tasks')
+            ->where('user_id', $userId)
+            ->where('is_deleted', null)
+            ->orderBy('created_at', 'desc')
+            ->offset($offset)
+            ->limit($perPage + 1) // Get one extra to check if there are more
+            ->get(['id', 'title', 'description', 'status', 'due_date', 'created_at', 'user_id']);
+
+        $hasMore = $tasks->count() > $perPage;
+        if ($hasMore) {
+            $tasks = $tasks->take($perPage);
+        }
+
+        return response()->json([
+            'success' => true,
+            'tasks' => $tasks,
+            'has_more' => $hasMore,
+            'current_page' => $page
+        ]);
     }
 
-    $labels = [];
-    $assignedData = [];
-    $completedData = [];
+    public function saveCustomMetric(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1000'
+            ]);
 
-    foreach ($dateRange as $date) {
-        $dayStats = $taskStats->firstWhere('date', $date);
+            // Check if custom metric with same name already exists for this user
+            $existingMetric = DB::table('user_metrics')
+                ->where('userid', auth()->user()->id)
+                ->whereNull('metric_id')
+                ->where('custom_name', $request->name)
+                ->first();
 
-        $labels[] = Carbon::parse($date)->format('M j');
-        $assignedData[] = $dayStats ? (int)$dayStats->total_assigned : 0;
-        $completedData[] = $dayStats ? (int)$dayStats->total_completed : 0;
+            if ($existingMetric) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'A custom metric with this name already exists.'
+                ], 422);
+            }
+
+            // Insert custom metric
+            DB::table('user_metrics')->insert([
+                'userid' => auth()->user()->id,
+                'metric_id' => null, // null indicates custom metric
+                'custom_name' => $request->name,
+                'custom_description' => $request->description,
+                'weight' => 1,
+                'percentage' => 0, // Will be calculated later
+                'created_at' => now(),
+
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Custom metric added successfully!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adding custom metric: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
-    return [
-        'labels' => $labels,
-        'assigned' => $assignedData,
-        'completed' => $completedData
-    ];
-}
+    /**
+     * Delete a custom metric
+     */
+    public function deleteCustomMetric($id)
+    {
+        try {
+            // Verify the custom metric belongs to the current user and is actually custom (metric_id is null)
+            $customMetric = DB::table('user_metrics')
+                ->where('id', $id)
+                ->where('userid', auth()->user()->id)
+                ->whereNull('metric_id')
+                ->first();
 
-public function loadusertasks(Request $request) {
-    $userId = $request->input('user_id');
-    $page = $request->input('page', 1);
-    $perPage = 10;
-    $offset = ($page - 1) * $perPage;
-    
-    $tasks = DB::table('tasks')
-        ->where('user_id', $userId)
-        ->where('is_deleted', null)
-        ->orderBy('created_at', 'desc')
-        ->offset($offset)
-        ->limit($perPage + 1) // Get one extra to check if there are more
-        ->get(['id', 'title', 'description', 'status', 'due_date', 'created_at','user_id']);
-    
-    $hasMore = $tasks->count() > $perPage;
-    if ($hasMore) {
-        $tasks = $tasks->take($perPage);
+            if (!$customMetric) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Custom metric not found or you do not have permission to delete it.'
+                ], 404);
+            }
+
+            // Delete the custom metric
+            DB::table('user_metrics')
+                ->where('id', $id)
+                ->where('userid', auth()->user()->id)
+                ->whereNull('metric_id')
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Custom metric deleted successfully!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting custom metric: ' . $e->getMessage()
+            ], 500);
+        }
     }
-    
-    return response()->json([
-        'success' => true,
-        'tasks' => $tasks,
-        'has_more' => $hasMore,
-        'current_page' => $page
-    ]);
-}
+
 
 }

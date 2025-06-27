@@ -41,7 +41,7 @@ def ensure_sqlalchemy_connection():
         # Recreate the SQLAlchemy database connection
         db = SQLDatabase.from_uri(
             "mysql+pymysql://root:50465550@127.0.0.1:3306/db?pool_pre_ping=True&pool_recycle=3600",
-            include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics"]
+            include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics","status_trello"]
         )
 
 def ensure_connection():
@@ -181,6 +181,7 @@ CONVERSATION queries:
 - General questions about the assistant: what can you do, who are you
 
 DATA queries:
+- sometimes the user query might look tricky, try to understand if the user what data and use "sql" thats more important
 - if user ask for anything related to team , or duration, or task, or project, or platform_users, or linked, use sql
 - if the query is about a user or the user talking about a particular user use sql
 - most of your query should be from tasks 
@@ -204,6 +205,7 @@ PULL MOST FROM tasks  TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPON
 
 
 CONTEXT AWARENESS:
+- note you have trello and linear as source, so make sure you know what you're doing
 - always left join anything related to project_id or project
 - never search a table that is not in the schema, i mean never and ever try to do this
 - provide clean sql , and working , with zero chance of error
@@ -260,6 +262,7 @@ When analyzing data, incorporate these user-defined metrics by:
 - Referencing these metrics in your analysis and recommendations
 
 ## IMPORTANT
+- note you have trello and linear as source, so make sure you know what you're doing
  - mostly mix template with anything data related so make it informative
  - always provide templates for tasks related stuff or project related
  - avoid giving duplicate template id base on chat history, if it look duplicate, change the id to random long uuid

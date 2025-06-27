@@ -110,6 +110,8 @@ Route::get('/{any}', [Dash::class, 'dash'])
  Route::post('/bulk_send_invites', [LinearCustomerController::class, 'bulk_send_invites'])->name('user.bulk_send_invites');
  Route::post('/bulk_block_users', [LinearCustomerController::class, 'bulk_block_users'])->name('user.bulk_block_users');
 
+  Route::post('/metrics/save-custom', [Dash::class, 'saveCustomMetric'])->name('metrics.save-custom');
+ Route::delete('/metrics/delete-custom/{id}', [Dash::class, 'deleteCustomMetric'])->name('metrics.delete-custom');
 
 
  // Route for getting calendar data
@@ -156,6 +158,13 @@ Route::prefix('/trello')->group(function(){
     Route::get('/auth',[AuthData::class,'redirectToTrello']); 
 
     Route::get('/callback',[AuthData::class,'handleTrelloCallback']); 
+});
+
+
+Route::prefix('/jira')->group(function(){
+    Route::get('/auth',[AuthData::class,'redirectToJira']); 
+
+    Route::get('/callback',[AuthData::class,'handleJiraCallback']); 
 });
 
 Route::prefix('/slack')->group(function(){

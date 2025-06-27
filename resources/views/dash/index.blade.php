@@ -140,6 +140,38 @@
             }
         }
     </style>
+
+  
+
+<!-- Modal Overlay -->
+<div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" style="z-index:999999999">
+  <!-- Modal Content -->
+  <div class="relative top-20 mx-auto p-[50px] border w-[50%] shadow-lg rounded-[30px] bg-white flex flex-col gap-5">
+  
+    
+    <!-- Modal Body -->
+    <div class="mb-4 w-full items-center justify-center flex flex-col">
+        <img src="/start_img.svg" width="460px"/>
+
+        <h3 class="font-bold text-5xl mt-3">Welcome to Reviewbod</h3>
+
+        <p class="w-[70%] text-center self-center text-1xl text-[#888888] mt-5">To get started, please set up your performance metrics for grading your team. Choose KPIs from your connected apps, to tailor evaluations to your projects.</p>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-center mt-5 space-x-2">
+        <button onclick="location.href='/dashboard/settings?type=metric'" class="bg-[#1E3A8A] w-[250px] hover:bg-blue-700 text-white   py-3 text-2xl font-light px-4 rounded-lg">
+        Proceed 
+      </button>
+      <button id="cancelBtn" class="bg-[#E4E4E4]  w-[250px] text-[#1E3A8A] hover:bg-gray-400 text-gray-800   text-2xl font-light py-2 px-4 rounded-lg">
+        Later
+      </button>
+  
+    </div>
+  </div>
+</div>
+
+
     <div class="flex h-screen overflow-hidden">
         <div style="max-width:25%;min-width:25%" class="flex flex-col w-[25%]   h-full bg-[#E8EAEE] flex-shrink-0">
             <div class="px-2 w-full mt-4">
@@ -1005,7 +1037,7 @@ function renderTable(res, containerId) {
 
     // Updated main function
     // Replace the existing gettemplate function with this updated version
-function gettemplate(temp) {
+function gettemplate(temp,regenerate = false) {
     const pathParts = window.location.pathname.split('/');
     const chatIdFromPath = pathParts[pathParts.length - 1];
     
@@ -1021,7 +1053,7 @@ function gettemplate(temp) {
     }
     
     $.post('{{ route('user.get_template') }}', {
-        'des': temp.description,
+        'des': regenerate ? `The template generatoin failed , regenerate another template using this description - ${temp.description}` : temp.description,
         'id': temp.id,
         'sql': temp.sql,
         'chat_id': chatIdFromPath,
@@ -1080,7 +1112,7 @@ function showTemplateError(containerId, templateData, errorMessage) {
 // Add this new function to handle template regeneration
 function regenerateTemplate(containerId, templateData) {
     console.log('Regenerating template:', templateData);
-    gettemplate(templateData);
+    gettemplate(templateData,true);
 }
 
     // Utility function to manually trigger chart rendering (useful for debugging)
@@ -1498,8 +1530,18 @@ isStreaming = false;
         chatContainer.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full px-8 py-16" id="placeholder">
             <div class="relative mb-8">
-                <div class="w-20 h-20 rounded-full flex items-center justify-center">
-                   <img src="/images/{{ Auth::user()->service }}.webp" />
+                <div class="w-20 h-20 rounded-full flex items-center justify-center gap-2">
+                    @foreach(  DB::table("linked")->where([
+        "userid" => Auth::id(),
+      
+    ])->get() as $d)
+                 @if($d->type == 'jira')
+                   <img src="/{{ $d->type }}.svg"  width="50"/>
+                   @else
+                     <img src="/images/{{ $d->type }}.webp"  width="50"/>
+                     @endif
+
+                   @endforeach
                 </div> 
             </div>
             
@@ -2211,6 +2253,47 @@ function reaction(id,type){
     });
 }
 
+
+@if(!DB::table("user_metrics")->where(["userid"=>Auth::id()])->exists())
+ // Get modal elements
+const modal = document.getElementById('modal');
+const openModalBtn = document.getElementById('openModal');
+const closeModalBtn = document.getElementById('closeModal');
+const cancelBtn = document.getElementById('cancelBtn');
+const confirmBtn = document.getElementById('confirmBtn');
+
+// Open modal
+function openmodal() {
+    $("#modal").removeClass("hidden");
+}
+
+// Close modal and store flag
+function closeModalAndRemember() {
+    localStorage.setItem('modalClosed', 'true');
+    closeModal();
+}
+
+// Just close modal (no memory)
+function closeModal() {
+    $("#modal").addClass("hidden");
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const isClosed = localStorage.getItem('modalClosed');
+    
+    if (!isClosed) {
+        openmodal();
+    }
+
+    $("#closeModal").click(function () {
+        closeModalAndRemember();
+    });
+
+    $("#cancelBtn").click(function () {
+        closeModalAndRemember();
+    });
+});
+ @endif
 </script>
 
 
