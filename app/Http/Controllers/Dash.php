@@ -2671,5 +2671,160 @@ class Dash extends Controller
         }
     }
 
+    public function getUserAnalysis(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $query = $request->input('query', 'Give me an analysis of my data');
 
+        if (!$userId) {
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
+
+        $cacheKey = 'user_analysis_' . $userId . '_' . md5($query);
+
+        // Try to get from cache first (5 minutes)
+        $cached = Cache::get($cacheKey);
+        if ($cached) {
+            return response()->json($cached);
+        }
+
+        try {
+            // Pre-fetch all user data in parallel
+            $userData = $this->getUserData($userId);
+
+            // Single AI call with all context
+            $analysisResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4-turbo-preview',
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => $this->buildAnalysisPrompt($userData, $query)
+                    ]
+                ],
+                'temperature' => 0.4,
+                'max_tokens' => 1500
+            ]);
+
+            $textAnalysis = $analysisResponse->json()['choices'][0]['message']['content'];
+
+            $result = [
+                'success' => true,
+                'analysis' => $textAnalysis,
+                'workspace_types' => $userData['workspace_types'],
+                'has_data' => $userData['has_data']
+            ];
+
+            // Cache for 5 minutes
+            Cache::put($cacheKey, $result, now()->addMinutes(5));
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Analysis failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getUserData($userId)
+    {
+        // Get all user data in efficient queries
+        $workspaceTypes = DB::table('linked')
+            ->where('userid', $userId)
+            ->pluck('type')
+            ->implode(', ') ?: 'unknown';
+
+        $userMetrics = DB::table('user_metrics')
+            ->where('userid', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get(['title', 'description', 'category', 'weight', 'percentage']);
+
+        // Get key business data
+        $tasks = DB::table('tasks')
+            ->where('owner_id', $userId)
+            ->select(['title', 'status', 'priority', 'created_at', 'due_date'])
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        $projects = DB::table('projects')
+            ->where('owner_id', $userId)
+            ->select(['name', 'created_at'])
+            ->get();
+
+        $taskStats = DB::table('tasks')
+            ->where('owner_id', $userId)
+            ->selectRaw('
+                COUNT(*) as total_tasks,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_tasks,
+                SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending_tasks,
+                SUM(CASE WHEN due_date < NOW() AND status != "completed" THEN 1 ELSE 0 END) as overdue_tasks
+            ')
+            ->first();
+
+        return [
+            'workspace_types' => $workspaceTypes,
+            'metrics' => $userMetrics,
+            'tasks' => $tasks,
+            'projects' => $projects,
+            'task_stats' => $taskStats,
+            'has_data' => $tasks->count() > 0 || $projects->count() > 0
+        ];
+    }
+
+    private function buildAnalysisPrompt($userData, $query)
+    {
+        $metricsText = "";
+        foreach ($userData['metrics'] as $metric) {
+            $metricsText .= "• {$metric->title}: {$metric->description} (Category: {$metric->category}, Weight: {$metric->weight}, Percentage: {$metric->percentage}%)\n";
+        }
+        if (empty($metricsText)) {
+            $metricsText = "No custom metrics defined by user.";
+        }
+
+        return "You are a data analyst. Provide a clear text analysis based on the user's query and their data.
+
+USER CONTEXT:
+- Workspace types: {$userData['workspace_types']}
+- Custom metrics: {$metricsText}
+
+USER DATA:
+- Task Statistics: Total: {$userData['task_stats']->total_tasks}, Completed: {$userData['task_stats']->completed_tasks}, Pending: {$userData['task_stats']->pending_tasks}, Overdue: {$userData['task_stats']->overdue_tasks}
+- Recent Tasks: " . json_encode($userData['tasks']->take(10)) . "
+- Projects: " . json_encode($userData['projects']) . "
+- Also your response should start with  e.g BAse on the report of the user... then continue.
+
+- Give professional but friendly text response
+- No charts, templates, or visual elements  
+- Focus on key insights and actionable recommendations
+- Use emojis appropriately for readability
+- If no data, explain briefly and suggest alternatives
+- Include performance insights and recommendations
+
+User asked: \"{$query}\"
+
+Provide a comprehensive text analysis:";
+    }
+
+    // Cache database schema (run this once and cache)
+    private function getDatabaseSchema()
+    {
+        return Cache::remember('database_schema', 3600, function () {
+            $tables = ['tasks', 'projects', 'teams', 'platform_users', 'linked', 'sub_issues', 'user_metrics'];
+            $schema = [];
+
+            foreach ($tables as $table) {
+                $columns = DB::select("DESCRIBE {$table}");
+                $schema[$table] = array_map(function($col) {
+                    return $col->Field . ' (' . $col->Type . ')';
+                }, $columns);
+            }
+
+            return json_encode($schema);
+        });
+    }
+    
 }

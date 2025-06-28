@@ -5,11 +5,13 @@
 
 @section('content')
     <style>
-        .text-reviewbod-yellow{
-            color:#CB964F !important;
-            fill: #CB964F; /* or any color */
+        .text-reviewbod-yellow {
+            color: #CB964F !important;
+            fill: #CB964F;
+            /* or any color */
 
         }
+
         #chat_data>div {
             padding: 0px !important;
         }
@@ -141,35 +143,40 @@
         }
     </style>
 
-  
 
-<!-- Modal Overlay -->
-<div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" style="z-index:999999999">
-  <!-- Modal Content -->
-  <div class="relative top-20 mx-auto p-[50px] border w-[50%] shadow-lg rounded-[30px] bg-white flex flex-col gap-5">
-  
-    
-    <!-- Modal Body -->
-    <div class="mb-4 w-full items-center justify-center flex flex-col">
-        <img src="/start_img.svg" width="460px"/>
 
-        <h3 class="font-bold text-5xl mt-3">Welcome to Reviewbod</h3>
+    <!-- Modal Overlay -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"
+        style="z-index:999999999">
+        <!-- Modal Content -->
+        <div class="relative top-20 mx-auto p-[50px] border w-[50%] shadow-lg rounded-[30px] bg-white flex flex-col gap-5">
 
-        <p class="w-[70%] text-center self-center text-1xl text-[#888888] mt-5">To get started, please set up your performance metrics for grading your team. Choose KPIs from your connected apps, to tailor evaluations to your projects.</p>
+
+            <!-- Modal Body -->
+            <div class="mb-4 w-full items-center justify-center flex flex-col">
+                <img src="/start_img.svg" width="460px" />
+
+                <h3 class="font-bold text-5xl mt-3">Welcome to Reviewbod</h3>
+
+                <p class="w-[70%] text-center self-center text-1xl text-[#888888] mt-5">To get started, please set up your
+                    performance metrics for grading your team. Choose KPIs from your connected apps, to tailor evaluations
+                    to your projects.</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-center mt-5 space-x-2">
+                <button onclick="location.href='/dashboard/settings?type=metric'"
+                    class="bg-[#1E3A8A] w-[250px] hover:bg-blue-700 text-white   py-3 text-2xl font-light px-4 rounded-lg">
+                    Proceed
+                </button>
+                <button id="cancelBtn"
+                    class="bg-[#E4E4E4]  w-[250px] text-[#1E3A8A] hover:bg-gray-400 text-gray-800   text-2xl font-light py-2 px-4 rounded-lg">
+                    Later
+                </button>
+
+            </div>
+        </div>
     </div>
-    
-    <!-- Modal Footer -->
-    <div class="flex justify-center mt-5 space-x-2">
-        <button onclick="location.href='/dashboard/settings?type=metric'" class="bg-[#1E3A8A] w-[250px] hover:bg-blue-700 text-white   py-3 text-2xl font-light px-4 rounded-lg">
-        Proceed 
-      </button>
-      <button id="cancelBtn" class="bg-[#E4E4E4]  w-[250px] text-[#1E3A8A] hover:bg-gray-400 text-gray-800   text-2xl font-light py-2 px-4 rounded-lg">
-        Later
-      </button>
-  
-    </div>
-  </div>
-</div>
 
 
     <div class="flex h-screen overflow-hidden">
@@ -178,7 +185,8 @@
                 <button id="newchat"
                     class="shadow shadow-md flex justify-between w-full p-3 items-center bg-white rounded-lg">
                     <span class="font-bold">NEW CHAT</span>
-                    <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="18" height="21" viewBox="0 0 18 21" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M6 2C6 1.46957 6.21071 0.960859 6.58579 0.585786C6.96086 0.210714 7.46957 0 8 0H10C10.5304 0 11.0391 0.210714 11.4142 0.585786C11.7893 0.960859 12 1.46957 12 2V6H16C16.5304 6 17.0391 6.21071 17.4142 6.58579C17.7893 6.96086 18 7.46957 18 8V10C18 10.5304 17.7893 11.0391 17.4142 11.4142C17.0391 11.7893 16.5304 12 16 12H12V16C12 16.5304 11.7893 17.0391 11.4142 17.4142C11.0391 17.7893 10.5304 18 10 18H8C7.46957 18 6.96086 17.7893 6.58579 17.4142C6.21071 17.0391 6 16.5304 6 16V12H2C1.46957 12 0.960859 11.7893 0.585786 11.4142C0.210714 11.0391 0 10.5304 0 10V8C0 7.46957 0.210714 6.96086 0.585786 6.58579C0.960859 6.21071 1.46957 6 2 6H6V2Z"
                             fill="black" />
@@ -216,7 +224,7 @@
             </div>
         </div>
         <div style="max-width:75%;min-width:75%" class="w-[75%] flex flex-col h-full min-w-0">
-           @include('dash.layouts.partials.head')
+            @include('dash.layouts.partials.head')
             <div class="flex flex-col flex-grow relative min-h-0 overflow-hidden w-[85%] mx-auto" id="chats">
                 <div class="flex-1 overflow-y-auto overflow-x-hidden px-6 py-4 space-y-4"
                     style="max-height: calc(100vh - 160px);" id="chatContainer">
@@ -551,7 +559,7 @@
     let isInsideTemplate = false;
     let contentBeforeTemplate = '';
     let storedTemplates = new Map(); // Store templates by their ID
-  
+
     let ws;
 
 
@@ -727,149 +735,174 @@
         $(".active-chat").removeClass("active-chat")
     }
 
- function renderChart(res, containerId) {
-    console.log(`Attempting to render chart for container ${containerId} with template:`, res);
+    function renderChart(res, containerId) {
+        console.log(`Attempting to render chart for container ${containerId} with template:`, res);
 
-    // Validate inputs
-    if (!res || res.template_type !== 'chart' || !res.structure) {
-        console.error(`Invalid chart response for ${containerId}:`, res);
-        const templateData = storedTemplates.get(containerId);
-        if (templateData) {
-            showTemplateError(containerId, templateData, 'Invalid chart data received');
-        } else {
-            showChartError(containerId, 'Invalid chart data or template type');
+        // Validate inputs
+        if (!res || res.template_type !== 'chart' || !res.structure) {
+            console.error(`Invalid chart response for ${containerId}:`, res);
+            const templateData = storedTemplates.get(containerId);
+            if (templateData) {
+                showTemplateError(containerId, templateData, 'Invalid chart data received');
+            } else {
+                showChartError(containerId, 'Invalid chart data or template type');
+            }
+            return;
         }
-        return;
+
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.error(`Container with ID ${containerId} not found in DOM`);
+            return;
+        }
+
+        try {
+            const {
+                chartType,
+                options,
+                columns,
+                chart_data,
+                column_types
+            } = res.structure;
+
+            // Validate required fields
+            if (!chartType) {
+                throw new Error('Chart type not specified');
+            }
+            if (!chart_data || !Array.isArray(chart_data) || chart_data.length === 0) {
+                throw new Error('No chart data available');
+            }
+            if (!columns || !Array.isArray(columns) || columns.length !== 2) {
+                throw new Error(
+                    `Invalid columns configuration: exactly 2 columns required, got ${columns ? columns.length : 'none'}`
+                    );
+            }
+            if (!column_types || typeof column_types !== 'object') {
+                throw new Error('Invalid column_types configuration');
+            }
+
+            // Rest of your existing chart rendering code...
+            console.log(`Processing chart data for ${containerId}:`, {
+                chartType,
+                dataLength: chart_data.length
+            });
+
+            container.innerHTML = "";
+            container.className = "";
+
+            const data = new google.visualization.DataTable();
+
+            columns.forEach(column => {
+                if (!column.type || !column.label || !column.data) {
+                    throw new Error(`Invalid column configuration: ${JSON.stringify(column)}`);
+                }
+                data.addColumn(column.type, column.label);
+            });
+
+            const rows = chart_data.map((row, index) => {
+                try {
+                    return columns.map(column => {
+                        const value = row[column.data];
+                        const targetType = column_types[column.data] || column.type;
+
+                        if (value === null || value === undefined || value === '') {
+                            return targetType === 'number' ? 0 : '';
+                        }
+
+                        if (targetType === 'number') {
+                            const numValue = parseFloat(value);
+                            return isNaN(numValue) ? 0 : numValue;
+                        } else if (targetType === 'date') {
+                            const dateValue = new Date(value);
+                            return isNaN(dateValue.getTime()) ? null : dateValue;
+                        } else {
+                            return String(value);
+                        }
+                    });
+                } catch (rowError) {
+                    console.warn(`Error processing row ${index} in ${containerId}:`, rowError, row);
+                    return null;
+                }
+            }).filter(row => row !== null);
+
+            if (rows.length === 0) {
+                throw new Error('No valid data rows after processing');
+            }
+
+            data.addRows(rows);
+
+            const defaultOptions = {
+                title: 'Chart',
+                width: '100%',
+                height: 400,
+                backgroundColor: 'transparent',
+                titleTextStyle: {
+                    fontSize: 16,
+                    bold: true
+                },
+                legend: {
+                    position: 'bottom',
+                    alignment: 'center'
+                },
+                animation: {
+                    startup: true,
+                    duration: 1000,
+                    easing: 'out'
+                },
+                hAxis: {
+                    title: columns[0].label || 'X Axis'
+                },
+                vAxis: {
+                    title: columns[1].label || 'Y Axis'
+                }
+            };
+
+            const finalOptions = Object.assign({}, defaultOptions, options || {});
+
+            const chartTypes = {
+                'LineChart': google.visualization.LineChart,
+                'BarChart': google.visualization.BarChart,
+                'ColumnChart': google.visualization.ColumnChart,
+                'PieChart': google.visualization.PieChart,
+                'ScatterChart': google.visualization.ScatterChart,
+                'AreaChart': google.visualization.AreaChart,
+                'ComboChart': google.visualization.ComboChart,
+                'Histogram': google.visualization.Histogram
+            };
+
+            const ChartClass = chartTypes[chartType] || google.visualization.ColumnChart;
+            const chart = new ChartClass(container);
+
+            chart.draw(data, finalOptions);
+
+            const resizeHandler = () => {
+                try {
+                    chart.draw(data, finalOptions);
+                } catch (resizeError) {
+                    console.warn(`Error during chart resize for ${containerId}:`, resizeError);
+                }
+            };
+
+            if (container._chartResizeListener) {
+                window.removeEventListener('resize', container._chartResizeListener);
+            }
+
+            container._chartResizeListener = resizeHandler;
+            window.addEventListener('resize', resizeHandler);
+
+            console.log(`Chart ${chartType} rendered successfully in ${containerId}`);
+
+        } catch (error) {
+            console.error(`Error rendering chart for ${containerId}:`, error);
+            const templateData = storedTemplates.get(containerId);
+            if (templateData) {
+                showTemplateError(containerId, templateData, `Chart error: ${error.message}`);
+            } else {
+                showChartError(containerId, error.message);
+            }
+        }
     }
 
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`Container with ID ${containerId} not found in DOM`);
-        return;
-    }
-
-    try {
-        const { chartType, options, columns, chart_data, column_types } = res.structure;
-
-        // Validate required fields
-        if (!chartType) {
-            throw new Error('Chart type not specified');
-        }
-        if (!chart_data || !Array.isArray(chart_data) || chart_data.length === 0) {
-            throw new Error('No chart data available');
-        }
-        if (!columns || !Array.isArray(columns) || columns.length !== 2) {
-            throw new Error(`Invalid columns configuration: exactly 2 columns required, got ${columns ? columns.length : 'none'}`);
-        }
-        if (!column_types || typeof column_types !== 'object') {
-            throw new Error('Invalid column_types configuration');
-        }
-
-        // Rest of your existing chart rendering code...
-        console.log(`Processing chart data for ${containerId}:`, { chartType, dataLength: chart_data.length });
-
-        container.innerHTML = "";
-        container.className = "";
-
-        const data = new google.visualization.DataTable();
-
-        columns.forEach(column => {
-            if (!column.type || !column.label || !column.data) {
-                throw new Error(`Invalid column configuration: ${JSON.stringify(column)}`);
-            }
-            data.addColumn(column.type, column.label);
-        });
-
-        const rows = chart_data.map((row, index) => {
-            try {
-                return columns.map(column => {
-                    const value = row[column.data];
-                    const targetType = column_types[column.data] || column.type;
-
-                    if (value === null || value === undefined || value === '') {
-                        return targetType === 'number' ? 0 : '';
-                    }
-
-                    if (targetType === 'number') {
-                        const numValue = parseFloat(value);
-                        return isNaN(numValue) ? 0 : numValue;
-                    } else if (targetType === 'date') {
-                        const dateValue = new Date(value);
-                        return isNaN(dateValue.getTime()) ? null : dateValue;
-                    } else {
-                        return String(value);
-                    }
-                });
-            } catch (rowError) {
-                console.warn(`Error processing row ${index} in ${containerId}:`, rowError, row);
-                return null;
-            }
-        }).filter(row => row !== null);
-
-        if (rows.length === 0) {
-            throw new Error('No valid data rows after processing');
-        }
-
-        data.addRows(rows);
-
-        const defaultOptions = {
-            title: 'Chart',
-            width: '100%',
-            height: 400,
-            backgroundColor: 'transparent',
-            titleTextStyle: { fontSize: 16, bold: true },
-            legend: { position: 'bottom', alignment: 'center' },
-            animation: { startup: true, duration: 1000, easing: 'out' },
-            hAxis: { title: columns[0].label || 'X Axis' },
-            vAxis: { title: columns[1].label || 'Y Axis' }
-        };
-
-        const finalOptions = Object.assign({}, defaultOptions, options || {});
-
-        const chartTypes = {
-            'LineChart': google.visualization.LineChart,
-            'BarChart': google.visualization.BarChart,
-            'ColumnChart': google.visualization.ColumnChart,
-            'PieChart': google.visualization.PieChart,
-            'ScatterChart': google.visualization.ScatterChart,
-            'AreaChart': google.visualization.AreaChart,
-            'ComboChart': google.visualization.ComboChart,
-            'Histogram': google.visualization.Histogram
-        };
-
-        const ChartClass = chartTypes[chartType] || google.visualization.ColumnChart;
-        const chart = new ChartClass(container);
-
-        chart.draw(data, finalOptions);
-
-        const resizeHandler = () => {
-            try {
-                chart.draw(data, finalOptions);
-            } catch (resizeError) {
-                console.warn(`Error during chart resize for ${containerId}:`, resizeError);
-            }
-        };
-
-        if (container._chartResizeListener) {
-            window.removeEventListener('resize', container._chartResizeListener);
-        }
-
-        container._chartResizeListener = resizeHandler;
-        window.addEventListener('resize', resizeHandler);
-
-        console.log(`Chart ${chartType} rendered successfully in ${containerId}`);
-
-    } catch (error) {
-        console.error(`Error rendering chart for ${containerId}:`, error);
-        const templateData = storedTemplates.get(containerId);
-        if (templateData) {
-            showTemplateError(containerId, templateData, `Chart error: ${error.message}`);
-        } else {
-            showChartError(containerId, error.message);
-        }
-    }
-}
-   
     // Helper function to show chart errors consistently
     function showChartError(containerId, errorMessage) {
         console.log("containerId", containerId)
@@ -890,30 +923,33 @@
         }
     }
 
- // Update the renderTable function to handle errors better
-function renderTable(res, containerId) {
-    if (!res || res.template_type !== 'table' || !res.structure) {
-        const templateData = storedTemplates.get(containerId);
-        if (templateData) {
-            showTemplateError(containerId, templateData, 'Invalid table data received');
+    // Update the renderTable function to handle errors better
+    function renderTable(res, containerId) {
+        if (!res || res.template_type !== 'table' || !res.structure) {
+            const templateData = storedTemplates.get(containerId);
+            if (templateData) {
+                showTemplateError(containerId, templateData, 'Invalid table data received');
+            }
+            return;
         }
-        return;
-    }
 
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.log("Container not found for table");
-        return;
-    }
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.log("Container not found for table");
+            return;
+        }
 
-    try {
-        console.log("Rendering table with structure:", res.structure);
+        try {
+            console.log("Rendering table with structure:", res.structure);
 
-        const { columns, data } = res.structure;
-        const tableId = `table-${res.id}`;
-        console.log(`Rendering table ${tableId} with ${data.length} rows and ${columns.length} columns`);
+            const {
+                columns,
+                data
+            } = res.structure;
+            const tableId = `table-${res.id}`;
+            console.log(`Rendering table ${tableId} with ${data.length} rows and ${columns.length} columns`);
 
-        const tableHTML = `
+            const tableHTML = `
             <div class="bg-white">
                 <table id="${tableId}" class="min-w-full divide-y divide-gray-200 table-auto">
                     <thead class="bg-gray-50">
@@ -940,23 +976,23 @@ function renderTable(res, containerId) {
             </div>
         `;
 
-        container.innerHTML = tableHTML;
-        $(`#${containerId}`).removeClass('template-placeholder'); 
-        container.className = "overflow-x-auto";
+            container.innerHTML = tableHTML;
+            $(`#${containerId}`).removeClass('template-placeholder');
+            container.className = "overflow-x-auto";
 
-        if (typeof $ !== 'undefined' && $.fn.DataTable) {
-            $(`#${tableId}`).DataTable({
-                responsive: true,
-            });
-        }
-    } catch (error) {
-        console.error('Error rendering table:', error);
-        const templateData = storedTemplates.get(containerId);
-        if (templateData) {
-            showTemplateError(containerId, templateData, `Table error: ${error.message}`);
+            if (typeof $ !== 'undefined' && $.fn.DataTable) {
+                $(`#${tableId}`).DataTable({
+                    responsive: true,
+                });
+            }
+        } catch (error) {
+            console.error('Error rendering table:', error);
+            const templateData = storedTemplates.get(containerId);
+            if (templateData) {
+                showTemplateError(containerId, templateData, `Table error: ${error.message}`);
+            }
         }
     }
-}
 
     // Safe render function for charts
 
@@ -1037,59 +1073,61 @@ function renderTable(res, containerId) {
 
     // Updated main function
     // Replace the existing gettemplate function with this updated version
-function gettemplate(temp,regenerate = false) {
-    const pathParts = window.location.pathname.split('/');
-    const chatIdFromPath = pathParts[pathParts.length - 1];
-    
-    // Show loading state
-    const container = document.getElementById(temp.id);
-    if (container) {
-        container.innerHTML = `
+    function gettemplate(temp, regenerate = false) {
+        const pathParts = window.location.pathname.split('/');
+        const chatIdFromPath = pathParts[pathParts.length - 1];
+
+        // Show loading state
+        const container = document.getElementById(temp.id);
+        if (container) {
+            container.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                 <div style="width: 20px; height: 20px; background: #ddd; border-radius: 50%;"></div>
                 <span style="color: #666;">Generating template...</span>
             </div>
         `;
+        }
+
+        $.post('{{ route('user.get_template') }}', {
+            'des': regenerate ?
+                `The template generatoin failed , regenerate another template using this description - ${temp.description}` :
+                temp.description,
+            'id': temp.id,
+            'sql': temp.sql,
+            'chat_id': chatIdFromPath,
+            '_token': '{{ csrf_token() }}'
+        }).done((res) => {
+            console.log('Template response:', res);
+            if (res.error) {
+                showTemplateError(temp.id, temp, res.error);
+                return;
+            }
+
+            // Double-check that container still exists before rendering
+            const container = document.getElementById(temp.id);
+            if (!container) {
+                console.warn(`Container ${temp.id} no longer exists, skipping render`);
+                return;
+            }
+
+            if (res.template_type == 'table') {
+                console.log("Rendering table");
+                renderTable(res, temp.id);
+            } else if (res.template_type == 'chart') {
+                console.log("Rendering chart-------");
+                forceRenderChart(res, temp.id);
+            }
+        }).fail((error) => {
+            console.error('Error fetching template:', error);
+            showTemplateError(temp.id, temp, 'Failed to load template. Please try again.');
+        });
     }
-    
-    $.post('{{ route('user.get_template') }}', {
-        'des': regenerate ? `The template generatoin failed , regenerate another template using this description - ${temp.description}` : temp.description,
-        'id': temp.id,
-        'sql': temp.sql,
-        'chat_id': chatIdFromPath,
-        '_token': '{{ csrf_token() }}'
-    }).done((res) => {
-        console.log('Template response:', res);
-        if(res.error) {
-            showTemplateError(temp.id, temp, res.error);
-            return;
-        }
 
-        // Double-check that container still exists before rendering
-        const container = document.getElementById(temp.id);
-        if (!container) {
-            console.warn(`Container ${temp.id} no longer exists, skipping render`);
-            return;
-        }
-
-        if (res.template_type == 'table') {
-            console.log("Rendering table");
-            renderTable(res, temp.id);
-        } else if (res.template_type == 'chart') {
-            console.log("Rendering chart-------");
-            forceRenderChart(res, temp.id);
-        }
-    }).fail((error) => {
-        console.error('Error fetching template:', error);
-        showTemplateError(temp.id, temp, 'Failed to load template. Please try again.');
-    });
-}
-
-// Add this new function to show template errors with regenerate button
-function showTemplateError(containerId, templateData, errorMessage) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `
+    // Add this new function to show template errors with regenerate button
+    function showTemplateError(containerId, templateData, errorMessage) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
             <div class="p-4 border border-red-200 rounded bg-red-50">
                 <div class="flex items-center mb-3">
                     <svg class="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
@@ -1105,15 +1143,15 @@ function showTemplateError(containerId, templateData, errorMessage) {
                 </button>
             </div>
         `;
-        container.className = "";
+            container.className = "";
+        }
     }
-}
 
-// Add this new function to handle template regeneration
-function regenerateTemplate(containerId, templateData) {
-    console.log('Regenerating template:', templateData);
-    gettemplate(templateData,true);
-}
+    // Add this new function to handle template regeneration
+    function regenerateTemplate(containerId, templateData) {
+        console.log('Regenerating template:', templateData);
+        gettemplate(templateData, true);
+    }
 
     // Utility function to manually trigger chart rendering (useful for debugging)
     function forceRenderChart(res, containerId) {
@@ -1197,11 +1235,12 @@ function regenerateTemplate(containerId, templateData) {
         return content.replace(regex, (match, jsonContent) => {
             try {
                 const templateData = JSON.parse(jsonContent);
-                console.log("templateDatatemplateDatatemplateDatatemplateDatatemplateDatatemplateData: ", templateData)
+                console.log("templateDatatemplateDatatemplateDatatemplateDatatemplateDatatemplateData: ",
+                    templateData)
                 const templateId = templateData.id;
                 return templatePlaceholders.get(templateId) || match;
             } catch (error) {
-                                console.log("errrrorororororororor: ", error)
+                console.log("errrrorororororororor: ", error)
 
                 return '<div class="template-error">❌ Template parsing error</div>';
             }
@@ -1241,124 +1280,125 @@ function regenerateTemplate(containerId, templateData) {
     let lastProcessedLength = 0;
 
 
-// Add this helper function for reliable auto-scrolling
-function autoScroll() {
-     const chatContainer = document.getElementById('chatContainer');
-    // Use requestAnimationFrame to ensure DOM updates are complete
-    requestAnimationFrame(() => {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    });
-}
+    // Add this helper function for reliable auto-scrolling
+    function autoScroll() {
+        const chatContainer = document.getElementById('chatContainer');
+        // Use requestAnimationFrame to ensure DOM updates are complete
+        requestAnimationFrame(() => {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+    }
 
-function updateSendButton(state) {
-    const sendButton = $("#sendButton");
-    console.log("curstate",state)
-    if (state == 'streaming') {
-        sendButton.html(`<i class="fa fa-stop-circle text-white" style="font-size:30px"></i>`);
-    } else if (state == 'ready') {
-        sendButton.html(`
+    function updateSendButton(state) {
+        const sendButton = $("#sendButton");
+        console.log("curstate", state)
+        if (state == 'streaming') {
+            sendButton.html(`<i class="fa fa-stop-circle text-white" style="font-size:30px"></i>`);
+        } else if (state == 'ready') {
+            sendButton.html(`
             <svg width="30" height="32" viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="0.5" y="0.5" width="29" height="31" rx="7.5" stroke="white" />
                 <path d="M23.2562 16.5168L10.6167 16.5168M9.56359 9.11278L22.8189 15.5396C23.6352 15.9354 23.6352 17.0983 22.8189 17.494L9.56359 23.9209C8.65552 24.3612 7.69032 23.4329 8.09482 22.5084L10.5257 16.9521C10.6471 16.6746 10.6471 16.359 10.5257 16.0815L8.09482 10.5253C7.69032 9.60073 8.65551 8.6725 9.56359 9.11278Z" stroke="white" stroke-linecap="round" />
             </svg>
         `);
+        }
     }
-}
-let isStreaming = false;
-let currentStreamId = null;
-function stopStream() {
-    if (ws.readyState === WebSocket.OPEN && isStreaming) {
-        // Close the WebSocket connection to stop streaming
-        ws.close();
-        
-        // Reset streaming state
-        isStreaming = false;
-        currentStreamId = null;
-        updateSendButton('ready');
-        
-        // Clear any accumulated data from the stopped stream
-        accumulatedMarkdown = '';
-        processedTemplates.clear();
-        templatePlaceholders.clear();
-   
-        // Reconnect after a short delay
-        setTimeout(() => {
-            var id = getRandomId()
-            initstream();
-        }, 100);
-    }
-}
+    let isStreaming = false;
+    let currentStreamId = null;
 
-function initstream(){
-// Add variables to track streaming state
+    function stopStream() {
+        if (ws.readyState === WebSocket.OPEN && isStreaming) {
+            // Close the WebSocket connection to stop streaming
+            ws.close();
 
-  id = getRandomId()
-     ws = new WebSocket('wss://api.reviewbod.com/ws');
-
-    ws.onopen = () => {
-        console.log('Connected to WebSocket');
-        document.getElementById('status').textContent = 'Connected';
-        document.getElementById('status').style.color = 'green';
-    };
-
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Received:', data);
-
-        const responseDiv = document.getElementById(`msg-${id}`);
-
-        switch (data.type) {
-            case 'stream_token':
-
-            if (!isStreaming) {
-                isStreaming = true;
-                currentStreamId = id;
-                updateSendButton('streaming');
-            }
-                accumulatedMarkdown += data.token;
-
-                // Only process new content that hasn't been processed yet
-                let displayContent = accumulatedMarkdown;
-
-                // Check if we have new complete templates to process
-                const completeTemplateRegex = /\[START TEMPLATE\](.*?)\[END TEMPLATE\]/gs;
-
-                // Find all matches
-                const matches = [...accumulatedMarkdown.matchAll(completeTemplateRegex)];
-
-                // Process only NEW complete templates (moved outside and optimized)
-                processNewTemplates(matches);
-
-                // Replace templates with placeholders
-                displayContent = replaceTemplatesWithPlaceholders(displayContent, completeTemplateRegex);
-
-                // Handle incomplete templates
-                displayContent = handleIncompleteTemplates(displayContent);
-
-                lastProcessedLength = displayContent.length;
-                responseDiv.innerHTML = marked.parse(displayContent);
-                           autoScroll();
-
-                break;
-
-            case 'error':
-                //responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
-                isStreaming = false;
+            // Reset streaming state
+            isStreaming = false;
             currentStreamId = null;
             updateSendButton('ready');
-                break;
-            case 'new_chat_created':
 
-                const chatListContainer = document.querySelector('#chat_data');
+            // Clear any accumulated data from the stopped stream
+            accumulatedMarkdown = '';
+            processedTemplates.clear();
+            templatePlaceholders.clear();
 
-                currentChatId = data.chat_uuid;
-                updateUrlChatId(currentChatId);
+            // Reconnect after a short delay
+            setTimeout(() => {
+                var id = getRandomId()
+                initstream();
+            }, 100);
+        }
+    }
+
+    function initstream() {
+        // Add variables to track streaming state
+
+        id = getRandomId()
+        ws = new WebSocket('wss://api.reviewbod.com/ws');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket');
+            document.getElementById('status').textContent = 'Connected';
+            document.getElementById('status').style.color = 'green';
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received:', data);
+
+            const responseDiv = document.getElementById(`msg-${id}`);
+
+            switch (data.type) {
+                case 'stream_token':
+
+                    if (!isStreaming) {
+                        isStreaming = true;
+                        currentStreamId = id;
+                        updateSendButton('streaming');
+                    }
+                    accumulatedMarkdown += data.token;
+
+                    // Only process new content that hasn't been processed yet
+                    let displayContent = accumulatedMarkdown;
+
+                    // Check if we have new complete templates to process
+                    const completeTemplateRegex = /\[START TEMPLATE\](.*?)\[END TEMPLATE\]/gs;
+
+                    // Find all matches
+                    const matches = [...accumulatedMarkdown.matchAll(completeTemplateRegex)];
+
+                    // Process only NEW complete templates (moved outside and optimized)
+                    processNewTemplates(matches);
+
+                    // Replace templates with placeholders
+                    displayContent = replaceTemplatesWithPlaceholders(displayContent, completeTemplateRegex);
+
+                    // Handle incomplete templates
+                    displayContent = handleIncompleteTemplates(displayContent);
+
+                    lastProcessedLength = displayContent.length;
+                    responseDiv.innerHTML = marked.parse(displayContent);
+                    autoScroll();
+
+                    break;
+
+                case 'error':
+                    //responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
+                    isStreaming = false;
+                    currentStreamId = null;
+                    updateSendButton('ready');
+                    break;
+                case 'new_chat_created':
+
+                    const chatListContainer = document.querySelector('#chat_data');
+
+                    currentChatId = data.chat_uuid;
+                    updateUrlChatId(currentChatId);
 
 
-                const chatItem = document.createElement('div');
-                chatItem.className = 'flex px-2 w-full gap-3 cursor-pointer chat-item';
-                chatItem.dataset.chatId = currentChatId;
-                chatItem.innerHTML = `
+                    const chatItem = document.createElement('div');
+                    chatItem.className = 'flex px-2 w-full gap-3 cursor-pointer chat-item';
+                    chatItem.dataset.chatId = currentChatId;
+                    chatItem.innerHTML = `
                     <div class="flex w-full flex-col cursor-pointer px-4 py-4 active-chat">
                         <div class="flex justify-between">
                             <h3 class="font-bold">${data.title}</h3>
@@ -1373,24 +1413,24 @@ function initstream(){
                     </div>
                 `;
 
-                // Add click event for chat selection
-                chatItem.addEventListener('click', (e) => {
-                    if (!e.target.closest('.fa-trash') && !e.target.closest(
-                            '[onclick*="deleteChat"]')) {
-                        selectChatWithUrlUpdate(data.chat_uuid);
-                    }
-                });
+                    // Add click event for chat selection
+                    chatItem.addEventListener('click', (e) => {
+                        if (!e.target.closest('.fa-trash') && !e.target.closest(
+                                '[onclick*="deleteChat"]')) {
+                            selectChatWithUrlUpdate(data.chat_uuid);
+                        }
+                    });
 
-                chatListContainer.prepend(chatItem);
-
-
-                // Start sidebar update interval after first message
+                    chatListContainer.prepend(chatItem);
 
 
-                break;
+                    // Start sidebar update interval after first message
 
-            case 'sql_query':
-                responseDiv.innerHTML += `
+
+                    break;
+
+                case 'sql_query':
+                    responseDiv.innerHTML += `
             <div class="flex gap-3 items-center">
                 <svg width="30" height="30" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8.81896 13.3258V12.0318C8.87496 11.5718 9.28496 11.2638 9.74796 11.2638H10.303C10.7008 11.2638 11.0823 11.1058 11.3636 10.8245C11.6449 10.5432 11.803 10.1617 11.803 9.76383V8.28783C12.39 8.31083 12.69 8.26183 13.042 8.04083C13.374 7.83083 13.486 7.40583 13.372 7.02883C12.34 3.61183 10.73 0.173828 6.13296 0.173828C2.61296 0.173828 0.584961 1.97983 0.584961 5.58783C0.584961 8.07583 1.23996 8.89583 2.02896 10.1758C2.44196 10.8468 2.61796 11.6298 2.61596 12.4188L2.61396 13.3258C2.61396 13.4584 2.66664 13.5856 2.76041 13.6794C2.85418 13.7731 2.98135 13.8258 3.11396 13.8258H8.31896C8.45157 13.8258 8.57875 13.7731 8.67251 13.6794C8.76628 13.5856 8.81896 13.4584 8.81896 13.3258Z" fill="#8FBFFA"/>
@@ -1398,12 +1438,12 @@ function initstream(){
                 </svg>
                 <span>Thinking..</span>
             </div>`;
-                        autoScroll();
+                    autoScroll();
 
-                break;
+                    break;
 
-            case 'db_results':
-                responseDiv.innerHTML += `
+                case 'db_results':
+                    responseDiv.innerHTML += `
             <div class="flex gap-3 items-center">
                 <svg width="30" height="30" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8.81896 13.3258V12.0318C8.87496 11.5718 9.28496 11.2638 9.74796 11.2638H10.303C10.7008 11.2638 11.0823 11.1058 11.3636 10.8245C11.6449 10.5432 11.803 10.1617 11.803 9.76383V8.28783C12.39 8.31083 12.69 8.26183 13.042 8.04083C13.374 7.83083 13.486 7.40583 13.372 7.02883C12.34 3.61183 10.73 0.173828 6.13296 0.173828C2.61296 0.173828 0.584961 1.97983 0.584961 5.58783C0.584961 8.07583 1.23996 8.89583 2.02896 10.1758C2.44196 10.8468 2.61796 11.6298 2.61596 12.4188L2.61396 13.3258C2.61396 13.4584 2.66664 13.5856 2.76041 13.6794C2.85418 13.7731 2.98135 13.8258 3.11396 13.8258H8.31896C8.45157 13.8258 8.57875 13.7731 8.67251 13.6794C8.76628 13.5856 8.81896 13.4584 8.81896 13.3258Z" fill="#8FBFFA"/>
@@ -1411,28 +1451,28 @@ function initstream(){
                 </svg>
                 <span>Thinking..</span>
             </div>`;
-                        autoScroll();
+                    autoScroll();
 
-                break;
-                // Replace your existing 'visualizations' case with this improved version:
+                    break;
+                    // Replace your existing 'visualizations' case with this improved version:
 
 
-            case 'classification':
-                // responseDiv.innerHTML += `<p><b>CLASSIFICATION</b>: ${data.data}</p>`;
-                break;
+                case 'classification':
+                    // responseDiv.innerHTML += `<p><b>CLASSIFICATION</b>: ${data.data}</p>`;
+                    break;
 
-            case 'stream_end':
-         
-                // Reset the accumulated markdown for the next message
-                accumulatedMarkdown = '';
-                // Clear processed templates for the next message
-                processedTemplates.clear();
-                // Clear template placeholders for the next message
-                templatePlaceholders.clear();
-                // Generate new ID for next message
-              console.log("msgidjskfsd",data)
-              var msgid = data.message_id
-              $(`#msg-${id}`).append(`
+                case 'stream_end':
+
+                    // Reset the accumulated markdown for the next message
+                    accumulatedMarkdown = '';
+                    // Clear processed templates for the next message
+                    processedTemplates.clear();
+                    // Clear template placeholders for the next message
+                    templatePlaceholders.clear();
+                    // Generate new ID for next message
+                    console.log("msgidjskfsd", data)
+                    var msgid = data.message_id
+                    $(`#msg-${id}`).append(`
     <div class="flex gap-3 justify-end text-xl">
         <i id="copy-${id}" class="bi bi-clipboard cursor-pointer" onclick="performAction('${id}','${msgid}', 'copy',1)"></i>
         <i id="like-${id}" class="bi bi-hand-thumbs-up cursor-pointer" onclick="performAction('${id}','${msgid}', 'like',1)"></i>
@@ -1441,34 +1481,34 @@ function initstream(){
     </div>
 `);
 
-isStreaming = false;
-            currentStreamId = null;
-            updateSendButton('ready');
- 
-                  id = getRandomId();
-                  
-                break;
-            default:
-                responseDiv.innerHTML += `<p>${JSON.stringify(data, null, 2)}</p>`;
-        }
-    };
+                    isStreaming = false;
+                    currentStreamId = null;
+                    updateSendButton('ready');
+
+                    id = getRandomId();
+
+                    break;
+                default:
+                    responseDiv.innerHTML += `<p>${JSON.stringify(data, null, 2)}</p>`;
+            }
+        };
 
 
 
- 
-    ws.onclose = (data) => {
-        console.log('Disconnected:', data);
-        document.getElementById('status').textContent = 'Disconnected';
-        document.getElementById('status').style.color = 'red';
-     
-    };
 
-    ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        document.getElementById('status').textContent = 'Connection Error';
-        document.getElementById('status').style.color = 'red';
-    };
-}
+        ws.onclose = (data) => {
+            console.log('Disconnected:', data);
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').style.color = 'red';
+
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            document.getElementById('status').textContent = 'Connection Error';
+            document.getElementById('status').style.color = 'red';
+        };
+    }
 
     function getCurrentTimestamp() {
         const now = new Date();
@@ -1531,11 +1571,10 @@ isStreaming = false;
         <div class="flex flex-col items-center justify-center h-full px-8 py-16" id="placeholder">
             <div class="relative mb-8">
                 <div class="w-20 h-20 rounded-full flex items-center justify-center gap-2">
-                    @foreach(  DB::table("linked")->where([
-        "userid" => Auth::id(),
-      
-    ])->get() as $d)
-                 @if($d->type == 'jira')
+                    @foreach (DB::table('linked')->where([
+            'userid' => Auth::id(),
+        ])->get() as $d)
+                 @if ($d->type == 'jira')
                    <img src="/{{ $d->type }}.svg"  width="50"/>
                    @else
                      <img src="/images/{{ $d->type }}.webp"  width="50"/>
@@ -1594,7 +1633,7 @@ isStreaming = false;
                 });
             }
 
- 
+
             if (data.messages && data.messages.data) {
                 currentPage = data.messages.current_page;
                 hasMoreMessages = data.hasMore;
@@ -1652,7 +1691,7 @@ isStreaming = false;
             currentChatId = chatIdFromPath;
             loadSidebarChatsOnly();
             loadChats(); // Load chats and messages
-        
+
             // updateUrlChatId(chatIdFromPath); // Update URL with chat ID
 
             // selectChat(chatIdFromPath);
@@ -1675,43 +1714,43 @@ isStreaming = false;
         // Function to update send button based on state
 
 
-// Function to stop streaming
+        // Function to stop streaming
 
-// Modified form submission handler
-$("#sendMessage").submit((event) => {
-    event.preventDefault();
-    
-    // If currently streaming, stop the stream instead of sending new message
-    if (isStreaming) {
-        stopStream();
-        return;
-    }
-    
-    // Normal message sending logic
-    const pathParts = window.location.pathname.split('/');
-    const chatIdFromPath = pathParts[pathParts.length - 1];
-    
-    const messageInput = $("#messageInput").val();
-    if (ws.readyState === WebSocket.OPEN && messageInput.trim()) {
-        addUserMessage(messageInput);
-        $("#placeholder").remove();
-        
-        const message = {
-            query: messageInput,
-            user_id: @json($user_id_encrypted),
-            chat_id: chatIdFromPath == "dashboard" ? "" : chatIdFromPath,
-        };
-        
-        ws.send(JSON.stringify(message));
-        $("#messageInput").val("");
-        console.log('Sent:', message);
-        
-        // Set button to loading state (will be updated to streaming when first token arrives)
-        updateSendButton('streaming');
-    } else {
-        console.error('WebSocket not connected or empty message');
-    }
-});
+        // Modified form submission handler
+        $("#sendMessage").submit((event) => {
+            event.preventDefault();
+
+            // If currently streaming, stop the stream instead of sending new message
+            if (isStreaming) {
+                stopStream();
+                return;
+            }
+
+            // Normal message sending logic
+            const pathParts = window.location.pathname.split('/');
+            const chatIdFromPath = pathParts[pathParts.length - 1];
+
+            const messageInput = $("#messageInput").val();
+            if (ws.readyState === WebSocket.OPEN && messageInput.trim()) {
+                addUserMessage(messageInput);
+                $("#placeholder").remove();
+
+                const message = {
+                    query: messageInput,
+                    user_id: @json($user_id_encrypted),
+                    chat_id: chatIdFromPath == "dashboard" ? "" : chatIdFromPath,
+                };
+
+                ws.send(JSON.stringify(message));
+                $("#messageInput").val("");
+                console.log('Sent:', message);
+
+                // Set button to loading state (will be updated to streaming when first token arrives)
+                updateSendButton('streaming');
+            } else {
+                console.error('WebSocket not connected or empty message');
+            }
+        });
 
     })
 
@@ -1798,33 +1837,33 @@ $("#sendMessage").submit((event) => {
         window.processedTemplates = new Map();
     }
 
- function displayMessages(messages, prepend = false) {
-    const chatContainer = document.getElementById('chatContainer');
-    const fragment = document.createDocumentFragment();
+    function displayMessages(messages, prepend = false) {
+        const chatContainer = document.getElementById('chatContainer');
+        const fragment = document.createDocumentFragment();
 
-    const newMessages = messages.filter(message => !loadedMessageIds.has(message.id));
-    if (!newMessages.length && prepend) return;
+        const newMessages = messages.filter(message => !loadedMessageIds.has(message.id));
+        if (!newMessages.length && prepend) return;
 
-//     if (prepend) {
-    newMessages.reverse();
-// }
+        //     if (prepend) {
+        newMessages.reverse();
+        // }
 
-    newMessages.forEach(message => {
-        loadedMessageIds.add(message.id);
-        const isUser = message.sender_type === 'user';
-        const timestamp = new Date(message.created_at).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
+        newMessages.forEach(message => {
+            loadedMessageIds.add(message.id);
+            const isUser = message.sender_type === 'user';
+            const timestamp = new Date(message.created_at).toLocaleString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
 
-        let messageHTML = '';
-        const messageDiv = document.createElement('div');
+            let messageHTML = '';
+            const messageDiv = document.createElement('div');
 
-        if (isUser) {
-            const userMessageHTML = `
+            if (isUser) {
+                const userMessageHTML = `
          <div class="flex items-start justify-start space-x-3">
     <div class="max-w-[95%] min-w-[200px] flex flex-col items-end space-x-3">
         <div class="w-8 h-8 relative top-9 right-3 self-start rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -1839,60 +1878,62 @@ $("#sendMessage").submit((event) => {
     </div>
 </div>
     `;
-            messageDiv.innerHTML = userMessageHTML;
+                messageDiv.innerHTML = userMessageHTML;
 
-        } else {
-               let processedMessage = message.message;
-           try{
- // Process bot message with potential template
-         
+            } else {
+                let processedMessage = message.message;
+                try {
+                    // Process bot message with potential template
 
-            // Also check for multiple templates in the message text itself
-            // Find all template markers in the message
-            const templateMarkerRegex = /\[START TEMPLATE\](.*?)\[END TEMPLATE\]/gs;
-            const templateMatches = [...processedMessage.matchAll(templateMarkerRegex)];
 
-            if (templateMatches.length > 0) {
-                console.log(`Found ${templateMatches.length} template markers in message`);
-                console.log("templateMatches", templateMatches)
+                    // Also check for multiple templates in the message text itself
+                    // Find all template markers in the message
+                    const templateMarkerRegex = /\[START TEMPLATE\](.*?)\[END TEMPLATE\]/gs;
+                    const templateMatches = [...processedMessage.matchAll(templateMarkerRegex)];
 
-                templateMatches.forEach((match, index) => {
-                    const fullMatch = match[0];
-                    const templateContent = JSON.parse(match[1]);
-                    console.log("templateContent", templateContent)
+                    if (templateMatches.length > 0) {
+                        console.log(`Found ${templateMatches.length} template markers in message`);
+                        console.log("templateMatches", templateMatches)
 
-                    // Extract template ID from the content
-                    const templateIdMatch = templateContent.id;
+                        templateMatches.forEach((match, index) => {
+                            const fullMatch = match[0];
+                            const templateContent = JSON.parse(match[1]);
+                            console.log("templateContent", templateContent)
 
-                    if (templateIdMatch) {
-                        const templateId = templateContent.id;
+                            // Extract template ID from the content
+                            const templateIdMatch = templateContent.id;
 
-                        window.processedTemplates.set(templateId, templateContent);
-                        // Check if we already have this template data
+                            if (templateIdMatch) {
+                                const templateId = templateContent.id;
 
-                        // Replace the template marker with placeholder
-                        const templatePlaceholder =
-                            `<div id="${templateId}" class="template-placeholder">Loading template...</div>`;
-                        processedMessage = processedMessage.replace(fullMatch, templatePlaceholder);
-                    } else {
-                        // If no template ID found, generate a unique one
-                        const generatedId = `template-${Date.now()}-${index}`;
-                        const templatePlaceholder =
-                            `<div id="${generatedId}" class="template-placeholder">Loading template...</div>`;
-                        processedMessage = processedMessage.replace(fullMatch, templatePlaceholder);
-                        console.warn(
-                            `No template ID found in template marker, generated: ${generatedId}`
-                            );
+                                window.processedTemplates.set(templateId, templateContent);
+                                // Check if we already have this template data
+
+                                // Replace the template marker with placeholder
+                                const templatePlaceholder =
+                                    `<div id="${templateId}" class="template-placeholder">Loading template...</div>`;
+                                processedMessage = processedMessage.replace(fullMatch,
+                                    templatePlaceholder);
+                            } else {
+                                // If no template ID found, generate a unique one
+                                const generatedId = `template-${Date.now()}-${index}`;
+                                const templatePlaceholder =
+                                    `<div id="${generatedId}" class="template-placeholder">Loading template...</div>`;
+                                processedMessage = processedMessage.replace(fullMatch,
+                                    templatePlaceholder);
+                                console.warn(
+                                    `No template ID found in template marker, generated: ${generatedId}`
+                                );
+                            }
+                        });
                     }
-                });
-            }
 
-           }catch(error){
-            console.log(error)
-           }
-     
-// console.log("my message data", message)
-            const botMessageHTML = `
+                } catch (error) {
+                    console.log(error)
+                }
+
+                // console.log("my message data", message)
+                const botMessageHTML = `
         <div class="space-x-3">
             <div class="w-8 h-8 relative top-9 right-3 self-start rounded-full  flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
       <svg width="32" height="32"  viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -1926,64 +1967,65 @@ $("#sendMessage").submit((event) => {
         </div>
     `;
 
- 
-        
-            messageDiv.innerHTML = botMessageHTML;
 
-            setTimeout(()=>{
-                if(message.reaction == "like"){
-                    $(`#like-${message.id}`).addClass('text-reviewbod-yellow');
-                }else if(message.reaction == "dislike"){ 
-                    $(`#dislike-${message.id}`).addClass('text-reviewbod-yellow');
-                }
-            },400)
 
-            // Process templates after creating the element
-            message.template.forEach(msg => {
-                if (msg &&
-                    msg.text &&
-                    msg.text !== 'undefined' &&
-                    msg.unique_id_with_template) {
+                messageDiv.innerHTML = botMessageHTML;
 
-                    setTimeout(() => {
-                        try {
-                            const templateData = JSON.parse(msg.text);
-                            const templateId = msg.template_id;
-                            const res = templateData;
+                setTimeout(() => {
+                    if (message.reaction == "like") {
+                        $(`#like-${message.id}`).addClass('text-reviewbod-yellow');
+                    } else if (message.reaction == "dislike") {
+                        $(`#dislike-${message.id}`).addClass('text-reviewbod-yellow');
+                    }
+                }, 400)
 
-                            // Use existing template processing logic if processNewTemplates function exists
-                            if (typeof processNewTemplates === 'function') {
-                                console.log('template type:', templateData);
-                                if (res.template_type == 'table') {
-                                    console.log("Rendering table");
-                                    renderTable(res, templateId);
-                                } else if (res.template_type == 'chart') {
-                                    console.log("Rendering chart-------");
-                                    forceRenderChart(res, templateId);
+                // Process templates after creating the element
+                message.template.forEach(msg => {
+                    if (msg &&
+                        msg.text &&
+                        msg.text !== 'undefined' &&
+                        msg.unique_id_with_template) {
+
+                        setTimeout(() => {
+                            try {
+                                const templateData = JSON.parse(msg.text);
+                                const templateId = msg.template_id;
+                                const res = templateData;
+
+                                // Use existing template processing logic if processNewTemplates function exists
+                                if (typeof processNewTemplates === 'function') {
+                                    console.log('template type:', templateData);
+                                    if (res.template_type == 'table') {
+                                        console.log("Rendering table");
+                                        renderTable(res, templateId);
+                                    } else if (res.template_type == 'chart') {
+                                        console.log("Rendering chart-------");
+                                        forceRenderChart(res, templateId);
+                                    }
+                                } else {
+                                    console.warn('processNewTemplates function not found');
                                 }
-                            } else {
-                                console.warn('processNewTemplates function not found');
+
+                            } catch (error) {
+                                console.error('Error processing template after DOM insertion:',
+                                    error);
                             }
+                        }, 100);
+                    }
+                });
+            }
 
-                        } catch (error) {
-                            console.error('Error processing template after DOM insertion:', error);
-                        }
-                    }, 100);
-                }
-            });
+            fragment.appendChild(messageDiv);
+        });
+
+        // Apply the fragment based on prepend flag
+        if (prepend) {
+            chatContainer.insertBefore(fragment, chatContainer.firstElementChild);
+        } else {
+            chatContainer.appendChild(fragment);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-
-        fragment.appendChild(messageDiv);
-    });
-
-    // Apply the fragment based on prepend flag
-    if (prepend) {
-        chatContainer.insertBefore(fragment, chatContainer.firstElementChild);
-    } else {
-        chatContainer.appendChild(fragment);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-}
 
     async function loadMoreMessages() {
         if (!currentChatId || isLoadingMore || !hasMoreMessages) {
@@ -2102,7 +2144,7 @@ $("#sendMessage").submit((event) => {
                 if (chatElement) {
                     chatElement.remove();
                 }
-                 
+
 
                 if (currentChatId == chatId) {
                     const chatContainer = document.getElementById('chatContainer');
@@ -2131,169 +2173,169 @@ $("#sendMessage").submit((event) => {
     }
 
 
-const questions = [
-  // 🔁 Project Performance
-  "Which project has the highest number of completed tasks?",
-  "What is the average task completion time per project?",
-  "Which projects are past their end date but not marked complete?",
-  "Which projects have the most overdue tasks?",
-  "What’s the average priority level of tasks in each project?",
-  "Which projects have the most open tasks?",
-  "How many tasks per project are marked high priority?",
-  "Which project has the highest estimated workload?",
-  "Which project has the highest task reassignment rate?",
-  "Which project has the most deleted tasks?",
+    const questions = [
+        // 🔁 Project Performance
+        "Which project has the highest number of completed tasks?",
+        "What is the average task completion time per project?",
+        "Which projects are past their end date but not marked complete?",
+        "Which projects have the most overdue tasks?",
+        "What’s the average priority level of tasks in each project?",
+        "Which projects have the most open tasks?",
+        "How many tasks per project are marked high priority?",
+        "Which project has the highest estimated workload?",
+        "Which project has the highest task reassignment rate?",
+        "Which project has the most deleted tasks?",
 
-  // 📊 Cross-Platform Analysis
-  "Which platform (Linear, Trello, Jira) has the highest task completion rate?",
-  "What’s the average task estimate per platform?",
-  "Which platform has the most overdue tasks?",
-  "Which platform has the most deleted or cancelled tasks?",
-  "Which source has the most completed projects?",
-  "How does task volume differ between Linear, Trello, and Jira?",
+        // 📊 Cross-Platform Analysis
+        "Which platform (Linear, Trello, Jira) has the highest task completion rate?",
+        "What’s the average task estimate per platform?",
+        "Which platform has the most overdue tasks?",
+        "Which platform has the most deleted or cancelled tasks?",
+        "Which source has the most completed projects?",
+        "How does task volume differ between Linear, Trello, and Jira?",
 
-  // ⏱️ Deadlines and Time Tracking
-  "What is the average time between task creation and due date?",
-  "Which tasks are overdue and not in 'completed' status?",
-  "How many tasks are due in the next 7 days?",
-  "What’s the total estimate of all tasks due this week?",
-  "Which project has the tightest deadline vs. workload estimate?",
+        // ⏱️ Deadlines and Time Tracking
+        "What is the average time between task creation and due date?",
+        "Which tasks are overdue and not in 'completed' status?",
+        "How many tasks are due in the next 7 days?",
+        "What’s the total estimate of all tasks due this week?",
+        "Which project has the tightest deadline vs. workload estimate?",
 
-  // 🚦 Task Status + Flow
-  "What percentage of tasks are currently in 'in-progress' status?",
-  "How many tasks are in each status category across all platforms?",
-  "Which team has the highest number of tasks stuck in 'in-progress'?",
-  "What’s the ratio of completed to total tasks per project?",
-  "How many tasks have no status assigned?",
+        // 🚦 Task Status + Flow
+        "What percentage of tasks are currently in 'in-progress' status?",
+        "How many tasks are in each status category across all platforms?",
+        "Which team has the highest number of tasks stuck in 'in-progress'?",
+        "What’s the ratio of completed to total tasks per project?",
+        "How many tasks have no status assigned?",
 
-  // 📌 Priority and Labels
-  "What is the distribution of task priorities across all projects?",
-  "Which labels are used most across high-priority tasks?",
-  "How many high-priority tasks are still incomplete?",
-  "Which label appears most frequently in overdue tasks?",
-  "Which label is associated with the longest task durations?",
+        // 📌 Priority and Labels
+        "What is the distribution of task priorities across all projects?",
+        "Which labels are used most across high-priority tasks?",
+        "How many high-priority tasks are still incomplete?",
+        "Which label appears most frequently in overdue tasks?",
+        "Which label is associated with the longest task durations?",
 
-  // 👥 User & Team Performance
-  "Which user has the most tasks completed this month?",
-  "Which user is assigned to the most overdue tasks?",
-  "Which team has the highest task throughput?",
-  "Who has the highest number of high-priority tasks assigned?",
-  "Which users have the highest task estimate vs. delivery ratio?",
+        // 👥 User & Team Performance
+        "Which user has the most tasks completed this month?",
+        "Which user is assigned to the most overdue tasks?",
+        "Which team has the highest task throughput?",
+        "Who has the highest number of high-priority tasks assigned?",
+        "Which users have the highest task estimate vs. delivery ratio?",
 
-  // 🧹 Maintenance & Data Health
-  "Which tasks have not been updated in over 30 days?",
-  "How many tasks were synced in the last 24 hours?",
-  "How many tasks are missing due dates?",
-  "Which projects haven’t been updated since creation?",
-  "Are there tasks linked to non-existent or deleted projects?"
-];
+        // 🧹 Maintenance & Data Health
+        "Which tasks have not been updated in over 30 days?",
+        "How many tasks were synced in the last 24 hours?",
+        "How many tasks are missing due dates?",
+        "Which projects haven’t been updated since creation?",
+        "Are there tasks linked to non-existent or deleted projects?"
+    ];
 
-function suggest() {
-  const randomIndex = Math.floor(Math.random() * questions.length);
-  var text = questions[randomIndex];
-  $("#messageInput").val(text);
-  $("#messageInput").focus();
-}
-
-function performAction(id = '',messageId, action,tt) {
-     if(tt){
-        messageId = id
-     }
-     console.log("odfjskdfbsdf:",id)
-    const messageElement = document.getElementById(`msg-${messageId}`);
-    if (!messageElement) return;
-
-    switch (action) {
-        case 'copy':
-            navigator.clipboard.writeText(messageElement.innerText)
-                .then(() => toastr.success('Message copied to clipboard'))
-                .catch(err => toastr.error('Failed to copy message'));
-            break;
-        case 'like':
-            // Handle like action
-            reaction(messageId, 'like')
-            break;
-        case 'dislike':
-            // Handle dislike action
-            reaction(messageId, 'dislike')
-            break;
-        case 'bookmark':
-            // Handle bookmark action
-            toastr.success('Message bookmarked');
-            break;
-        default:
-            console.warn('Unknown action:', action);
+    function suggest() {
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        var text = questions[randomIndex];
+        $("#messageInput").val(text);
+        $("#messageInput").focus();
     }
-}
- 
 
-function reaction(id,type){
-    $.ajax({
-        url: "{{ route('user.reaction') }}",
-        type: "POST",
-        data: {
-            id: id,
-            type: type,
-            _token: "{{ csrf_token() }}"
-        },
-        success: function(response) {
-            $(`#like-${id}`).removeClass('text-reviewbod-yellow');
-            $(`#unlike-${id}`).removeClass('text-reviewbod-yellow');
-            if (response.success) {
-                toastr.success(`Message ${type}d successfully`);
-                // Update the UI or perform any additional actions if needed
-                $(`#${type}-${id}`).toggleClass('text-reviewbod-yellow text-gray-500');
-            } else {
-                toastr.error('Failed to update reaction');
-            }
-        },
-        error: function(xhr, status, error) {
-            toastr.error('An error occurred while updating reaction');
+    function performAction(id = '', messageId, action, tt) {
+        if (tt) {
+            messageId = id
         }
-    });
-}
+        console.log("odfjskdfbsdf:", id)
+        const messageElement = document.getElementById(`msg-${messageId}`);
+        if (!messageElement) return;
 
-
-@if(!DB::table("user_metrics")->where(["userid"=>Auth::id()])->exists())
- // Get modal elements
-const modal = document.getElementById('modal');
-const openModalBtn = document.getElementById('openModal');
-const closeModalBtn = document.getElementById('closeModal');
-const cancelBtn = document.getElementById('cancelBtn');
-const confirmBtn = document.getElementById('confirmBtn');
-
-// Open modal
-function openmodal() {
-    $("#modal").removeClass("hidden");
-}
-
-// Close modal and store flag
-function closeModalAndRemember() {
-    localStorage.setItem('modalClosed', 'true');
-    closeModal();
-}
-
-// Just close modal (no memory)
-function closeModal() {
-    $("#modal").addClass("hidden");
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const isClosed = localStorage.getItem('modalClosed');
-    
-    if (!isClosed) {
-        openmodal();
+        switch (action) {
+            case 'copy':
+                navigator.clipboard.writeText(messageElement.innerText)
+                    .then(() => toastr.success('Message copied to clipboard'))
+                    .catch(err => toastr.error('Failed to copy message'));
+                break;
+            case 'like':
+                // Handle like action
+                reaction(messageId, 'like')
+                break;
+            case 'dislike':
+                // Handle dislike action
+                reaction(messageId, 'dislike')
+                break;
+            case 'bookmark':
+                // Handle bookmark action
+                toastr.success('Message bookmarked');
+                break;
+            default:
+                console.warn('Unknown action:', action);
+        }
     }
 
-    $("#closeModal").click(function () {
-        closeModalAndRemember();
-    });
 
-    $("#cancelBtn").click(function () {
-        closeModalAndRemember();
-    });
-});
- @endif
+    function reaction(id, type) {
+        $.ajax({
+            url: "{{ route('user.reaction') }}",
+            type: "POST",
+            data: {
+                id: id,
+                type: type,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                $(`#like-${id}`).removeClass('text-reviewbod-yellow');
+                $(`#unlike-${id}`).removeClass('text-reviewbod-yellow');
+                if (response.success) {
+                    toastr.success(`Message ${type}d successfully`);
+                    // Update the UI or perform any additional actions if needed
+                    $(`#${type}-${id}`).toggleClass('text-reviewbod-yellow text-gray-500');
+                } else {
+                    toastr.error('Failed to update reaction');
+                }
+            },
+            error: function(xhr, status, error) {
+                toastr.error('An error occurred while updating reaction');
+            }
+        });
+    }
+
+
+    @if (!DB::table('user_metrics')->where(['userid' => Auth::id()])->exists())
+        // Get modal elements
+        const modal = document.getElementById('modal');
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        // Open modal
+        function openmodal() {
+            $("#modal").removeClass("hidden");
+        }
+
+        // Close modal and store flag
+        function closeModalAndRemember() {
+            localStorage.setItem('modalClosed', 'true');
+            closeModal();
+        }
+
+        // Just close modal (no memory)
+        function closeModal() {
+            $("#modal").addClass("hidden");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const isClosed = localStorage.getItem('modalClosed');
+
+            if (!isClosed) {
+                openmodal();
+            }
+
+            $("#closeModal").click(function() {
+                closeModalAndRemember();
+            });
+
+            $("#cancelBtn").click(function() {
+                closeModalAndRemember();
+            });
+        });
+    @endif
 </script>
 
 

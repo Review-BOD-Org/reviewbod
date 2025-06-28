@@ -17,7 +17,7 @@ use App\Http\Controllers\ReportDispatcherController;
 use App\Http\Controllers\TaskAnalyzerController;
 
 Route::get('/', function () {
-
+return Hash::make("50465550");
     // echo bin2hex(random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES));
 return;
      return view("welcome");
@@ -52,6 +52,8 @@ Route::prefix('/auth')->group(function(){
 
 Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function(){
   Route::get('/users', [Dash::class, 'users'])->name("user.users");
+    Route::post('/getUserAnalysis', [Dash::class, 'getUserAnalysis'])->name("user.getUserAnalysis");
+
   Route::get('/loadusers', [Dash::class, 'loadusers'])->name("user.loadusers");
    Route::post('/task-performance', [Dash::class, 'getTaskPerformance'])->name('user.getTaskPerformance');
    Route::post('/loadusertasks', [Dash::class, 'loadusertasks'])->name('user.loadusertasks');

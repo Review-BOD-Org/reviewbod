@@ -202,7 +202,7 @@ sql_prompt = PromptTemplate.from_template("""
 Based on the database schema, user query, and owner_id, write a SQL query to get the data.
 PULL MOST FROM tasks  TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPONSE 
 
-
+{staff_filter_instruction}
 
 CONTEXT AWARENESS:
 - note you have trello and linear as source, so make sure you know what you're doing
@@ -241,18 +241,23 @@ sql_chain = LLMChain(llm=llm, prompt=sql_prompt)
 
 # Updated response template with user metrics integration
 response_template = PromptTemplate.from_template("""
+                                                 
+{save}
 You are a helpful data analyst assistant, and you give accurate responses. Respond naturally based on the type of query.
 NEVER AND EVER YOU GIVE SQL OUT FOR USER, DONT TRY IT NEVER , NO MATTER WHAT THE USER ASK, THIS IS FOR MY SAFETY PLS
 ##MORE IMPORTANT!!!!!
  - mostly add template with anything data related so make it informative
  - Do not display template for empty data
- - avoid asking user for data , example 'Once you provide the data, I’ll help you get a detailed...' dont do that
+ 
+ - avoid asking user for data , example 'Once you provide the data, I'll help you get a detailed...' dont do that
  - dont ask the user if you want to create a template, just create it, this should happen if you have data to show
 The only available workspace currently are {workspace_types}
 
 ## USER-DEFINED METRICS & FORMULAS
 The user has defined these custom metrics for analysis:
 {user_metrics}
+
+
 
 When analyzing data, incorporate these user-defined metrics by:
 - Using the title and description to understand what each metric measures
@@ -431,6 +436,8 @@ async def websocket_endpoint(websocket: WebSocket):
             query = data.get("query", "")
             user_id_enc = data.get("user_id")
             chat_id_enc = data.get("chat_id")
+            staff_id = data.get("staff_id", "")
+            save = data.get("save", 0)
             user_id = decrypt(user_id_enc) if user_id_enc else None
             
             if not query or not user_id:
@@ -442,32 +449,36 @@ async def websocket_endpoint(websocket: WebSocket):
             logger.info(f"chat_id_enc {chat_id_enc}")
             # Handle empty chat_id - create new chat
             if not chat_id_enc:
-                
-                new_chat_info = create_new_chat(user_id, query, conn)
-                chat_id = new_chat_info['chat_uuid']
-                logger.info(chat_id)
-                
-                # Send new chat info back to client
-                await websocket.send_json({
-                    "type": "new_chat_created",
-                    "chat_id": new_chat_info['chat_id'],
-                    "chat_uuid": new_chat_info['chat_uuid'],
-                    "title": new_chat_info['title'],
-                    "description": new_chat_info['description'],
-                    "created_at": datetime.datetime.now().isoformat()
-                })
+                # Only create new chat if not staff_id or save equals 1
+                if not staff_id or save == 1:
+                    new_chat_info = create_new_chat(user_id, query, conn)
+                    chat_id = new_chat_info['chat_uuid']
+                    logger.info(chat_id)
+                    
+                    # Send new chat info back to client
+                    await websocket.send_json({
+                        "type": "new_chat_created",
+                        "chat_id": new_chat_info['chat_id'],
+                        "chat_uuid": new_chat_info['chat_uuid'],
+                        "title": new_chat_info['title'],
+                        "description": new_chat_info['description'],
+                        "created_at": datetime.datetime.now().isoformat()
+                    })
+                else:
+                    chat_id = None
             else:
                 chat_id = chat_id_enc
             
-            chat_history = get_chat_history(chat_id, conn)
-            await process_query_with_streaming(query, user_id, chat_id, websocket, chat_history)
+            chat_history = get_chat_history(chat_id, conn) if chat_id else ""
+            await process_query_with_streaming(query, user_id, chat_id, websocket, chat_history, staff_id, save)
             
     except WebSocketDisconnect:
         logger.info("Client disconnected from WebSocket")
 
-async def process_query_with_streaming(query: str, user_id: str, chat_id: str, websocket: WebSocket, chat_history: str):
-    # Save user message first (no unique_id needed for user messages)
-    save_message_to_db(chat_id, user_id, user_id, "user", query, conn)
+async def process_query_with_streaming(query: str, user_id: str, chat_id: str, websocket: WebSocket, chat_history: str, staff_id: str = "", save: int = 0):
+    # Save user message only if staff_id and save != 1, or if no staff_id, or if save == 1
+    if (not staff_id and save != 1) or save == 1:
+        save_message_to_db(chat_id, user_id, user_id, "user", query, conn)
     
     # Generate unique ID for this conversation turn (for bot response and templates)
     import uuid
@@ -492,6 +503,7 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
         metrics_text = "No custom metrics defined by user."
     
     logger.info(f"Processing query for user_id {user_id}: {query}")
+    logger.info(f"Staff ID filter: {staff_id}")
     logger.info(f"Generated unique_id_with_template: {unique_id_with_template}")
     logger.info(f"User metrics loaded: {len(user_metrics)} metrics")
     
@@ -518,9 +530,31 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
             schema_str = json.dumps(schema_info, indent=2)
             logger.info(f"Database schema: {schema_str}")
             
-            sql_query = await sql_chain.arun(schema=schema_str, query=query, owner_id=user_id,history=chat_history)
+            # Prepare staff filter instruction
+            staff_filter_instruction = ""
+            if staff_id and staff_id.strip():
+                staff_filter_instruction = f"""
+STAFF FILTER REQUIREMENT:
+- A staff email '{staff_id}' has been provided 
+- for the platform_users use the email like this  WHERE email = '{staff_id}'
+- You MUST add 'AND user_id = "{staff_id}"' to ALL queries involving the tasks table, joining the platform_users
+- This filters results to only show tasks assigned to this specific staff member
+- This filter should be added to WHERE clause along with owner_id filter
+- Example: WHERE owner_id = '{user_id}' Then you join the  platform_users.email = '{staff_id}'
+- since its only for a staff focus on giving analysis base on that staff..
+"""
+            else:
+                staff_filter_instruction = "No staff filter applied - show all results for the owner."
+            
+            sql_query = await sql_chain.arun(
+                schema=schema_str, 
+                query=query, 
+                owner_id=user_id,
+                history=chat_history,
+                staff_filter_instruction=staff_filter_instruction
+            )
             cleaned_sql = clean_sql(sql_query.strip())
-            logger.info(f"Generated SQL Query for user_id {user_id}:\n{cleaned_sql}")
+            logger.info(f"Generated SQL Query for user_id {user_id} with staff_id {staff_id}:\n{cleaned_sql}")
             
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             cursor.execute(cleaned_sql)
@@ -565,13 +599,40 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
                 "message": str(e)
             })
     try:
-        final_prompt_text = response_template.format(
+        if (staff_id and save != 1):
+            instruct = 'ABSOLUTELY NO TEMPLATES - RESPOND WITH TEXT ONLY'
+            logger.info(f"NO TEMPLATE")
+            
+            # Get the original template and completely remove template sections
+            modified_template = response_template.template
+            
+            # Remove the entire template instruction block
+            template_section_start = "### TEMPLATE INSTRUCTION"
+            template_section_end = "### PROFESSIONAL DATA RESPONSES"
+            
+            start_idx = modified_template.find(template_section_start)
+            end_idx = modified_template.find(template_section_end)
+            
+            if start_idx != -1 and end_idx != -1:
+                modified_template = modified_template[:start_idx] + "### NO TEMPLATES ALLOWED - TEXT ONLY\n\n" + modified_template[end_idx:]
+            
+            # Also remove any other template references
+            modified_template = modified_template.replace("Create templates when they enhance understanding", "Do not create any templates")
+            modified_template = modified_template.replace("with templates as needed", "without any templates")
+            
+            unique_id_with_template = "DISABLED"
+        else:
+            modified_template = response_template.template
+            instruct = ''
+
+        final_prompt_text = modified_template.format(
             history=chat_history,
             query=query,
             db_results=db_results or "No data available.",
             workspace_types=workspace_types,
             user_metrics=metrics_text,
-            unique_id_with_template=unique_id_with_template  # Pass to AI
+            save=instruct,
+            unique_id_with_template=unique_id_with_template
         )
         
         logger.info(f"Final prompt created with unique_id_with_template: {unique_id_with_template}")

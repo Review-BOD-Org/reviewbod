@@ -21,7 +21,7 @@
                 @foreach (DB::table('linked')->where('userid', auth()->user()->id)->get() as $linked)
                     <div class="border p-4 rounded-lg">
                         <div class="flex justify-between">
-                            <div><img src="/images/{{ $linked->type }}.webp" width="100"></div>
+                            <div><img src="@if($linked->type == 'jira') /{{ $linked->type }}.svg @else /images/{{ $linked->type }}.webp @endif" width="100"></div>
                             <div
                                 class="p-1 w-[150px] self-center rounded-full bg-[#BBF7D0] border-[#22C55E] border items-center flex justify-center text-[#22C55E]">
                                 Connected

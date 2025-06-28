@@ -100,18 +100,15 @@
 
                 <!-- Linked Apps Section Card -->
                 <div class="bg-white border border-black/15 rounded shadow-sm p-4">
-                    <h4 class="text-sm font-medium text-gray-900 mb-4">Linked Apps</h4>
+                    <h4 class="text-sm font-medium text-gray-900 mb-4">Linked App</h4>
                     <div class="space-y-3">
+
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900 opacity-90">Linear</span>
+                            <span class="text-sm font-medium text-gray-900 opacity-90 capitalize">{{ $data->source }}</span>
                             <span
                                 class="bg-[#99FDD2] text-gray-700 px-3 py-1 rounded-full text-xs font-medium opacity-80">Linked</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900 opacity-90">Trello</span>
-                            <span
-                                class="bg-[#99FDD2] text-gray-700 px-3 py-1 rounded-full text-xs font-medium opacity-80">Linked</span>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -259,7 +256,7 @@
 <!-- User Analytics Modal -->
 <div id="userAnalyticsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
     onclick="closeUserAnalyticsModal()">
-    <div class="bg-white rounded-[20px] w-[540px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+    <div class="bg-white rounded-[20px] w-[740px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
         onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-8 py-4 border-b border-[#e5e5e5] rounded-t-[20px]">
             <h2 class="text-base font-bold text-[#292d32] font-schibsted">User Details</h2>
@@ -366,72 +363,92 @@
                 </div>
             </div>
 
-        <!-- Time Filter Buttons -->
-<div class="flex items-center justify-center space-x-4">
-    <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
-        data-days="7">7 Days</button>
-    <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
-        data-days="30">30 Days</button>
-      <button class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
-        data-days="all">All</button>
-</div>
-
-<!-- Task Performance Chart -->
-<div>
-    <h3 class="text-xl font-semibold text-black mb-6 text-center">Task Performance</h3>
-    
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="hidden flex items-center justify-center mb-4">
-        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#6fb489]"></div>
-        <span class="ml-2 text-sm text-[#8e8e8e]">Loading chart data...</span>
-    </div>
-    
-    <!-- Error Message -->
-    <div id="errorMessage" class="hidden text-center text-red-500 text-sm mb-4"></div>
-    
-    <!-- Chart Container -->
-    <div class="relative mb-6">
-        <div class="flex items-center justify-center mb-4">
-            <div class="w-8"></div>
-            <canvas id="taskChart" width="400" height="200"></canvas>
-        </div>
-        
-        <!-- Legend -->
-        <div class="flex items-center justify-center space-x-6 mt-4">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-3 bg-[#6fb489] rounded-sm"></div>
-                <span class="text-xs text-[#8e8e8e]">Completed</span>
+            <!-- Time Filter Buttons -->
+            <div class="flex items-center justify-center space-x-4">
+                <button
+                    class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+                    data-days="7">7 Days</button>
+                <button
+                    class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+                    data-days="30">30 Days</button>
+                <button
+                    class="filter-btn bg-[#e1e1e1] text-[#717171] text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-[#d1d1d1]"
+                    data-days="all">All</button>
             </div>
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-3 bg-[#f4d632] rounded-sm"></div>
-                <span class="text-xs text-[#8e8e8e]">Assigned</span>
-            </div>
-        </div>
-    </div>
-</div>
 
-           <!-- Task List Section -->
+            <!-- Task Performance Chart -->
             <div>
-                <h3 class="text-xl font-semibold text-black mb-4">Task List</h3>
+                <h3 class="text-xl font-semibold text-black mb-6 text-center">Task Performance</h3>
 
-                <!-- Loading Indicator for Tasks -->
-                <div id="tasksLoadingIndicator" class="hidden flex items-center justify-center mb-4">
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="hidden flex items-center justify-center mb-4">
                     <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#6fb489]"></div>
-                    <span class="ml-2 text-sm text-[#8e8e8e]">Loading tasks...</span>
+                    <span class="ml-2 text-sm text-[#8e8e8e]">Loading chart data...</span>
                 </div>
 
-                <!-- Task Items Container -->
-                <div id="tasksList" class="space-y-3">
-                    <!-- Tasks will be loaded here via AJAX -->
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden text-center text-red-500 text-sm mb-4"></div>
+
+                <!-- Chart Container -->
+                <div class="relative mb-6">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-8"></div>
+                        <canvas id="taskChart" width="400" height="200"></canvas>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex items-center justify-center space-x-6 mt-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-10 h-3 bg-[#6fb489] rounded-sm"></div>
+                            <span class="text-xs text-[#8e8e8e]">Completed</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-10 h-3 bg-[#f4d632] rounded-sm"></div>
+                            <span class="text-xs text-[#8e8e8e]">Assigned</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task List Section -->
+            <div>
+                <h3 class="text-xl font-semibold text-black mb-4">Insights for this user</h3>
+
+
+                <div class="w-full bg-[#F1F1F1] p-5 rounded-lg">
+                    <div class="flex justify-between">
+
+                        <div class="bg-white flex items-center p-2 gap-3 w-[170px]  justify-center rounded-md">
+                            <svg width="20" height="20" viewBox="0 0 12 11" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M7.58342 1.4043C8.31261 1.4043 8.90373 0.813171 8.90373 0.0839844H9.5131C9.5131 0.813171 10.1042 1.4043 10.8334 1.4043V2.01367C10.1042 2.01367 9.5131 2.6048 9.5131 3.33398H8.90373C8.90373 2.6048 8.31261 2.01367 7.58342 2.01367V1.4043ZM0.541748 4.95898C2.33667 4.95898 3.79175 3.50391 3.79175 1.70898H4.87508C4.87508 3.50391 6.33016 4.95898 8.12508 4.95898V6.04232C6.33016 6.04232 4.87508 7.4974 4.87508 9.29232H3.79175C3.79175 7.4974 2.33667 6.04232 0.541748 6.04232V4.95898ZM9.34383 6.58398C9.34383 7.55622 8.55565 8.3444 7.58342 8.3444V9.1569C8.55565 9.1569 9.34383 9.94508 9.34383 10.9173H10.1563C10.1563 9.94508 10.9445 9.1569 11.9167 9.1569V8.3444C10.9445 8.3444 10.1563 7.55622 10.1563 6.58398H9.34383Z"
+                                    fill="#535754" />
+                            </svg>
+
+                            <span>User Summary</span>
+                        </div>
+
+                        <a href="javascript:;" class="" onclick="$('#content-ai').toggle()">
+                            <svg width="20" height="20" viewBox="0 0 12 8" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M6.00004 4.97633L10.1249 0.851562L11.3034 2.03007L6.00004 7.33341L0.696777 2.03007L1.87529 0.851562L6.00004 4.97633Z"
+                                    fill="#585858" />
+                            </svg>
+
+                        </a>
+                    </div>
+
+
+                    <div class="mt-5 flex flex-col gap-7" id="content-ai">
+
+                        <p class="text-center">Loading...</p>
+
+                    </div>
                 </div>
 
-                <!-- Load More Button -->
-                <div class="text-center mt-6">
-                    <button id="loadMoreBtn" onclick="loadMoreTasks()" 
-                        class="bg-[#e1e1e1] text-[#717171] text-sm font-medium px-6 py-2 rounded-full hover:bg-[#d1d1d1] transition-all duration-200">
-                        Load More
-                    </button>
-                </div>
+
             </div>
         </div>
 
@@ -449,184 +466,200 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
 <script>
+
+      @php
+    $key = hex2bin(env('SODIUM_KEY')); // 32-byte key from env
+    $nonceUser = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    $nonceChat = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+
+    $encryptedUser = sodium_crypto_secretbox(Auth::id(), $nonceUser, $key);
  
-let taskChart = null;
+    // combine nonce + ciphertext then base64 encode for safe JS embedding
+    $user_id_encrypted = base64_encode($nonceUser . $encryptedUser);
+ @endphp
 
-// Chart configuration
-const chartConfig = {
-    type: 'line',
-    data: {
-        labels: [],
-        datasets: [{
-            label: 'Completed',
-            data: [],
-            borderColor: '#6fb489',
-            backgroundColor: 'rgba(111, 180, 137, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#6fb489',
-            pointBorderColor: '#6fb489',
-            pointRadius: 4,
-            pointHoverRadius: 6
-        }, {
-            label: 'Assigned',
-            data: [],
-            borderColor: '#f4d632',
-            backgroundColor: 'rgba(244, 214, 50, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#f4d632',
-            pointBorderColor: '#f4d632',
-            pointRadius: 4,
-            pointHoverRadius: 6
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0,0,0,0.05)'
-                },
-                ticks: {
-                    color: '#8e8e8e',
-                    font: {
-                        size: 11
-                    }
-                }
-            },
-            x: {
-                grid: {
-                    color: 'rgba(0,0,0,0.05)'
-                },
-                ticks: {
-                    color: '#8e8e8e',
-                    font: {
-                        size: 11
-                    }
-                }
-            }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        }
+    let taskChart = null;
+
+    function getRandomId() {
+        return Math.floor(100000000 + Math.random() * 900000000);
     }
-};
-
-// Initialize chart
-function initChart() {
-    const ctx = document.getElementById('taskChart').getContext('2d');
-    taskChart = new Chart(ctx, chartConfig);
-}
-
-// Show loading state
-function showLoading() {
-    document.getElementById('loadingIndicator').classList.remove('hidden');
-    document.getElementById('errorMessage').classList.add('hidden');
-}
-
-// Hide loading state
-function hideLoading() {
-    document.getElementById('loadingIndicator').classList.add('hidden');
-}
-
-// Show error message
-function showError(message) {
-    document.getElementById('errorMessage').textContent = message;
-    document.getElementById('errorMessage').classList.remove('hidden');
-    hideLoading();
-}
-
-// Fetch chart data via AJAX
-async function fetchChartData(days = 7) {
-    showLoading();
-    
-    try {
-        const response = await fetch('{{route('user.getTaskPerformance')}}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+    var id = getRandomId();
+    // Chart configuration
+    const chartConfig = {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Completed',
+                data: [],
+                borderColor: '#6fb489',
+                backgroundColor: 'rgba(111, 180, 137, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#6fb489',
+                pointBorderColor: '#6fb489',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }, {
+                label: 'Assigned',
+                data: [],
+                borderColor: '#f4d632',
+                backgroundColor: 'rgba(244, 214, 50, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#f4d632',
+                pointBorderColor: '#f4d632',
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            body: JSON.stringify({
-                days: days,
-                _token: "{{csrf_token()}}",
-                user_id: window.currentUserId // Assume this is set globally
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        color: '#8e8e8e',
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        color: '#8e8e8e',
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
         }
+    };
 
-        const data = await response.json();
-        
-        if (data.success) {
-            updateChart(data.data);
-        } else {
-            throw new Error(data.message || 'Failed to fetch chart data');
-        }
-    } catch (error) {
-        console.error('Error fetching chart data:', error);
-        showError('Failed to load chart data. Please try again.');
-    } finally {
+    // Initialize chart
+    function initChart() {
+        const ctx = document.getElementById('taskChart').getContext('2d');
+        taskChart = new Chart(ctx, chartConfig);
+    }
+
+    // Show loading state
+    function showLoading() {
+        document.getElementById('loadingIndicator').classList.remove('hidden');
+        document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    // Hide loading state
+    function hideLoading() {
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    }
+
+    // Show error message
+    function showError(message) {
+        document.getElementById('errorMessage').textContent = message;
+        document.getElementById('errorMessage').classList.remove('hidden');
         hideLoading();
     }
-}
 
-// Update chart with new data
-function updateChart(data) {
-    if (!taskChart) return;
-    
-    taskChart.data.labels = data.labels;
-    taskChart.data.datasets[0].data = data.completed;
-    taskChart.data.datasets[1].data = data.assigned;
-    taskChart.update('active');
-}
+    // Fetch chart data via AJAX
+    async function fetchChartData(days = 7) {
+        showLoading();
 
-// Handle filter button clicks
-function setupFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active state from all buttons
-            filterButtons.forEach(btn => {
-                btn.classList.remove('bg-[#6fb489]', 'text-white');
-                btn.classList.add('bg-[#e1e1e1]', 'text-[#717171]');
+        try {
+            const response = await fetch('{{ route('user.getTaskPerformance') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                        'content') || ''
+                },
+                body: JSON.stringify({
+                    days: days,
+                    _token: "{{ csrf_token() }}",
+                    user_id: window.currentUserId // Assume this is set globally
+                })
             });
-            
-            // Add active state to clicked button
-            this.classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
-            this.classList.add('bg-[#6fb489]', 'text-white');
-            
-            // Fetch new data
-            const days = parseInt(this.getAttribute('data-days'));
-            fetchChartData(days);
-        });
-    });
-    
-    // Set default active button (7 days)
-    filterButtons[0].classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
-    filterButtons[0].classList.add('bg-[#6fb489]', 'text-white');
-}
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initChart();
-    setupFilterButtons();
-    fetchChartData(7); // Load initial data
-});
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                updateChart(data.data);
+            } else {
+                throw new Error(data.message || 'Failed to fetch chart data');
+            }
+        } catch (error) {
+            console.error('Error fetching chart data:', error);
+            showError('Failed to load chart data. Please try again.');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Update chart with new data
+    function updateChart(data) {
+        if (!taskChart) return;
+
+        taskChart.data.labels = data.labels;
+        taskChart.data.datasets[0].data = data.completed;
+        taskChart.data.datasets[1].data = data.assigned;
+        taskChart.update('active');
+    }
+
+    // Handle filter button clicks
+    function setupFilterButtons() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active state from all buttons
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('bg-[#6fb489]', 'text-white');
+                    btn.classList.add('bg-[#e1e1e1]', 'text-[#717171]');
+                });
+
+                // Add active state to clicked button
+                this.classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
+                this.classList.add('bg-[#6fb489]', 'text-white');
+
+                // Fetch new data
+                const days = parseInt(this.getAttribute('data-days'));
+                fetchChartData(days);
+            });
+        });
+
+        // Set default active button (7 days)
+        filterButtons[0].classList.remove('bg-[#e1e1e1]', 'text-[#717171]');
+        filterButtons[0].classList.add('bg-[#6fb489]', 'text-white');
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initChart();
+        setupFilterButtons();
+        fetchChartData(7); // Load initial data
+    });
 
     // Modal functions (you'll need to implement these)
     function closeUserAnalyticsModal() {
@@ -658,64 +691,64 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    
+
 
     // Task loading variables
-let currentTaskPage = 1;
-let isLoadingTasks = false;
-let hasMoreTasks = true;
+    let currentTaskPage = 1;
+    let isLoadingTasks = false;
+    let hasMoreTasks = true;
 
-// Load tasks function
-async function loadTasks(page = 1) {
-    if (isLoadingTasks) return;
-    
-    isLoadingTasks = true;
-    document.getElementById('tasksLoadingIndicator').classList.remove('hidden');
-    
-    try {
-        const response = await fetch('{{ route('user.loadusertasks') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                user_id: '{{ $data->user_id }}',
-                page: page,
-                _token: "{{ csrf_token() }}"
-            })
-        });
+    // Load tasks function
+    async function loadTasks(page = 1) {
+        if (isLoadingTasks) return;
 
-        const data = await response.json();
-        
-        if (data.success) {
-            displayTasks(data.tasks, page === 1);
-            hasMoreTasks = data.has_more;
-            currentTaskPage = data.current_page;
-            
-            // Show/hide load more button
-            document.getElementById('loadMoreBtn').style.display = hasMoreTasks ? 'block' : 'none';
+        isLoadingTasks = true;
+        // document.getElementById('tasksLoadingIndicator').classList.remove('hidden');
+
+        try {
+            const response = await fetch('{{ route('user.loadusertasks') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    user_id: '{{ $data->user_id }}',
+                    page: page,
+                    _token: "{{ csrf_token() }}"
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                displayTasks(data.tasks, page === 1);
+                hasMoreTasks = data.has_more;
+                currentTaskPage = data.current_page;
+
+                // Show/hide load more button
+                document.getElementById('loadMoreBtn').style.display = hasMoreTasks ? 'block' : 'none';
+            }
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+        } finally {
+            isLoadingTasks = false;
+            document.getElementById('tasksLoadingIndicator').classList.add('hidden');
         }
-    } catch (error) {
-        console.error('Error loading tasks:', error);
-    } finally {
-        isLoadingTasks = false;
-        document.getElementById('tasksLoadingIndicator').classList.add('hidden');
     }
-}
-// Updated displayTasks function with new card design
-function displayTasks(tasks, clearExisting = false) {
-    const tasksList = document.getElementById('tasksList');
-    
-    if (clearExisting) {
-        tasksList.innerHTML = '';
-    }
-    
-    tasks.forEach(task => {
-        const statusConfig = getStatusConfig(task.status);
-        const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date';
-        
-        const taskHTML = `
+    // Updated displayTasks function with new card design
+    function displayTasks(tasks, clearExisting = false) {
+        const tasksList = document.getElementById('tasksList');
+
+        if (clearExisting) {
+            tasksList.innerHTML = '';
+        }
+
+        tasks.forEach(task => {
+            const statusConfig = getStatusConfig(task.status);
+            const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date';
+
+            const taskHTML = `
             <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between mb-2">
                     <h4 class="text-sm font-medium text-gray-900">${task.title}</h4>
@@ -743,65 +776,220 @@ function displayTasks(tasks, clearExisting = false) {
                 </div>
             </div>
         `;
-        
-        tasksList.insertAdjacentHTML('beforeend', taskHTML);
-    });
-}
 
-// Helper function for status dots
-function getStatusDot(status) {
-    const dotColors = {
-        'Done': 'bg-green-500',
-        'In Progress': 'bg-yellow-500', 
-        'Pending': 'bg-orange-500',
-        'Todo': 'bg-gray-400'
-    };
-    return dotColors[status] || 'bg-gray-400';
-}
+            tasksList.insertAdjacentHTML('beforeend', taskHTML);
+        });
+    }
 
-// Updated status config with better sizing
-function getStatusConfig(status) {
-    const configs = {
-        'Done': {
-            class: 'bg-[#72c364] text-white text-xs px-3 py-1 rounded-full',
-            text: 'Completed'
-        },
-        'In Progress': {
-            class: 'bg-[#f4d632] text-black text-xs px-3 py-1 rounded-full',
-            text: 'In Progress'
-        },
-        'Pending': {
-            class: 'bg-[#ff8a6b] text-white text-xs px-3 py-1 rounded-full',
-            text: 'Pending'
-        },
-        'Todo': {
+    // Helper function for status dots
+    function getStatusDot(status) {
+        const dotColors = {
+            'Done': 'bg-green-500',
+            'In Progress': 'bg-yellow-500',
+            'Pending': 'bg-orange-500',
+            'Todo': 'bg-gray-400'
+        };
+        return dotColors[status] || 'bg-gray-400';
+    }
+
+    // Updated status config with better sizing
+    function getStatusConfig(status) {
+        const configs = {
+            'Done': {
+                class: 'bg-[#72c364] text-white text-xs px-3 py-1 rounded-full',
+                text: 'Completed'
+            },
+            'In Progress': {
+                class: 'bg-[#f4d632] text-black text-xs px-3 py-1 rounded-full',
+                text: 'In Progress'
+            },
+            'Pending': {
+                class: 'bg-[#ff8a6b] text-white text-xs px-3 py-1 rounded-full',
+                text: 'Pending'
+            },
+            'Todo': {
+                class: 'bg-[#e1e1e1] text-black text-xs px-3 py-1 rounded-full',
+                text: 'To Do'
+            }
+        };
+
+        return configs[status] || {
             class: 'bg-[#e1e1e1] text-black text-xs px-3 py-1 rounded-full',
-            text: 'To Do'
+            text: status || 'Unknown'
+        };
+    }
+
+    // Load more tasks
+    function loadMoreTasks() {
+        if (!hasMoreTasks || isLoadingTasks) return;
+        loadTasks(currentTaskPage + 1);
+    }
+
+    // Load tasks when modal opens
+    function openUserAnalyticsModal() {
+        const modal = document.getElementById('userAnalyticsModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+
+        // Reset and load tasks
+        currentTaskPage = 1;
+        hasMoreTasks = true;
+        loadTasks(1);
+    }
+
+    function stopStream() {
+        if (ws.readyState === WebSocket.OPEN && isStreaming) {
+            // Close the WebSocket connection to stop streaming
+            ws.close();
+
+            // Reset streaming state
+            isStreaming = false;
+            currentStreamId = null;
+            updateSendButton('ready');
+
+            // Clear any accumulated data from the stopped stream
+            accumulatedMarkdown = '';
+            processedTemplates.clear();
+            templatePlaceholders.clear();
+
+            // Reconnect after a short delay
+            setTimeout(() => {
+                var id = getRandomId()
+                initstream();
+            }, 100);
         }
-    };
-    
-    return configs[status] || {
-        class: 'bg-[#e1e1e1] text-black text-xs px-3 py-1 rounded-full',
-        text: status || 'Unknown'
-    };
-}
+    }
 
-// Load more tasks
-function loadMoreTasks() {
-    if (!hasMoreTasks || isLoadingTasks) return;
-    loadTasks(currentTaskPage + 1);
-}
+     accumulatedMarkdown = '';
+    function initstream() {
+        // Add variables to track streaming state
 
-// Load tasks when modal opens
-function openUserAnalyticsModal() {
-    const modal = document.getElementById('userAnalyticsModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
+        id = getRandomId()
+        ws = new WebSocket('wss://api.reviewbod.com/ws');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket');
+            const message = {
+                    query: "Give analysis base on this user, and avoid starting with hey or hello, just give insight on this user",
+                    user_id: @json($user_id_encrypted),
+                    staff_id:"{{$data->email}}", 
+                };
+
+                ws.send(JSON.stringify(message)); 
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received:', data);
+
+            const responseDiv = document.getElementById(`content-ai`);
+
+            switch (data.type) {
+                case 'stream_token':
+
+                    
+                    accumulatedMarkdown += data.token;
+   let displayContent = accumulatedMarkdown;
+                    responseDiv.innerHTML = marked.parse(displayContent);
+                    // autoScroll();
+
+                    break;
+
+                case 'error':
+                    //responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
+                    isStreaming = false;
+                    currentStreamId = null; 
+                    break;
+                case 'new_chat_created':
+
+                  
+
+                    chatListContainer.prepend(chatItem);
+
+
+                    // Start sidebar update interval after first message
+
+
+                    break;
+
+                case 'sql_query':
+                    responseDiv.innerHTML += `
+            <div class="flex gap-3 items-center">
+                <svg width="30" height="30" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.81896 13.3258V12.0318C8.87496 11.5718 9.28496 11.2638 9.74796 11.2638H10.303C10.7008 11.2638 11.0823 11.1058 11.3636 10.8245C11.6449 10.5432 11.803 10.1617 11.803 9.76383V8.28783C12.39 8.31083 12.69 8.26183 13.042 8.04083C13.374 7.83083 13.486 7.40583 13.372 7.02883C12.34 3.61183 10.73 0.173828 6.13296 0.173828C2.61296 0.173828 0.584961 1.97983 0.584961 5.58783C0.584961 8.07583 1.23996 8.89583 2.02896 10.1758C2.44196 10.8468 2.61796 11.6298 2.61596 12.4188L2.61396 13.3258C2.61396 13.4584 2.66664 13.5856 2.76041 13.6794C2.85418 13.7731 2.98135 13.8258 3.11396 13.8258H8.31896C8.45157 13.8258 8.57875 13.7731 8.67251 13.6794C8.76628 13.5856 8.81896 13.4584 8.81896 13.3258Z" fill="#8FBFFA"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.26557 2.63672H6.67157C6.82356 2.63731 6.97188 2.68345 7.09738 2.7692C7.22287 2.85494 7.31978 2.97634 7.37557 3.11772L7.56157 3.59072L8.12657 3.91672L8.62757 3.84072C8.77822 3.81812 8.93218 3.84132 9.06948 3.90729C9.20678 3.97327 9.32109 4.07898 9.39757 4.21072L9.60057 4.56172C9.67653 4.69379 9.71104 4.84564 9.69963 4.99756C9.68822 5.14949 9.63141 5.29448 9.53657 5.41372L9.22057 5.80972V6.46372L9.53457 6.85972C9.6292 6.97886 9.68588 7.12367 9.69729 7.27539C9.7087 7.42711 9.67431 7.57876 9.59857 7.71072L9.39557 8.06072C9.31937 8.19282 9.20518 8.29895 9.06786 8.36529C8.93053 8.43163 8.77643 8.45513 8.62557 8.43272L8.12557 8.35672L7.55957 8.68272L7.37457 9.15472C7.31893 9.29628 7.2221 9.4179 7.09659 9.50383C6.97108 9.58976 6.82268 9.63605 6.67057 9.63672H6.26457C6.1123 9.63625 5.96367 9.59005 5.83797 9.50411C5.71226 9.41817 5.61527 9.29644 5.55957 9.15472L5.37457 8.68272L4.80857 8.35672L4.30857 8.43272C4.15793 8.45532 4.00397 8.43212 3.86667 8.36615C3.72936 8.30017 3.61506 8.19446 3.53857 8.06272L3.33557 7.71072C3.25983 7.57876 3.22544 7.42711 3.23685 7.27539C3.24826 7.12367 3.30495 6.97886 3.39957 6.85972L3.71557 6.46372V5.80972L3.39957 5.41372C3.30473 5.29448 3.24792 5.14949 3.23651 4.99756C3.2251 4.84564 3.25961 4.69379 3.33557 4.56172L3.53857 4.21172C3.61485 4.07997 3.72894 3.97417 3.86605 3.90802C4.00316 3.84187 4.15698 3.81843 4.30757 3.84072L4.80757 3.91672L5.37457 3.58772L5.56057 3.11772C5.61643 2.97618 5.71349 2.85467 5.83918 2.76892C5.96487 2.68316 6.11341 2.63711 6.26557 2.63672ZM6.46857 4.94672C6.75257 4.94672 7.05157 5.02972 7.27157 5.21272C7.52157 5.42172 7.63957 5.74872 7.65557 6.05972C7.67157 6.37172 7.58857 6.70672 7.38557 6.94572C7.16057 7.20972 6.80257 7.32572 6.46857 7.32572C6.13557 7.32572 5.77657 7.20972 5.55157 6.94572C5.34857 6.70672 5.26557 6.37172 5.28157 6.05972C5.29857 5.74972 5.41657 5.42172 5.66657 5.21272C5.88557 5.02972 6.18457 4.94672 6.46857 4.94672Z" fill="#2859C5"/>
+                </svg>
+                <span>Thinking..</span>
+            </div>`;
+                    // autoScroll();
+
+                    break;
+
+                case 'db_results':
+                    responseDiv.innerHTML += `
+            <div class="flex gap-3 items-center">
+                <svg width="30" height="30" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.81896 13.3258V12.0318C8.87496 11.5718 9.28496 11.2638 9.74796 11.2638H10.303C10.7008 11.2638 11.0823 11.1058 11.3636 10.8245C11.6449 10.5432 11.803 10.1617 11.803 9.76383V8.28783C12.39 8.31083 12.69 8.26183 13.042 8.04083C13.374 7.83083 13.486 7.40583 13.372 7.02883C12.34 3.61183 10.73 0.173828 6.13296 0.173828C2.61296 0.173828 0.584961 1.97983 0.584961 5.58783C0.584961 8.07583 1.23996 8.89583 2.02896 10.1758C2.44196 10.8468 2.61796 11.6298 2.61596 12.4188L2.61396 13.3258C2.61396 13.4584 2.66664 13.5856 2.76041 13.6794C2.85418 13.7731 2.98135 13.8258 3.11396 13.8258H8.31896C8.45157 13.8258 8.57875 13.7731 8.67251 13.6794C8.76628 13.5856 8.81896 13.4584 8.81896 13.3258Z" fill="#8FBFFA"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.26557 2.63672H6.67157C6.82356 2.63731 6.97188 2.68345 7.09738 2.7692C7.22287 2.85494 7.31978 2.97634 7.37557 3.11772L7.56157 3.59072L8.12657 3.91672L8.62757 3.84072C8.77822 3.81812 8.93218 3.84132 9.06948 3.90729C9.20678 3.97327 9.32109 4.07898 9.39757 4.21072L9.60057 4.56172C9.67653 4.69379 9.71104 4.84564 9.69963 4.99756C9.68822 5.14949 9.63141 5.29448 9.53657 5.41372L9.22057 5.80972V6.46372L9.53457 6.85972C9.6292 6.97886 9.68588 7.12367 9.69729 7.27539C9.7087 7.42711 9.67431 7.57876 9.59857 7.71072L9.39557 8.06072C9.31937 8.19282 9.20518 8.29895 9.06786 8.36529C8.93053 8.43163 8.77643 8.45513 8.62557 8.43272L8.12557 8.35672L7.55957 8.68272L7.37457 9.15472C7.31893 9.29628 7.2221 9.4179 7.09659 9.50383C6.97108 9.58976 6.82268 9.63605 6.67057 9.63672H6.26457C6.1123 9.63625 5.96367 9.59005 5.83797 9.50411C5.71226 9.41817 5.61527 9.29644 5.55957 9.15472L5.37457 8.68272L4.80857 8.35672L4.30857 8.43272C4.15793 8.45532 4.00397 8.43212 3.86667 8.36615C3.72936 8.30017 3.61506 8.19446 3.53857 8.06272L3.33557 7.71072C3.25983 7.57876 3.22544 7.42711 3.23685 7.27539C3.24826 7.12367 3.30495 6.97886 3.39957 6.85972L3.71557 6.46372V5.80972L3.39957 5.41372C3.30473 5.29448 3.24792 5.14949 3.23651 4.99756C3.2251 4.84564 3.25961 4.69379 3.33557 4.56172L3.53857 4.21172C3.61485 4.07997 3.72894 3.97417 3.86605 3.90802C4.00316 3.84187 4.15698 3.81843 4.30757 3.84072L4.80757 3.91672L5.37457 3.58772L5.56057 3.11772C5.61643 2.97618 5.71349 2.85467 5.83918 2.76892C5.96487 2.68316 6.11341 2.63711 6.26557 2.63672ZM6.46857 4.94672C6.75257 4.94672 7.05157 5.02972 7.27157 5.21272C7.52157 5.42172 7.63957 5.74872 7.65557 6.05972C7.67157 6.37172 7.58857 6.70672 7.38557 6.94572C7.16057 7.20972 6.80257 7.32572 6.46857 7.32572C6.13557 7.32572 5.77657 7.20972 5.55157 6.94572C5.34857 6.70672 5.26557 6.37172 5.28157 6.05972C5.29857 5.74972 5.41657 5.42172 5.66657 5.21272C5.88557 5.02972 6.18457 4.94672 6.46857 4.94672Z" fill="#2859C5"/>
+                </svg>
+                <span>Thinking..</span>
+            </div>`;
+                    // autoScroll();
+
+                    break;
+                    // Replace your existing 'visualizations' case with this improved version:
+
+
+                case 'classification':
+                    // responseDiv.innerHTML += `<p><b>CLASSIFICATION</b>: ${data.data}</p>`;
+                    break;
+
+                case 'stream_end':
+
+                 
+                    break;
+                default:
+                    responseDiv.innerHTML += `<p>${JSON.stringify(data, null, 2)}</p>`;
+            }
+        };
+
+
+
+
+        ws.onclose = (data) => {
+            console.log('Disconnected:', data);
+            toastr.error("Network Error")
+
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+              toastr.error("Connection Error")
+        };
+    }
+
+    function getCurrentTimestamp() {
+        const now = new Date();
+        const day = now.getDate();
+        const month = now.toLocaleDateString('en-US', {
+            month: 'short'
+        });
+        const time = now.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+        return `${day} ${month} ▪ ${time}`;
+    }
+
+  
+    document.addEventListener('DOMContentLoaded', function() {
+
+        initstream();
+ 
+                 
+          
     
-    // Reset and load tasks
-    currentTaskPage = 1;
-    hasMoreTasks = true;
-    loadTasks(1);
-}
+    })
 </script>
