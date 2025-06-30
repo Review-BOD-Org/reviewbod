@@ -20,12 +20,13 @@
                 <p style="margin-top: 0; color: #333333; font-size: 16px;">Hello <strong>{{ $name }}</strong>,</p>
                 <p style="color: #333333; font-size: 16px;">You've been invited to join ReviewBod. Use the link below to accept your invitation and get started.</p>
                 <p style="color: #666666; font-size: 14px;">Invitation ID: {{ $id }}</p>
+                  <p style="color: #666666; font-size: 14px;">Workspace: {{ $workspace }}</p>
                 
                 <!-- Button -->
                 <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
                     <tr>
                         <td style="background-color: #4285F4; border-radius: 4px; padding: 12px 24px; text-align: center;">
-                            <a href="{{url("/invite/$id")}}" style="color: white; text-decoration: none; font-weight: bold; display: inline-block;">Accept Invitation</a>
+                            <a href="{{url("/invite/$workspace/$id")}}" style="color: white; text-decoration: none; font-weight: bold; display: inline-block;">Accept Invitation</a>
                         </td>
                     </tr>
                 </table>

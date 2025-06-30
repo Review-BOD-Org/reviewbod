@@ -83,7 +83,7 @@
                     success: function(response) {
                         toastr.success('OTP Verified Successfully!');
                         // Handle successful verification (e.g., redirect)
-                        location.href = '/auth/choose'
+                        location.href = '/auth/workspace'
                     },
                     error: function(xhr) {
                         toastr.error(xhr.responseJSON?.message || 'OTP Verification Failed');

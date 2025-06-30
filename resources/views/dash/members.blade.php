@@ -375,7 +375,7 @@
                                                         data-user-status="{{ $user->user_status }}"
                                                         style="margin-left: 10%;border: none !important;box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(70, 79, 96, 0.16), 0px 2px 5px rgba(89, 96, 120, 0.1);">
                                                 </td>
-                                                <td class="py-4 px-6 text-sm font-medium text-gray-900">{{ $user->id }}
+                                                <td class="py-4 px-6 text-sm font-medium text-gray-900">{{ $user->user_id }}
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="flex flex-col">
@@ -457,7 +457,7 @@
 
                                                             <!-- Send Invitation - Only show if conditions are met -->
                                                             @if ($user->user_status != 'blocked' && $user->user_status != 'active')
-                                                                @if ($user->email != 'N/A')
+                                                                @if ($user->email != '')
                                                                     <button class="dropdown-item primary"
                                                                         onclick="send_invite('{{ $user->id }}','{{ $user->name }}','{{ $user->email }}')">
                                                                         <svg fill="none" stroke="currentColor"

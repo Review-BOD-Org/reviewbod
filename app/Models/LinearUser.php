@@ -11,7 +11,7 @@ class LinearUser extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    protected $table = 'linear_users';
+    protected $table = 'linked_users';
     /**
      * The attributes that are mass assignable.
      *

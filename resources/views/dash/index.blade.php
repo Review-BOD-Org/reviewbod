@@ -12,6 +12,33 @@
 
         }
 
+          .snap-animation {
+            animation: snapOut 0.6s ease-out forwards;
+        }
+
+        @keyframes snapOut {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            40% {
+                transform: scale(0.95) rotate(-3deg);
+            }
+            60% {
+                transform: scale(1.05) rotate(2deg);
+            }
+            80% {
+                transform: scale(0.98) rotate(-1deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
         #chat_data>div {
             padding: 0px !important;
         }
@@ -400,6 +427,7 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 @php
     $key = hex2bin(env('SODIUM_KEY')); // 32-byte key from env
@@ -2261,15 +2289,87 @@
                 break;
             case 'bookmark':
                 // Handle bookmark action
-                toastr.success('Message bookmarked');
+                snapCapture(`msg-${messageId}`);
+                
                 break;
             default:
                 console.warn('Unknown action:', action);
         }
     }
 
-
-    function reaction(id, type) {
+   async function snapCapture(divId) {
+            const element = document.getElementById(divId);
+            if (!element) return;
+            
+            // Add snap animation
+            element.classList.add('snap-animation');
+            
+            // Wait for animation to start then capture straight
+            setTimeout(async () => {
+                try {
+                    // Completely remove animation and reset transform
+                    element.classList.remove('snap-animation');
+                    element.style.transform = 'none';
+                    
+                    // Small delay to ensure styles are applied
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                    
+                    const canvas = await html2canvas(element, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#ffffff'
+                    });
+                    
+                    // Create new canvas with watermark
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = canvas.width;
+                    finalCanvas.height = canvas.height;
+                    const ctx = finalCanvas.getContext('2d');
+                    
+                    // Draw original content
+                    ctx.drawImage(canvas, 0, 0);
+                    
+                    // Create logo image element for watermark
+                    const logoImg = document.createElement('img');
+                    logoImg.crossOrigin = 'anonymous';
+                    
+                    logoImg.onload = () => {
+                        // Draw logo watermark
+                        const logoSize = 60;
+                        const margin = 15;
+                        ctx.globalAlpha = 0.8;
+                        ctx.drawImage(logoImg, finalCanvas.width - logoSize - margin, margin, logoSize, logoSize);
+                        
+                        // Download final image
+                        const link = document.createElement('a');
+                        link.download = `snap-${Date.now()}.png`;
+                        link.href = finalCanvas.toDataURL('image/png');
+                        link.click();
+                    };
+                    
+                    logoImg.onerror = () => {
+                        // Fallback: draw text watermark if logo fails
+                        ctx.globalAlpha = 0.6;
+                        ctx.font = '16px Arial';
+                        ctx.fillStyle = '#333';
+                        ctx.fillText('ReviewBod', finalCanvas.width - 100, 25);
+                        
+                        const link = document.createElement('a');
+                        link.download = `snap-${Date.now()}.png`;
+                        link.href = finalCanvas.toDataURL('image/png');
+                        link.click();
+                    };
+                    
+                    // Load the logo
+                    logoImg.src = 'https://reviewbod.com/rb.svg';
+                    
+                } catch (error) {
+                    console.error('Capture failed:', error);
+                    element.classList.remove('snap-animation');
+                }
+            }, 200);
+        }
+        function reaction(id, type) {
         $.ajax({
             url: "{{ route('user.reaction') }}",
             type: "POST",

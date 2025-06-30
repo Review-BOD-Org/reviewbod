@@ -873,7 +873,7 @@
             const message = {
                     query: "Give analysis base on this user, and avoid starting with hey or hello, just give insight on this user",
                     user_id: @json($user_id_encrypted),
-                    staff_id:"{{$data->email}}", 
+                    staff_id:"{{$data->email ? $data->email : $data->user_id}}", 
                 };
 
                 ws.send(JSON.stringify(message)); 

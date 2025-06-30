@@ -21,6 +21,10 @@ class AuthController extends Controller
     }
 
 
+    public function workspace(){
+        return view("auth.workspace");
+}
+
 
     public function verification(){
         return view("auth.otp_verify");
@@ -190,21 +194,35 @@ class AuthController extends Controller
 
     public function update_password(Request $request){
         
-        $checkuser = DB::table("linear_users")->where("invite_id",$request->id)->first();
+        $checkuser = DB::table("linked_users")->where("invite_id",$request->id)->first();
         if(!$checkuser){
             return response()->json([
                 'message' => 'User not found',
             ],400);
         }
 
-        DB::table("linear_users")->where("invite_id",$request->id)->update([
+        DB::table("linked_users")->where("invite_id",$request->id)->update([
             'password' => Hash::make($request->password),
-            "verified" => 1,
+            "status" => "active",
         ]);
    
 
         return response()->json([
             'message' => 'Password updated successfully',
+        ],200);
+    }
+
+    public function create(Request $request){
+        $check = DB::table("users")->where(["workspace"=>$request->name])->exists();
+        if($check){
+              return response()->json([
+                'message' => 'This workspace name already exists, please choose another name!',
+            ],400);
+        }
+
+         DB::table("users")->where(["id"=>Auth::id()])->update(["workspace"=>$request->name]);
+       return response()->json([
+            'message' => 'Workspace created!',
         ],200);
     }
 }

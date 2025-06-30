@@ -18,8 +18,7 @@
                             class="dropdown-content absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
                             <a href="{{ route('user.settings') }}"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account Settings</a>
-                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Theme
-                                Preferences</a>
+                        
                             <div class="border-t border-gray-100 my-1"></div>
                             <a href="{{ route('user.logout') }}"
                                 class="block px-4 py-2 text-sm text-pink-600 hover:bg-gray-100">Logout</a>

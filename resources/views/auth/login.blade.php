@@ -38,7 +38,7 @@
                         <label for="email" class="block text-lg font-medium text-gray-700 mb-2">Login</label>
                         <input type="text" id="email"
                             class="w-full px-4 py-4 bg-gray-100 rounded-lg focus:outline-none"
-                            placeholder="Email or phone number">
+                            placeholder="Email Address">
                     </div>
 
                     <div class="mb-6">

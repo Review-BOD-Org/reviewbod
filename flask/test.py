@@ -41,7 +41,7 @@ def ensure_sqlalchemy_connection():
         # Recreate the SQLAlchemy database connection
         db = SQLDatabase.from_uri(
             "mysql+pymysql://root:50465550@127.0.0.1:3306/db?pool_pre_ping=True&pool_recycle=3600",
-            include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics","status_trello"]
+            include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics","status_trello","status_jira"]
         )
 
 def ensure_connection():
@@ -86,7 +86,7 @@ os.environ["OPENAI_API_KEY"] = "sk-proj-H_YvpLOudqgr6sl_jgsUrg95W9T11I9JzS9BiplT
 
 db = SQLDatabase.from_uri(
     "mysql+pymysql://root:50465550@127.0.0.1:3306/db",
-    include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics"]
+     include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics","status_trello","status_jira", "users"]
 )
 conn = pymysql.connect(
     host='localhost',
@@ -534,15 +534,19 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
             staff_filter_instruction = ""
             if staff_id and staff_id.strip():
                 staff_filter_instruction = f"""
-STAFF FILTER REQUIREMENT:
-- A staff email '{staff_id}' has been provided 
-- for the platform_users use the email like this  WHERE email = '{staff_id}'
-- You MUST add 'AND user_id = "{staff_id}"' to ALL queries involving the tasks table, joining the platform_users
-- This filters results to only show tasks assigned to this specific staff member
-- This filter should be added to WHERE clause along with owner_id filter
-- Example: WHERE owner_id = '{user_id}' Then you join the  platform_users.email = '{staff_id}'
-- since its only for a staff focus on giving analysis base on that staff..
-"""
+                STAFF FILTER REQUIREMENT:
+                - A staff identifier '{staff_id}' has been provided
+                - STEP 1: Determine if '{staff_id}' is an email (contains @) or an ID (numeric/string without @)
+                - STEP 2: Join tasks table with platform_users table using the appropriate field:
+                * If email: JOIN platform_users ON platform_users.email = '{staff_id}'
+                * If ID: JOIN platform_users ON platform_users.user_id = '{staff_id}'
+                - STEP 3: Always include owner filter: WHERE owner_id = '{user_id}'
+                - STEP 4: Filter tasks to show only those assigned to this staff member
+                - COMPLETE EXAMPLE:
+                * For email: SELECT * FROM tasks JOIN platform_users ON tasks.user_id = platform_users.user_id WHERE tasks.owner_id = '{user_id}' AND platform_users.email = '{staff_id}'
+                * For ID: SELECT * FROM tasks JOIN platform_users ON tasks.user_id = platform_users.user_id WHERE tasks.owner_id = '{user_id}' AND platform_users.user_id = '{staff_id}'
+                - Focus analysis only on this specific staff member's performance
+                """
             else:
                 staff_filter_instruction = "No staff filter applied - show all results for the owner."
             

@@ -223,7 +223,7 @@ os.environ["OPENAI_API_KEY"] = "sk-proj-H_YvpLOudqgr6sl_jgsUrg95W9T11I9JzS9BiplT
 # Create SQLDatabase - LangChain SQLDatabase doesn't support pooling parameters directly
 db = SQLDatabase.from_uri(
     "mysql+pymysql://root:50465550@localhost:3306/db?charset=utf8mb4&autocommit=true",
-    include_tables=["tasks", "projects", "teams", "platform_users", "linked"],
+      include_tables=["tasks", "projects", "teams", "platform_users", "linked","sub_issues", "user_metrics","status_trello","status_jira", "users"],
        engine_args={
         'pool_pre_ping': True,
         'pool_recycle': 3600,
@@ -778,6 +778,8 @@ sql_optimization_prompt = PromptTemplate.from_template("""
 Based on the database schema, description, sample SQL query, and owner_id, write a SINGLE, VALID SQL query.
 
 CRITICAL SQL REQUIREMENTS: 
+- on the users table i dont have anything like full_name only name
+- use only the schema provided avoid suggesting please, thats more important
 - always state the platform the data is from, either trello or linear or jira
 - note you have trello and linear as source, so make sure you know what you're doing, so your response should be accurate across these platform
 - include trello and linear when fetching , make give repsonse labeled by platform either linear or trello
@@ -789,6 +791,18 @@ CRITICAL SQL REQUIREMENTS:
 - NO explanatory text before or after the SQL
 - NO multiple queries or statements
 - Must be syntactically correct MySQL
+
+
+##CRITICAL JOIN RULES:
+- This is correct JOIN platform_users ON platform_users.user_id = tasks.user_id, this is not correct JOIN platform_users ON platform_users.user_id = users.id, always note that
+- NEVER join platform_users directly on email
+- CORRECT task joins: tasks -> users (via owner_id) -> platform_users (via user_id)
+- EXAMPLE: FROM tasks 
+           JOIN users ON users.id = tasks.owner_id 
+           JOIN platform_users ON platform_users.user_id = tasks.user_id
+- please pass distinct to your fetching of tasks as most of the tasks are duplicare
+- Always filter by: WHERE platform_users.email = '{user_email}' AND users.workspace = '{workspace}'
+- Always add: WHERE tasks.is_deleted IS NULL (to exclude deleted tasks)
 
 
 CURRENT DATE CONTEXT:
@@ -941,6 +955,7 @@ def getTableTemplate(temp_data, owner_id):
         
         # Optimize the SQL query using AI
         try:
+            logger.info(f"All schema {schema_str}:\n{schema_str}")
             optimized_sql = sql_optimization_chain.run(
                 schema=schema_str,
                 description=description,
@@ -1014,29 +1029,52 @@ def generate_template():
         current_date = date.today()
         current_year = current_date.year
         
-        # Validate required fields with defaults
-        # required_fields = ['description', 'id', 'sql', 'owner_id', 'chat_id']
-        # for field in required_fields:
-        #     if field not in data or not data[field]:
-        #         return jsonify({"error": f"Missing or empty required field: {field}"}), 400
+        # Get the type parameter from query string
+        request_type = request.args.get('type', 'default')
         
         description = str(data['description'])
         template_id = str(data['id'])
         sample_sql_query = str(data['sql'])
-        owner_id_enc = str(data['owner_id'])
         chat_id_enc = str(data['chat_id'])
         
-        # Decrypt IDs with error handling
-        try:
-            owner_id = decrypt(owner_id_enc) if owner_id_enc else None
-            chat_id = chat_id_enc
+        # Handle different request types
+        if request_type == 'invited':
+            # For invited type, use staff_id (encrypted email)
+            staff_id_enc = str(data.get('staff_id', ''))
+            if not staff_id_enc:
+                return jsonify({"error": "Missing staff_id for invited type"}), 400
             
-            if not owner_id or not chat_id:
-                return jsonify({"error": "Invalid encrypted IDs"}), 400
-        except Exception as e:
-            return jsonify({"error": "Decryption failed"}), 400
+            # Decrypt staff_id to get email
+            try:
+                staff_email = decrypt(staff_id_enc)
+                if not staff_email:
+                    return jsonify({"error": "Invalid encrypted staff_id"}), 400
+            except Exception as e:
+                return jsonify({"error": "Staff ID decryption failed"}), 400
+            
+            # For invited type, we don't need owner_id
+            owner_id = None
+            user_email = staff_email
+            
+        else:
+            # For default type, use owner_id
+            owner_id_enc = str(data.get('owner_id', ''))
+            if not owner_id_enc:
+                return jsonify({"error": "Missing owner_id for default type"}), 400
+            
+            # Decrypt owner_id
+            try:
+                owner_id = decrypt(owner_id_enc)
+                if not owner_id:
+                    return jsonify({"error": "Invalid encrypted owner_id"}), 400
+            except Exception as e:
+                return jsonify({"error": "Owner ID decryption failed"}), 400
+            
+            user_email = None  # Will be set from database if needed
         
-        logger.info(f"Generating template for owner_id {owner_id}, template_id {template_id}")
+        chat_id = chat_id_enc
+        
+        logger.info(f"Generating template for type: {request_type}, template_id: {template_id}")
         
         # Get chat history safely
         chat_history = ""
@@ -1053,33 +1091,117 @@ def generate_template():
         except Exception as e:
             logger.warning(f"Could not get schema: {str(e)}")
         
-        # Optimize SQL with fallback
-        optimized_sql = None
-        try:
-            optimized_sql = sql_optimization_chain.run(
-                schema=schema_str,
-                description=description,
-                sample_sql=sample_sql_query,
-                owner_id=owner_id,
-                history=chat_history,
-                current_date=current_date.strftime('%Y-%m-%d'),
-                current_year=current_year
-            )
-            optimized_sql = clean_sql(optimized_sql.strip())
-            logger.info(f"AI-Optimized SQL Query:\n{optimized_sql}")
+        # Create appropriate optimization prompt based on type
+        if request_type == 'invited':
+            # Use the invited-specific SQL prompt
+            invited_sql_prompt = PromptTemplate.from_template("""
+Based on the database schema, user query, and staff email, write a SQL query to get the data for invited users.
+
+PULL MOST FROM tasks TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPONSE
+
+CONTEXT AWARENESS:
+- on the users table i dont have anything like full_name only name
+- use only the schema provided avoid suggesting please, thats more important
+- note you have trello and linear as source, so make sure you know what you're doing
+- always specify where a data is from either linear or trello
+- always left join anything related to project_id or project
+- never search a table that is not in the schema, i mean never and ever try to do this
+- provide clean sql , and working , with zero chance of error
+- nothing like task_name, please check column very well before performing queries
+- Track and reuse last-used table if user continues in same thread.
+- Always assume KPIs and performance analysis refer to the `tasks` table unless stated otherwise.
+- most of your query should be from tasks and refer to last chat history
+
+##CRITICAL JOIN RULES FOR INVITED TYPE:
+- This is correct JOIN platform_users ON platform_users.user_id = tasks.user_id
+- NEVER join platform_users directly on email in tasks context
+- CORRECT task joins for invited users: tasks -> platform_users (via user_id)
+- EXAMPLE: FROM tasks JOIN platform_users ON platform_users.user_id = tasks.user_id
+- please pass distinct to your fetching of tasks as most of the tasks are duplicate
+- Always filter by: WHERE platform_users.email = '{staff_email}'
+- Always add: WHERE tasks.is_deleted IS NULL (to exclude deleted tasks)
+- You can also use platform_users.owner_id for additional joins if needed
+
+IMPORTANT RULES:
+- when joining user make sure you select the user name for response, same as teams and projects, the names are important please
+- For invited user queries, use the platform_users table as primary filter
+- also try to get who is lacking behind
+- Use WHERE LIKE for username-related queries
+- Return plain text SQL query without backticks
+- For "list users" or "show users", select from platform_users table
+- Common user fields: id, email, userid, platform_id, fullname, source, created_at, updated_at
+- Status types include "Done", "In Progress", "Backlog", and "Todo"
+- avoid using update_at for greater than duration query
+- team id is not platform id
+
+CURRENT DATE CONTEXT:
+- Today's date is: {current_date}
+- Current year is: {current_year}
+- Use DYNAMIC date functions, NEVER hardcoded years
+
+Database Schema: {schema}
+Chat History: {history}
+User query: {description}
+Staff Email: {staff_email}
+
+Return only the SQL query:
+""")
             
-        except Exception as e:
-            logger.error(f"SQL optimization error: {str(e)}")
-            # Safe fallback
+            invited_sql_chain = LLMChain(llm=llm, prompt=invited_sql_prompt)
+            
+            # Optimize SQL for invited type
             try:
-                optimized_sql = clean_sql(sample_sql_query.strip())
-                if "WHERE" in optimized_sql.upper():
-                    optimized_sql = optimized_sql.replace("WHERE", f"WHERE owner_id = '{owner_id}' AND")
-                else:
-                    optimized_sql += f" WHERE owner_id = '{owner_id}'"
-            except Exception as fallback_error:
-                logger.error(f"Fallback SQL error: {str(fallback_error)}")
-                return jsonify({"error": "SQL processing failed"}), 500
+                optimized_sql = invited_sql_chain.run(
+                    schema=schema_str,
+                    description=description,
+                    history=chat_history,
+                    staff_email=user_email,
+                    current_date=current_date.strftime('%Y-%m-%d'),
+                    current_year=current_year
+                )
+                optimized_sql = clean_sql(optimized_sql.strip())
+                logger.info(f"AI-Optimized SQL Query for invited type:\n{optimized_sql}")
+                
+            except Exception as e:
+                logger.error(f"SQL optimization error for invited type: {str(e)}")
+                # Safe fallback for invited type
+                try:
+                    optimized_sql = clean_sql(sample_sql_query.strip())
+                    if "WHERE" in optimized_sql.upper():
+                        optimized_sql = optimized_sql.replace("WHERE", f"WHERE platform_users.email = '{user_email}' AND")
+                    else:
+                        optimized_sql += f" WHERE platform_users.email = '{user_email}'"
+                except Exception as fallback_error:
+                    logger.error(f"Fallback SQL error: {str(fallback_error)}")
+                    return jsonify({"error": "SQL processing failed"}), 500
+        
+        else:
+            # Use the original optimization for default type
+            try:
+                optimized_sql = sql_optimization_chain.run(
+                    schema=schema_str,
+                    description=description,
+                    sample_sql=sample_sql_query,
+                    owner_id=owner_id,
+                    history=chat_history,
+                    current_date=current_date.strftime('%Y-%m-%d'),
+                    current_year=current_year
+                )
+                optimized_sql = clean_sql(optimized_sql.strip())
+                logger.info(f"AI-Optimized SQL Query for default type:\n{optimized_sql}")
+                
+            except Exception as e:
+                logger.error(f"SQL optimization error: {str(e)}")
+                # Safe fallback for default type
+                try:
+                    optimized_sql = clean_sql(sample_sql_query.strip())
+                    if "WHERE" in optimized_sql.upper():
+                        optimized_sql = optimized_sql.replace("WHERE", f"WHERE owner_id = '{owner_id}' AND")
+                    else:
+                        optimized_sql += f" WHERE owner_id = '{owner_id}'"
+                except Exception as fallback_error:
+                    logger.error(f"Fallback SQL error: {str(fallback_error)}")
+                    return jsonify({"error": "SQL processing failed"}), 500
         
         # Execute SQL safely
         all_data = []
@@ -1100,9 +1222,9 @@ def generate_template():
                 "id": template_id,
                 "data_count": 0,
                 "sql_query": optimized_sql,
-                "owner_id": owner_id,
+                "request_type": request_type,
                 "structure": {
-                    "message": "No data available for this owner",
+                    "message": f"No data available for this {'staff member' if request_type == 'invited' else 'owner'}",
                     "columns": [],
                     "data": []
                 }
@@ -1133,12 +1255,16 @@ def generate_template():
             template_config['id'] = template_id
             template_config['data_count'] = len(processed_data)
             template_config['sql_query'] = optimized_sql
-            template_config['owner_id'] = owner_id
+            template_config['request_type'] = request_type
+            if request_type == 'invited':
+                template_config['staff_email'] = user_email
+            else:
+                template_config['owner_id'] = owner_id
             
             # Save to database
             save_template_to_db(template_config, template_id, chat_id)
             
-            logger.info(f"Successfully generated template for template_id {template_id}")
+            logger.info(f"Successfully generated template for template_id {template_id}, type: {request_type}")
             return jsonify(template_config)
             
         except Exception as e:
@@ -1149,7 +1275,7 @@ def generate_template():
                 "id": template_id,
                 "data_count": len(processed_data) if processed_data else 0,
                 "sql_query": optimized_sql,
-                "owner_id": owner_id,
+                "request_type": request_type,
                 "structure": {
                     "message": "Template generation error - showing data as table",
                     "columns": [{"data": key, "title": key.replace('_', ' ').title()} 
