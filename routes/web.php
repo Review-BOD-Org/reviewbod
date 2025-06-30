@@ -335,7 +335,6 @@ Route::prefix('/invited')->group(function () {
         Route::post('/update_user_profile', [LinearCustomerController::class, 'update_user_profile']);
         Route::post('/update_password', [LinearCustomerController::class, 'update_password']);
 
-    Route::get('/sidebar_chats', [Dash::class, 'getSidebarChats']);
 
     });
 });
