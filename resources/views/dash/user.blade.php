@@ -584,7 +584,7 @@
             <!-- Managers List -->
             <div class="space-y-4" id="managers">
 
-                @foreach (DB::table('managers')->where(['userid' => Auth::user()->id])->get() as $m)
+                @foreach (DB::table('managers')->where(['userid' => Auth::user()->id,"status"=>"active"])->get() as $m)
                     <!-- Manager 1 -->
                     <div
                         class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
