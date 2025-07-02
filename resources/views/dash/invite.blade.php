@@ -30,8 +30,27 @@
 
         @if($user->status == "pending")
 
+         <div class="w-1/2 h-full flex items-center justify-center" id='ac'>
+            <div class="w-4/5 max-w-md">
+                <h1 class="text-4xl font-bold mb-4 text-gray-800">Hey {{$user->name}}</h1>
+                <p class="text-lg text-gray-500 mb-8">You have been invited to a <strong>{{$user->workspace}}</strong> created by <strong>{{$invite->name}}</strong>. You can accept or decline the invitation below.</p>
+
+                <div class="space-y-4">
+                    <button id="acceptBtn" type="button"
+                        class="w-full bg-[#1E3A8A] text-white py-4 rounded-lg hover:bg-indigo-900 transition duration-200 text-lg font-medium">
+                        Accept Invitation
+                    </button>
+                    
+                    <button id="cancelBtn" type="button"
+                        class="w-full bg-gray-500 text-white py-4 rounded-lg hover:bg-gray-600 transition duration-200 text-lg font-medium">
+                        Decline Invitation
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Right side with password creation form -->
-        <div class="w-1/2 h-full flex items-center justify-center">
+        <div class="w-1/2 h-full flex items-center justify-center" id='pw' style="display:none">
             <div class="w-4/5 max-w-md">
                 <h1 class="text-4xl font-bold mb-4 text-gray-800">Hey {{$user->name}}</h1>
                 <p class="text-lg text-gray-500 mb-8"> You have been invited to a {{$user->workspace}} created by {{$invite->name}}, create your password to get started</p>
@@ -122,29 +141,8 @@
             </div>
         </div>
 
-        @else
-
-        <!-- Right side with invitation acceptance -->
-        <div class="w-1/2 h-full flex items-center justify-center">
-            <div class="w-4/5 max-w-md">
-                <h1 class="text-4xl font-bold mb-4 text-gray-800">Hey {{$user->name}}</h1>
-                <p class="text-lg text-gray-500 mb-8">You have been invited to a <strong>{{$user->workspace}}</strong> created by <strong>{{$invite->name}}</strong>. You can accept or decline the invitation below.</p>
-
-                <div class="space-y-4">
-                    <button id="acceptBtn" type="button"
-                        class="w-full bg-[#1E3A8A] text-white py-4 rounded-lg hover:bg-indigo-900 transition duration-200 text-lg font-medium">
-                        Accept Invitation
-                    </button>
-                    
-                    <button id="cancelBtn" type="button"
-                        class="w-full bg-gray-500 text-white py-4 rounded-lg hover:bg-gray-600 transition duration-200 text-lg font-medium">
-                        Decline Invitation
-                    </button>
-                </div>
-            </div>
-        </div>
-
         @endif
+ 
     </div>
 
     <script>
@@ -201,36 +199,8 @@
 
             // Handle Accept Invitation button for active users
             $('#acceptBtn').on('click', function() {
-                const $btn = $(this);
-                $btn.attr("disabled", true);
-                $btn.text("Accepting...");
-
-                // AJAX request to accept invitation
-                $.ajax({
-                    url: '/invited/update_status',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ 
-                        id: "{{request()->id}}", 
-                        action: "accept",
-                         workspace: "{{request()->workspace}}",
-                        "_token": "{{csrf_token()}}" 
-                    }),
-                    success: function(response) {
-                        toastr.success('Invitation accepted successfully!');
-                        // Redirect to dashboard or appropriate page
-                        setTimeout(function() {
-                            location.href = response.redirect_url || "/invited/login";
-                        }, 1500);
-                    },
-                    error: function(xhr) {
-                        toastr.error(xhr.responseJSON?.message || 'Failed to accept invitation');
-                    },
-                    complete: function() {
-                        $btn.attr("disabled", false);
-                        $btn.text("Accept Invitation");
-                    }
-                });
+                $("#pw").show()
+                $('#ac').hide()
             });
 
             // Handle Decline Invitation button for active users

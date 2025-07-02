@@ -189,6 +189,8 @@ class LinearCustomerController extends Controller
     "workspace"=>Auth::user()->workspace,
     'userid'=>Auth::id()
 ]);
+        }else{
+            DB::table('linked_users')->where("workspace",Auth::user()->workspace)->where('email', $request->email)->update(["status"=>"pending"]);
         }
  
                $check = DB::table('linked_users')->where("workspace",Auth::user()->workspace)->where('email', $request->email)->first();

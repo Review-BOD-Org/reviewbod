@@ -238,7 +238,7 @@
                                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                         </svg>
                                     </button>
-                                    <div class="relative">
+                                    <div class="relative flex items-center">
                                         <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -246,7 +246,35 @@
                                         </svg>
                                         <input name='search' type="text" placeholder="Search..."
                                             class="pl-10 pr-4 py-2 border shadow shadow-sm rounded-md w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                                        <div class="flex gap-2 ml-5">
+                                            @foreach (DB::table('linked')->where([
+                'userid' => Auth::id(),
+            ])->get() as $d)
+                                                <div onclick="location.href='?type={{ $d->type }}'"
+                                                    class="gap-2 bg-white @if(request()->type == $d->type) border border-2 border-[#cb964f] @endif cursor-pointer  flex items-center p-2 rounded-md shadow">
+                                                    @if ($d->type == 'jira')
+                                                        <img src="/{{ $d->type }}.svg" width="20" />
+                                                    @else
+                                                        <img src="/images/{{ $d->type }}.webp" width="20" />
+                                                    @endif
+
+                                                    <span>{{ $d->type }}</span>
+                                                </div>
+                                            @endforeach
+
+                                                        @if(request()->type)
+                                                            <div onclick="location.href='/dashboard/users'"
+                                                    class="gap-2  cursor-pointer  flex items-center p-2 rounded-md">
+                                                    
+                                                    <span><i class="fa fa-times"></i></span>
+                                                </div>
+                                                @endif
+                                        </div>
+
                                     </div>
+
+
                                 </div>
                             </div>
 
@@ -375,7 +403,8 @@
                                                         data-user-status="{{ $user->user_status }}"
                                                         style="margin-left: 10%;border: none !important;box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(70, 79, 96, 0.16), 0px 2px 5px rgba(89, 96, 120, 0.1);">
                                                 </td>
-                                                <td class="py-4 px-6 text-sm font-medium text-gray-900">{{ $user->user_id }}
+                                                <td class="py-4 px-6 text-sm font-medium text-gray-900">
+                                                    {{ $user->user_id }}
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="flex flex-col">
@@ -385,7 +414,7 @@
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <span
-                                                        class="text-sm font-medium text-gray-900">{{ $user->email ? $user->email : "No email provided" }}</span>
+                                                        class="text-sm font-medium text-gray-900">{{ $user->email ? $user->email : 'No email provided' }}</span>
                                                 </td>
 
                                                 <td class="py-4 px-6 flex">

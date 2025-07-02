@@ -44,6 +44,10 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
+        'managers' => [
+            'driver' => 'session',
+            'provider' => 'managers',
+        ],
         'linear_user' => [
             'driver' => 'session',
             'provider' => 'linear_users',
@@ -75,6 +79,10 @@ return [
         'linear_users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_LINEAR_MODEL', App\Models\LinearUser::class),
+        ],
+           'managers' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_LINEAR_MODEL', App\Models\Manager::class),
         ],
 
        

@@ -15,6 +15,7 @@ use Ratchet\Client\WebSocket;
 use Ratchet\Client\Connector;
 use Exception;
 use WebSocket\Client;
+use Mail;
 class Dash extends Controller
 {
     //
@@ -1396,12 +1397,17 @@ class Dash extends Controller
     }
 
 
-    public function users()
+    public function users(Request $request)
     {
         $data = DB::table("platform_users")
             ->leftJoin('linked_users', DB::raw("CONVERT(linked_users.email USING utf8mb4) COLLATE utf8mb4_unicode_ci"), '=', 'platform_users.email')
             ->select('platform_users.*', 'linked_users.status as user_status', 'linked_users.id as iid')
-            ->where(["platform_users.owner_id" => Auth::id()])->distinct()->get();
+            ->where(["platform_users.owner_id" => Auth::id()]);
+
+        if ($request->type) {
+            $data->where(["platform_users.source" => $request->type]);
+        }
+        $data = $data->distinct()->get();
         return view("dash.members", compact("data"));
     }
     public function teams(Request $request)
@@ -2372,7 +2378,7 @@ class Dash extends Controller
                                 "weight" => $j['weight'],
                                 "percentage" => $j['percentage']
                             ]);
-                        $yes = "yes";
+                    $yes = "yes";
                 } else {
                     $number = $j['id'];
                     if (
@@ -2396,12 +2402,12 @@ class Dash extends Controller
                             "description" => $data->description,
                             "category" => $data->category,
                             "metric_id" => $j['id'],
-                               "weight" => $j['weight'],
-                                    "percentage" => $j['percentage'],
+                            "weight" => $j['weight'],
+                            "percentage" => $j['percentage'],
                             'userid' => Auth::id(),
                         ]);
                     }
-                      $yes = $number;
+                    $yes = $number;
 
                 }
 
@@ -2697,16 +2703,16 @@ class Dash extends Controller
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
             ])->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-4-turbo-preview',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $this->buildAnalysisPrompt($userData, $query)
-                    ]
-                ],
-                'temperature' => 0.4,
-                'max_tokens' => 1500
-            ]);
+                        'model' => 'gpt-4-turbo-preview',
+                        'messages' => [
+                            [
+                                'role' => 'user',
+                                'content' => $this->buildAnalysisPrompt($userData, $query)
+                            ]
+                        ],
+                        'temperature' => 0.4,
+                        'max_tokens' => 1500
+                    ]);
 
             $textAnalysis = $analysisResponse->json()['choices'][0]['message']['content'];
 
@@ -2818,7 +2824,7 @@ Provide a comprehensive text analysis:";
 
             foreach ($tables as $table) {
                 $columns = DB::select("DESCRIBE {$table}");
-                $schema[$table] = array_map(function($col) {
+                $schema[$table] = array_map(function ($col) {
                     return $col->Field . ' (' . $col->Type . ')';
                 }, $columns);
             }
@@ -2826,5 +2832,155 @@ Provide a comprehensive text analysis:";
             return json_encode($schema);
         });
     }
-    
+
+    public function managers()
+    {
+        $managers = DB::table("managers")->where(["userid" => Auth::id()])->get();
+        return view("dash.managers", compact("managers"));
+    }
+
+    public function upload_file(Request $request)
+    {
+        // $request->validate([
+        //     'profilePicture' => 'required|file|image|max:2048',
+        // ]);
+
+        $file = $request->file('profilePicture');
+
+        // Generate unique file name
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // Move file to public/uploads folder (create if not exists)
+        $destinationPath = public_path('uploads');
+
+        // Make sure directory exists
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        $file->move($destinationPath, $filename);
+
+        // URL to access the file
+        $url = url('uploads/' . $filename);
+
+        return response()->json([
+            'success' => true,
+            'filename' => $filename,
+            'url' => $url,
+            'message' => 'Profile picture uploaded successfully',
+        ]);
+    }
+
+    public function add_manager(Request $request){
+
+        $check = DB::table("managers")->where(["email"=>$request->email])->first();
+        if($check){
+            return response()->json(["message"=>"please use another email"],400);
+        }
+        $member = "RB-".rand();
+        DB::table("managers")->insert([
+                "name"=>$request->name,
+                "email"=>$request->email,
+                "department"=>$request->department,
+                "workspace"=>Auth::user()->workspace,
+                "phone"=>$request->phone,
+                "status"=>"pending",
+                "manager_id"=>$member,
+                "userid"=>Auth::id(),
+                "image"=>$request->image,
+                "note"=>$request->note
+        ]);
+             Mail::send('mail.invite_manager', ['name' => $request->name,"id"=>$member,"workspace"=>Auth::user()->workspace], function ($message) use ($request) {
+            $message->to($request->email)
+                ->subject('Inivitation  to ReviewBod - manager');
+        });
+
+                    return response()->json(["message"=>"Manager Added"]);
+
+    }
+
+    public function delete_manager(Request $request){
+        DB::table("managers")->where(["id"=>$request->id])->delete();
+        return response()->json(["message"=>"Delete Manager"]);
+    }
+
+public function edit_manager(Request $request)
+{
+    $check = DB::table("managers")
+        ->where([
+            'id' => $request->id,
+            'workspace' => Auth::user()->workspace
+        ])
+        ->first();
+
+    if (!$check) {
+        return response()->json(["message" => "Something went wrong"], 400);
+    }
+
+    // Check if email exists for another manager
+    $emailExists = DB::table("managers")
+        ->where('workspace', Auth::user()->workspace)
+        ->where('email', $request->email)
+        ->where('id', '!=', $request->id)
+        ->exists();
+
+    if ($emailExists) {
+        return response()->json(["message" => "Email already in use"], 409);
+    }
+
+    // Check if phone exists for another manager
+    $phoneExists = DB::table("managers")
+        ->where('workspace', Auth::user()->workspace)
+        ->where('phone', $request->phone)
+        ->where('id', '!=', $request->id)
+        ->exists();
+
+    if ($phoneExists) {
+        return response()->json(["message" => "Phone already in use"], 409);
+    }
+
+    DB::table("managers")->where(["id" => $request->id])->update([
+        "name"       => $request->name,
+        "email"      => $request->email,
+        "department" => $request->department, 
+        "phone"      => $request->phone,
+        "status"     => $request->status,  
+        "image"      => $request->image,
+        "note"       => $request->note
+    ]);
+
+    return response()->json(["message" => "Manager Updated"]);
+}
+
+
+
+public function manager_setstatus(Request $request){
+            DB::table('managers')->where(["id"=>$request->id,'userid'=>Auth::id()])->update(["status"=>$request->status]);
+        return response()->json(["message"=>"Manager status updated to $request->status"]);
+}
+
+
+
+    public function delete_bulk_managers(Request $request){
+        $users = $request->users;
+        // dd($users);
+        foreach($users as $u){
+            DB::table("managers")->where(["id"=>$u['id'],"userid"=>Auth::id()])->delete();
+        }
+
+                return response()->json(["message"=>"Managers deleted successfully"]);
+
+    }
+
+
+    public function bulk_block_managers(Request $request){
+             $users = $request->users;
+        // dd($users);
+        foreach($users as $u){
+            DB::table("managers")->where(["id"=>$u['id'],"userid"=>Auth::id()])->update(["status"=>"blocked"]);
+        }
+
+                return response()->json(["message"=>"Managers deleted successfully"]);
+    }
+
 }

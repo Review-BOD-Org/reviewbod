@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Manager;
 use App\Http\Middleware\CheckLinked;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Optimizer;
@@ -54,6 +55,20 @@ Route::prefix('/auth')->group(function () {
 
 
 Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function () {
+   
+    //managers 
+    Route::get('/managers', [Dash::class, 'managers'])->name("user.managers");
+    Route::post('/upload_file', [Dash::class, 'upload_file'])->name("user.upload_file");
+    Route::post('/add_manager', [Dash::class, 'add_manager'])->name("user.add_manager");
+    Route::post('/delete_bulk_managers', [Dash::class, 'delete_bulk_managers'])->name('user.delete_bulk_managers');
+
+    Route::post('/delete_manager', [Dash::class, 'delete_manager'])->name("user.delete_manager");
+    Route::post('/edit_manager', [Dash::class, 'edit_manager'])->name("user.edit_manager");
+    Route::post('/manager_setstatus', [Dash::class, 'manager_setstatus'])->name('user.manager_setstatus');
+    Route::post('/bulk_block_managers', [Dash::class, 'bulk_block_managers'])->name('user.bulk_block_managers');
+
+    
+
     Route::get('/users', [Dash::class, 'users'])->name("user.users");
     Route::post('/getUserAnalysis', [Dash::class, 'getUserAnalysis'])->name("user.getUserAnalysis");
 
@@ -117,6 +132,10 @@ Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function () {
 
     Route::post('/metrics/save-custom', [Dash::class, 'saveCustomMetric'])->name('metrics.save-custom');
     Route::delete('/metrics/delete-custom/{id}', [Dash::class, 'deleteCustomMetric'])->name('metrics.delete-custom');
+
+
+    //managers
+
 
 
     // Route for getting calendar data
@@ -337,4 +356,16 @@ Route::prefix('/invited')->group(function () {
 
 
     });
+});
+
+Route::get('/manager/invite/{workspace}/{id}', [Manager::class, 'invite'])->name("user.invite");
+
+
+Route::prefix('manager')->group(function () {
+    Route::get('/', [Manager::class, 'login']);
+  
+
+    Route::post('/update_password', [Manager::class, 'update_password']);
+    Route::post('/update_status', [Manager::class, 'update_status']);
+
 });
