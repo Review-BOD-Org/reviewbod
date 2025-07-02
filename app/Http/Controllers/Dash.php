@@ -2994,4 +2994,10 @@ public function manager_setstatus(Request $request){
 
     }
 
+    public function remove_manager(Request $request){
+                DB::table("platform_users")->where(["id"=>$request->id,"owner_id"=>Auth::id()])->update(["manager_id"=>null]);
+                        return response()->json(["message"=>"Managers removed successfully","success"=>true]);
+
+    }
+
 }

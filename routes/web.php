@@ -62,6 +62,7 @@ Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function () {
     Route::post('/add_manager', [Dash::class, 'add_manager'])->name("user.add_manager");
     Route::post('/delete_bulk_managers', [Dash::class, 'delete_bulk_managers'])->name('user.delete_bulk_managers');
     Route::post('/user_manager', [Dash::class, 'user_manager'])->name("user.user_manager");
+    Route::post('/remove_manager', [Dash::class, 'remove_manager'])->name("user.remove_manager");
 
     Route::post('/delete_manager', [Dash::class, 'delete_manager'])->name("user.delete_manager");
     Route::post('/edit_manager', [Dash::class, 'edit_manager'])->name("user.edit_manager");

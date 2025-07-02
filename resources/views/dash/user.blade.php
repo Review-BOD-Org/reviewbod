@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     @if($manager)
- <button onclick="openManagers()"
+ <button onclick="openManager()"
                         class="bg-[#cb964f] text-white flex gap-3 items-center  px-4 py-2 rounded-full text-xs font-medium">
                         <i class="fa fa-eye"></i>
                         View Manager
@@ -288,6 +288,60 @@
     </div>
 @endsection
 
+
+@if($manager)
+<!-- View Manager Modal -->
+<div id="viewmanagermodal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    onclick="closeviewmanagermodal()">
+    <div class="bg-white rounded-[20px] w-[640px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+        onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-8 py-4 border-b border-[#e5e5e5] rounded-t-[20px]">
+            <h2 class="text-base font-bold text-[#292d32] font-schibsted">Manager Details</h2>
+            <button onclick="closeviewmanagermodal()"
+                class="w-6 h-6 bg-white border border-[#8e8e8e] rounded-full flex items-center justify-center hover:bg-gray-50">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M9 3L3 9M3 3L9 9" stroke="#8e8e8e" stroke-width="1.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-8 space-y-6">
+            <!-- Manager Profile -->
+            <div class="text-center">
+                <img id="manager-photo" src="{{$manager->image}}" alt="Manager Photo" 
+                     class="w-20 h-20 rounded-full object-cover mx-auto">
+                <h3 id="manager-name" class="mt-4 text-xl font-bold text-gray-900"></h3>
+            </div>
+
+            <!-- Manager Details -->
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-gray-500">Email</label>
+                    <p id="manager-email" class="font-medium text-gray-900">{{$manager->name}}</p>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500">Phone</label>
+                    <p id="manager-phone" class="font-medium text-gray-900">{{$manager->email}}</p>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500">Department</label>
+                    <p id="manager-department" class="font-medium text-gray-900">{{$manager->department}}</p>
+                </div>
+            </div>
+
+            <!-- Remove Button -->
+            <div class="pt-4">
+                <button id="removemanager" onclick="removeManager()" 
+                        class="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                    Remove Manager from User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 <!-- User Analytics Modal -->
 <div id="userAnalyticsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
@@ -822,8 +876,16 @@
         document.getElementById('managersmodal').style.display = 'flex';
     }
 
+       function openManager() {
+        document.getElementById('viewmanagermodal').style.display = 'flex';
+    }
+
     function closemanagersmodal() {
       $("#managersmodal").hide()
+    }
+
+      function closeviewmanagermodal() {
+      $("#viewmanagermodal").hide()
     }
 
     function openUserAnalyticsModal() {
@@ -1194,4 +1256,47 @@
     }
 
     
+    @if($manager)
+  async  function removeManager(){
+          if (confirm("Are you sure?")) {
+             $(`#removemanager`).html("Loading...")
+            $("button").attr("disabled", true)
+            try {
+                const response = await fetch('{{ route('user.remove_manager') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                            'content') || ''
+                    },
+                    body: JSON.stringify({
+                      id:"{{$data->id}}",
+                        manager_id: "{{$manager->id}}",
+                        _token: "{{ csrf_token() }}"
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    toastr.success(data.message)
+                    location.reload()
+                } else {
+                    toastr.error(data.message)
+                }
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+                showError('Failed to load chart data. Please try again.');
+            } finally {
+                // hideLoading();
+                $(`#removemanager`).html("Remove Manager from User")
+                $("button").attr("disabled", false)
+            }
+        }
+    }
+    @endif
 </script>
