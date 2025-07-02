@@ -21,6 +21,34 @@
         </div>
 
         <div class="flex gap-6 self-center relative -mt-32">
+
+
+            <!-- Left Card - User Details -->
+            <div class="bg-white rounded-lg shadow-lg p-6 w-[400px] border border-gray-100 h-[600px]"
+                style="overflow-y: scroll">
+                <h3 class="mb-3 h3 text-bold">User Teams <i class="fa fa-users"></i></h3>
+                @foreach ($teams as $t)
+                    <!-- Personal Information Card -->
+                    <div class="bg-white border border-black/15 rounded shadow-sm p-4 mb-6">
+
+                        <!-- Full Name -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 opacity-90">{{ $t->name }}</p>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                @endforeach
+
+
+
+
+
+            </div>
+
             <!-- Left Card - User Details -->
             <div class="bg-white rounded-lg shadow-lg p-6 w-[400px] border border-gray-100">
                 <!-- Profile Section -->
@@ -32,14 +60,19 @@
                                 alt="Profile Avatar" class="w-full h-full object-cover">
                         </div>
                     </div>
-                    <button
-                        class="bg-[#F0EFFA] flex gap-3 items-center hover:bg-[#E8E7F5] px-4 py-2 rounded-full text-xs font-medium text-gray-700 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"
-                                d="M15 19c1.2-3.678 2.526-5.005 6-6c-3.474-.995-4.8-2.322-6-6c-1.2 3.678-2.526 5.005-6 6c3.474.995 4.8 2.322 6 6Zm-8-9c.6-1.84 1.263-2.503 3-3c-1.737-.497-2.4-1.16-3-3c-.6 1.84-1.263 2.503-3 3c1.737.497 2.4 1.16 3 3Zm1.5 10c.3-.92.631-1.251 1.5-1.5c-.869-.249-1.2-.58-1.5-1.5c-.3.92-.631 1.251-1.5 1.5c.869.249 1.2.58 1.5 1.5Z" />
-                        </svg>
-                        Analyze
+                    @if($manager)
+ <button onclick="openManagers()"
+                        class="bg-[#cb964f] text-white flex gap-3 items-center  px-4 py-2 rounded-full text-xs font-medium">
+                        <i class="fa fa-eye"></i>
+                        View Manager
                     </button>
+                    @else
+                    <button onclick="openManagers()"
+                        class="bg-[#F0EFFA] flex gap-3 items-center hover:bg-[#E8E7F5] px-4 py-2 rounded-full text-xs font-medium text-gray-700 transition-colors">
+                        <i class="fa fa-plus"></i>
+                        Add Manager
+                    </button>
+                    @endif
                 </div>
 
                 <!-- Personal Information Card -->
@@ -111,6 +144,9 @@
 
                     </div>
                 </div>
+
+
+
             </div>
 
             <!-- Right Card - Professional Details -->
@@ -462,21 +498,78 @@
     </div>
 </div>
 
+<!-- User Analytics Modal -->
+<div id="managersmodal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    onclick="closemanagersmodal()">
+    <div class="bg-white rounded-[20px] w-[740px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
+        onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-8 py-4 border-b border-[#e5e5e5] rounded-t-[20px]">
+            <h2 class="text-base font-bold text-[#292d32] font-schibsted">Add Manager</h2>
+            <button onclick="closemanagersmodal()"
+                class="w-6 h-6 bg-white border border-[#8e8e8e] rounded-full flex items-center justify-center hover:bg-gray-50">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M9 3L3 9M3 3L9 9" stroke="#8e8e8e" stroke-width="1.2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-8 space-y-6">
+            <!-- Search Input -->
+            <div class="relative">
+                <input type="text" placeholder="Search managers..." id="search"
+                    class="w-full h-14 px-6 text-lg bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
+                <svg class="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
+            <!-- Managers List -->
+            <div class="space-y-4" id="managers">
+
+                @foreach (DB::table('managers')->where(['userid' => Auth::user()->id])->get() as $m)
+                    <!-- Manager 1 -->
+                    <div
+                        class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ $m->image }}" alt="John Smith"
+                                class="w-12 h-12 rounded-full object-cover">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">{{ $m->name }}</h3>
+                                <p class="text-sm text-gray-600">{{ $m->email }}</p>
+                            </div>
+                        </div>
+                        <button id="assign-{{$m->id}}" onclick="assign_manager({{ $m->id }})"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            Assign Manager
+                        </button>
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Chart.js CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
 <script>
 
-      @php
-    $key = hex2bin(env('SODIUM_KEY')); // 32-byte key from env
-    $nonceUser = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-    $nonceChat = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    
+    @php
+        $key = hex2bin(env('SODIUM_KEY')); // 32-byte key from env
+        $nonceUser = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $nonceChat = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
-    $encryptedUser = sodium_crypto_secretbox(Auth::id(), $nonceUser, $key);
- 
-    // combine nonce + ciphertext then base64 encode for safe JS embedding
-    $user_id_encrypted = base64_encode($nonceUser . $encryptedUser);
- @endphp
+        $encryptedUser = sodium_crypto_secretbox(Auth::id(), $nonceUser, $key);
+
+        // combine nonce + ciphertext then base64 encode for safe JS embedding
+        $user_id_encrypted = base64_encode($nonceUser . $encryptedUser);
+    @endphp
 
     let taskChart = null;
 
@@ -659,6 +752,61 @@
         initChart();
         setupFilterButtons();
         fetchChartData(7); // Load initial data
+
+        $(document).ready(function() {
+    // Manager search functionality
+    $('#search').on('keyup', function() {
+        var searchText = $(this).val().toLowerCase().trim();
+        
+        // Get all manager cards
+        $('#managers > div').each(function() {
+            var $managerCard = $(this);
+            var managerName = $managerCard.find('h3').text().toLowerCase();
+            var managerEmail = $managerCard.find('p').text().toLowerCase();
+            
+            // Check if search text matches name or email
+            if (managerName.includes(searchText) || managerEmail.includes(searchText)) {
+                $managerCard.show();
+            } else {
+                $managerCard.hide();
+            }
+        });
+        
+        // Show "No results found" message if no managers are visible
+        var visibleManagers = $('#managers > div:visible').length;
+        
+        // Remove existing no results message
+        $('#no-results-message').remove();
+        
+        if (visibleManagers === 0 && searchText !== '') {
+            $('#managers').append(
+                '<div id="no-results-message" class="text-center py-8 text-gray-500">' +
+                    '<svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />' +
+                    '</svg>' +
+                    '<h3 class="text-sm font-medium text-gray-900 mb-1">No managers found</h3>' +
+                    '<p class="text-sm text-gray-500">Try adjusting your search terms.</p>' +
+                '</div>'
+            );
+        }
+    });
+    
+    // Clear search when modal is opened
+    $('#managersmodal').on('shown', function() {
+        $('#search').val('').trigger('keyup');
+    });
+    
+    // Alternative: If you want real-time search with minimal delay
+    var searchTimeout;
+    $('#search').on('input', function() {
+        clearTimeout(searchTimeout);
+        var $input = $(this);
+        
+        searchTimeout = setTimeout(function() {
+            $input.trigger('keyup');
+        }, 150); // 150ms delay for better performance
+    });
+});
     });
 
     // Modal functions (you'll need to implement these)
@@ -668,6 +816,14 @@
 
     function openUserAnalyticsModal() {
         document.getElementById('userAnalyticsModal').style.display = 'flex';
+    }
+
+    function openManagers() {
+        document.getElementById('managersmodal').style.display = 'flex';
+    }
+
+    function closemanagersmodal() {
+      $("#managersmodal").hide()
     }
 
     function openUserAnalyticsModal() {
@@ -861,7 +1017,9 @@
         }
     }
 
-     accumulatedMarkdown = '';
+
+    accumulatedMarkdown = '';
+
     function initstream() {
         // Add variables to track streaming state
 
@@ -871,12 +1029,12 @@
         ws.onopen = () => {
             console.log('Connected to WebSocket');
             const message = {
-                    query: "Give analysis base on this user, and avoid starting with hey or hello, just give insight on this user",
-                    user_id: @json($user_id_encrypted),
-                    staff_id:"{{$data->email ? $data->email : $data->user_id}}", 
-                };
+                query: "Give analysis base on this user, and avoid starting with hey or hello, just give insight on this user",
+                user_id: @json($user_id_encrypted),
+                staff_id: "{{ $data->email ? $data->email : $data->user_id }}",
+            };
 
-                ws.send(JSON.stringify(message)); 
+            ws.send(JSON.stringify(message));
         };
 
         ws.onmessage = (event) => {
@@ -888,9 +1046,9 @@
             switch (data.type) {
                 case 'stream_token':
 
-                    
+
                     accumulatedMarkdown += data.token;
-   let displayContent = accumulatedMarkdown;
+                    let displayContent = accumulatedMarkdown;
                     responseDiv.innerHTML = marked.parse(displayContent);
                     // autoScroll();
 
@@ -899,11 +1057,11 @@
                 case 'error':
                     //responseDiv.innerHTML += `<p><b>ERROR</b>: ${data.message}</p>`;
                     isStreaming = false;
-                    currentStreamId = null; 
+                    currentStreamId = null;
                     break;
                 case 'new_chat_created':
 
-                  
+
 
                     chatListContainer.prepend(chatItem);
 
@@ -947,7 +1105,7 @@
 
                 case 'stream_end':
 
-                 
+
                     break;
                 default:
                     responseDiv.innerHTML += `<p>${JSON.stringify(data, null, 2)}</p>`;
@@ -965,7 +1123,7 @@
 
         ws.onerror = (error) => {
             console.error('WebSocket error:', error);
-              toastr.error("Connection Error")
+            toastr.error("Connection Error")
         };
     }
 
@@ -983,13 +1141,57 @@
         return `${day} ${month} ▪ ${time}`;
     }
 
-  
+
     document.addEventListener('DOMContentLoaded', function() {
 
         initstream();
- 
-                 
-          
-    
+
+
+
+
     })
+
+    async function assign_manager(id) {
+        if (confirm("Are you sure?")) {
+                $(`#assign-${id}`).html("Loading...")
+            $("button").attr("disabled", true)
+            try {
+                const response = await fetch('{{ route('user.user_manager') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                            'content') || ''
+                    },
+                    body: JSON.stringify({
+                        id: "{{ $data->id }}",
+                        manager_id: id,
+                        _token: "{{ csrf_token() }}"
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    toastr.success(data.message)
+                    location.reload()
+                } else {
+                    toastr.error(data.message)
+                }
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+                showError('Failed to load chart data. Please try again.');
+            } finally {
+                // hideLoading();
+                $(`#assign-${id}`).html("Assign Manager")
+                $("button").attr("disabled", false)
+            }
+        }
+    }
+
+    
 </script>

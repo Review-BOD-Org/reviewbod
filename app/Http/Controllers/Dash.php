@@ -1801,8 +1801,13 @@ class Dash extends Controller
         // Convert to array for JavaScript
         $tasksArray = $tasks->toArray();
 
-        return view("dash.user", [
+        $teams = DB::table("teams")->join("tasks","tasks.team_id","teams.team_key")->where(["tasks.user_id"=>$data->user_id])->select("teams.name","teams.id")->distinct()->get();
+       $manager = DB::table("managers")->where(["id"=>$data->manager_id])->first();
+     
+       return view("dash.user", [
             'data' => $data,
+            'teams'=>$teams,
+            "manager"=>$manager,
             "tasks" => $tasks,
             "tasksJson" => json_encode($tasksArray) // Pass JSON for JavaScript
         ]);
@@ -2887,7 +2892,7 @@ Provide a comprehensive text analysis:";
                 "status"=>"pending",
                 "manager_id"=>$member,
                 "userid"=>Auth::id(),
-                "image"=>$request->image,
+                "image"=>$request->image ? $request->image : "/profile.png",
                 "note"=>$request->note
         ]);
              Mail::send('mail.invite_manager', ['name' => $request->name,"id"=>$member,"workspace"=>Auth::user()->workspace], function ($message) use ($request) {
@@ -2981,6 +2986,12 @@ public function manager_setstatus(Request $request){
         }
 
                 return response()->json(["message"=>"Managers deleted successfully"]);
+    }
+
+    public function user_manager(Request $request){
+        DB::table("platform_users")->where(["id"=>$request->id,"owner_id"=>Auth::id()])->update(["manager_id"=>$request->manager_id]);
+                        return response()->json(["message"=>"Managers added successfully","success"=>true]);
+
     }
 
 }
