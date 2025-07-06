@@ -38,7 +38,15 @@ def convert_decimal_to_float(obj):
 app = Flask(__name__)
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('template_.log', mode='a')
+    ]
+)
 logger = logging.getLogger(__name__)
 
 # Encryption setup
@@ -774,12 +782,11 @@ def determine_optimal_chart_type(data, column_types):
 # SQL Optimization Prompt
 
 # Enhanced SQL optimization prompt with better error prevention
+# Enhanced SQL optimization prompt with better error prevention
 sql_optimization_prompt = PromptTemplate.from_template("""
 Based on the database schema, description, sample SQL query, and owner_id, write a SINGLE, VALID SQL query.
 
 CRITICAL SQL REQUIREMENTS: 
-- on the users table i dont have anything like full_name only name
-- use only the schema provided avoid suggesting please, thats more important
 - always state the platform the data is from, either trello or linear or jira
 - note you have trello and linear as source, so make sure you know what you're doing, so your response should be accurate across these platform
 - include trello and linear when fetching , make give repsonse labeled by platform either linear or trello
@@ -791,18 +798,6 @@ CRITICAL SQL REQUIREMENTS:
 - NO explanatory text before or after the SQL
 - NO multiple queries or statements
 - Must be syntactically correct MySQL
-
-
-##CRITICAL JOIN RULES:
-- This is correct JOIN platform_users ON platform_users.user_id = tasks.user_id, this is not correct JOIN platform_users ON platform_users.user_id = users.id, always note that
-- NEVER join platform_users directly on email
-- CORRECT task joins: tasks -> users (via owner_id) -> platform_users (via user_id)
-- EXAMPLE: FROM tasks 
-           JOIN users ON users.id = tasks.owner_id 
-           JOIN platform_users ON platform_users.user_id = tasks.user_id
-- please pass distinct to your fetching of tasks as most of the tasks are duplicare
-- Always filter by: WHERE platform_users.email = '{user_email}' AND users.workspace = '{workspace}'
-- Always add: WHERE tasks.is_deleted IS NULL (to exclude deleted tasks)
 
 
 CURRENT DATE CONTEXT:
@@ -1036,6 +1031,8 @@ def generate_template():
         template_id = str(data['id'])
         sample_sql_query = str(data['sql'])
         chat_id_enc = str(data['chat_id'])
+        user_email = None
+        manager_id = None
         
         # Handle different request types
         if request_type == 'invited':
@@ -1055,6 +1052,23 @@ def generate_template():
             # For invited type, we don't need owner_id
             owner_id = None
             user_email = staff_email
+        if request_type == 'manager':
+            # For invited type, use staff_id (encrypted email)
+            staff_id_enc = str(data.get('manager_id', ''))
+            if not staff_id_enc:
+                return jsonify({"error": "Missing manager_id for invited type"}), 400
+            
+            # Decrypt staff_id to get email
+            try:
+                manager_id = decrypt(staff_id_enc)
+                if not manager_id:
+                    return jsonify({"error": "Invalid encrypted manager_id"}), 400
+            except Exception as e:
+                return jsonify({"error": "Staff ID decryption failed"}), 400
+            
+            # For invited type, we don't need owner_id
+            owner_id = None
+            manager_id = manager_id
             
         else:
             # For default type, use owner_id
@@ -1071,6 +1085,7 @@ def generate_template():
                 return jsonify({"error": "Owner ID decryption failed"}), 400
             
             user_email = None  # Will be set from database if needed
+            manager_id = None
         
         chat_id = chat_id_enc
         
@@ -1146,6 +1161,57 @@ Staff Email: {staff_email}
 
 Return only the SQL query:
 """)
+        elif request_type == "manager":
+            invited_sql_prompt = PromptTemplate.from_template("""
+Based on the database schema, user query, and staff email, write a SQL query to get the data for invited users.
+
+PULL MOST FROM tasks TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPONSE
+
+NOTE: you're  chatting with a manager these users 
+
+CONTEXT AWARENESS:
+- on the users table i dont have anything like full_name only name
+- use only the schema provided avoid suggesting please, thats more important
+- note you have trello and linear as source, so make sure you know what you're doing, source is ambigous so use platform_users.source
+- always specify where a data is from either linear or trello
+- always left join anything related to project_id or project
+- never search a table that is not in the schema, i mean never and ever try to do this
+- provide clean sql , and working , with zero chance of error
+- nothing like task_name, please check column very well before performing queries
+- Track and reuse last-used table if user continues in same thread.
+- Always assume KPIs and performance analysis refer to the `tasks` table unless stated otherwise.
+- most of your query should be from tasks and refer to last chat history
+
+##CRITICAL JOIN RULES FOR INVITED TYPE:
+- This is correct JOIN platform_users ON platform_users.user_id = tasks.user_id 
+- EXAMPLE: FROM tasks JOIN platform_users ON platform_users.user_id = tasks.user_id 
+- Always filter by: WHERE platform_users.manager_id = '{manager_id}'
+- Always add: WHERE tasks.is_deleted IS NULL (to exclude deleted tasks) 
+
+IMPORTANT RULES:
+- when joining user make sure you select the user name for response, same as teams and projects, the names are important please
+- also try to get who is lacking behind
+- Use WHERE LIKE for username-related queries
+- Return plain text SQL query without backticks
+- For "list users" or "show users", select from platform_users table
+- Common user fields: id, email, userid, platform_id, fullname, source, created_at, updated_at
+- Status types include "Done", "In Progress", "Backlog", and "Todo"
+- avoid using update_at for greater than duration query
+- team id is not platform id
+
+CURRENT DATE CONTEXT:
+- Today's date is: {current_date}
+- Current year is: {current_year}
+- Use DYNAMIC date functions, NEVER hardcoded years
+
+Database Schema: {schema}
+Chat History: {history}
+User query: {description}
+Manager ID: {manager_id}
+
+Return only the SQL query:
+""")
+            
             
             invited_sql_chain = LLMChain(llm=llm, prompt=invited_sql_prompt)
             
@@ -1157,7 +1223,8 @@ Return only the SQL query:
                     history=chat_history,
                     staff_email=user_email,
                     current_date=current_date.strftime('%Y-%m-%d'),
-                    current_year=current_year
+                    current_year=current_year,
+                    manager_id=manager_id
                 )
                 optimized_sql = clean_sql(optimized_sql.strip())
                 logger.info(f"AI-Optimized SQL Query for invited type:\n{optimized_sql}")
@@ -1258,6 +1325,9 @@ Return only the SQL query:
             template_config['request_type'] = request_type
             if request_type == 'invited':
                 template_config['staff_email'] = user_email
+            
+            elif request_type == 'manager':
+                template_config['manager_id'] = manager_id
             else:
                 template_config['owner_id'] = owner_id
             

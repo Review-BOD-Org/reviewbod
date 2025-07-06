@@ -163,7 +163,7 @@ def get_workspace_types(owner_id, db_conn):
 # Enhanced LLM setup with function calling capabilities
 llm = ChatOpenAI(
     temperature=0.4,
-    model="gpt-4.1-nano",
+    model="gpt-4o",
     streaming=True
 )
 
@@ -603,7 +603,7 @@ async def process_query_with_streaming(query: str, user_id: str, chat_id: str, w
                 "message": str(e)
             })
     try:
-        if (staff_id and save != 1):
+        if (save != 1):
             instruct = 'ABSOLUTELY NO TEMPLATES - RESPOND WITH TEXT ONLY'
             logger.info(f"NO TEMPLATE")
             

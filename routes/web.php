@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\FrontController;
 use App\Http\Controllers\Manager;
 use App\Http\Middleware\CheckLinked;
+use App\Http\Middleware\CheckManager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Optimizer;
 use App\Http\Controllers\AuthController;
@@ -18,12 +20,8 @@ use App\Http\Controllers\ReportDispatcherController;
 
 use App\Http\Controllers\TaskAnalyzerController;
 
-Route::get('/', function () {
-    return Hash::make("50465550");
-    // echo bin2hex(random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES));
-    return;
-    return view("welcome");
-});
+
+Route::get('/', [FrontController::class, 'index']);
 
 
 
@@ -55,7 +53,7 @@ Route::prefix('/auth')->group(function () {
 
 
 Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function () {
-   
+
     //managers 
     Route::get('/managers', [Dash::class, 'managers'])->name("user.managers");
     Route::post('/upload_file', [Dash::class, 'upload_file'])->name("user.upload_file");
@@ -69,7 +67,7 @@ Route::prefix('/dashboard')->middleware(CheckUser::class)->group(function () {
     Route::post('/manager_setstatus', [Dash::class, 'manager_setstatus'])->name('user.manager_setstatus');
     Route::post('/bulk_block_managers', [Dash::class, 'bulk_block_managers'])->name('user.bulk_block_managers');
 
-    
+
 
     Route::get('/users', [Dash::class, 'users'])->name("user.users");
     Route::post('/getUserAnalysis', [Dash::class, 'getUserAnalysis'])->name("user.getUserAnalysis");
@@ -365,11 +363,40 @@ Route::get('/manager/invite/{workspace}/{id}', [Manager::class, 'invite'])->name
 
 Route::prefix('manager')->group(function () {
     Route::get('/', [Manager::class, 'login']);
-      Route::get('/login', [Manager::class, 'login']);
+    Route::get('/login', [Manager::class, 'login']);
 
     Route::post('/update_password', [Manager::class, 'update_password']);
     Route::post('/update_status', [Manager::class, 'update_status']);
     Route::post('/login', [Manager::class, 'plogin']);
+
+
+    Route::middleware(CheckManager::class)->group(function () {
+        Route::get('/dash', [Manager::class, 'dash']);
+        Route::get('/dash/{any}', [Manager::class, 'dash'])->where('any', '.*');
+
+
+
+
+        Route::get('/chat_data', [Manager::class, 'chat_data']);
+        Route::get('/loadMoreMessages', [Manager::class, 'loadMoreMessages']);
+        Route::delete('/deleteChat', [Manager::class, 'deleteChat']);
+
+
+        Route::post('/reaction', [Manager::class, 'reaction']);
+
+        Route::get('/sidebar_chats', [Manager::class, 'sidebar_chats']);
+
+        Route::post('/get_template', [Manager::class, 'get_template']);
+        Route::get('/users', [Manager::class, 'users']);
+        Route::get('/user/{id}', [Manager::class, 'member']);
+           Route::post('/getTaskPerformance', [Manager::class, 'getTaskPerformance']);
+        Route::get('/logout', [Manager::class, 'logout']);
+        Route::get('/settings', [Manager::class, 'settings']);
+           Route::post('/update_user', [Manager::class, 'update_user']);
+           Route::post('/_update_password', [Manager::class, '_update_password']);
+           Route::post('/save_notification', [Manager::class, 'save_notification']);
+
+    });
 
 
 });

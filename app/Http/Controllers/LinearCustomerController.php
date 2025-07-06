@@ -507,7 +507,7 @@ class LinearCustomerController extends Controller
         } catch (\Exception $e) {
             \Log::error('Error deleting chat: ' . $e->getMessage(), [
                 'chat_id' => $request->input('chat_id'),
-                'user_id' => Auth::id(),
+                'user_id' =>Auth('linear_user')->user()->id,
                 'trace' => $e->getTraceAsString()
             ]);
 

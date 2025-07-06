@@ -1767,6 +1767,7 @@
                     query: messageInput,
                     user_id: @json($user_id_encrypted),
                     chat_id: chatIdFromPath == "dashboard" ? "" : chatIdFromPath,
+                    save: 1
                 };
 
                 ws.send(JSON.stringify(message));
