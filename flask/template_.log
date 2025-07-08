@@ -538,3 +538,26 @@ GROUP BY p.name,
 2025-07-05 10:45:42,753 - INFO - Retrieved 39 rows from query
 2025-07-05 10:45:42,759 - INFO - Template uid_a5944c19cd7c455aa994cf52d25a79e7_4a0e626fb2c5e81f_1751712334780 saved to database successfully
 2025-07-05 10:45:42,759 - INFO - Successfully generated template for template_id uid_a5944c19cd7c455aa994cf52d25a79e7_4a0e626fb2c5e81f_1751712334780, type: default
+2025-07-08 10:13:12,646 - INFO - Generating template for type: default, template_id: uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869
+2025-07-08 10:13:15,716 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-08 10:13:15,737 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       t.title AS task_title,
+       t.status AS task_status,
+       t.source AS platform,
+       u.full_name AS user_full_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users u ON t.user_id = u.user_id
+WHERE t.owner_id = 7
+  AND (t.source = 'linear'
+       OR t.source = 'trello')
+  AND YEAR(t.created_at) = YEAR(CURDATE())
+GROUP BY p.name,
+         t.title,
+         t.status,
+         t.source,
+         u.full_name;
+2025-07-08 10:13:15,743 - INFO - Retrieved 48 rows from query
+2025-07-08 10:13:15,768 - INFO - Template uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869 saved to database successfully
+2025-07-08 10:13:15,769 - INFO - Successfully generated template for template_id uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869, type: default
