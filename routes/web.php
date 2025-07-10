@@ -26,6 +26,7 @@ Route::get('/pricing', [FrontController::class, 'pricing']);
 
 Route::get('/how', [FrontController::class, 'how']);
 Route::get('/faq', [FrontController::class, 'faq']);
+Route::get('/support', [FrontController::class, 'support']);
 
 
 

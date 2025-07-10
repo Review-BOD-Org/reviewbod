@@ -386,7 +386,7 @@ if __name__ == "__main__":
     # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     # LINEAR_API_KEY = os.getenv('LINEAR_API_KEY')
     
-    OPENAI_API_KEY = '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'
+    OPENAI_API_KEY = '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'
     LINEAR_API_KEY = 'lin_api_RjdqHPeUYu6GgwMCfEdALxg6bco4ROlM0uFInLFD'
     
     creator = BackdatedLinearIssueCreator(LINEAR_API_KEY, OPENAI_API_KEY)

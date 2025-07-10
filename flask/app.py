@@ -52,6 +52,44 @@ logger = logging.getLogger(__name__)
 # Encryption setup
 key = bytes.fromhex("bdd317920e6a5171548339a51548261e6b47d0bd3f1c2d68c68948330f78aac1")
 
+
+def create_empty_data_response(template_id, sql_query, description, request_type="default", **kwargs):
+    """Create a consistent response for empty data scenarios"""
+    
+    # Determine appropriate message based on context
+    if "projects" in sql_query.lower():
+        message = "No projects found matching your criteria. This could mean:\n• No projects exist with the specified filters\n• Projects might not be linked to your workspace\n"
+    elif "tasks" in sql_query.lower():
+        message = "No tasks found matching your criteria. This could mean:\n• No tasks exist with the specified filters\n• Tasks might be assigned to different users\n• Data might still be syncing from your workspace"
+    elif "platform_users" in sql_query.lower() or "users" in sql_query.lower():
+        message = "No users found matching your criteria."
+    else:
+        message = "No data available for this query."
+    
+    # Add context about the query
+    if "end_date < CURDATE()" in sql_query:
+        message += "\n\nNote: Looking for overdue items. If none exist, that's actually good news!"
+    
+    return {
+        "template_type": "table",
+        "id": template_id,
+        "data_count": 0,
+        "sql_query": sql_query,
+        "request_type": request_type,
+        "description": description,
+        **kwargs,  # Include any additional params like owner_id, staff_email etc.
+        "structure": {
+            "message": message,
+            "columns": [],
+            "data": [],
+            "query_info": {
+                "has_date_filter": "CURDATE()" in sql_query or "DATE_SUB" in sql_query,
+                "has_status_filter": "state" in sql_query.lower() or "status" in sql_query.lower(),
+                "table_queried": "projects" if "projects" in sql_query.lower() else "tasks" if "tasks" in sql_query.lower() else "users"
+            }
+        }
+    }
+    
 def decrypt(enc_b64):
     data = base64.b64decode(enc_b64)
     nonce = data[:24]
@@ -226,7 +264,7 @@ class DatabaseManager:
 db_manager = DatabaseManager(DB_CONFIG)
 
 # Database setup for LangChain
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 
 # Create SQLDatabase - LangChain SQLDatabase doesn't support pooling parameters directly
 db = SQLDatabase.from_uri(
@@ -296,7 +334,7 @@ def clean_sql(raw_sql: str) -> str:
 
 
 def create_safe_template_structure(processed_data, column_types, description, template_type="auto"):
-    """Create template structure with guaranteed consistency"""
+    """Create bulletproof template structure"""
     try:
         if not processed_data or not column_types:
             return {
@@ -313,8 +351,89 @@ def create_safe_template_structure(processed_data, column_types, description, te
         number_cols = [col for col, dtype in column_types.items() if dtype == 'number']
         date_cols = [col for col, dtype in column_types.items() if dtype == 'date']
         
-        # Always create table structure as fallback
-        table_structure = {
+        # Validate data quality
+        if len(processed_data) < 2:
+            # Force table for single row
+            return {
+                "template_type": "table",
+                "structure": {
+                    "columns": [{"data": col, "title": col.replace('_', ' ').title()} for col in columns],
+                    "data": processed_data
+                }
+            }
+        
+        # Try to create chart if conditions are met
+        can_create_chart = len(columns) >= 2 and len(processed_data) >= 2
+        
+        if can_create_chart:
+            # Determine optimal chart type
+            chart_type = determine_optimal_chart_type(processed_data, column_types)
+            
+            # Setup chart columns based on type
+            chart_columns = []
+            
+            if date_cols and number_cols:
+                # Time series
+                chart_columns = [
+                    {"type": "date", "label": date_cols[0].replace('_', ' ').title(), "data": date_cols[0]},
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
+                ]
+            elif string_cols and number_cols:
+                # Categorical
+                chart_columns = [
+                    {"type": "string", "label": string_cols[0].replace('_', ' ').title(), "data": string_cols[0]},
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
+                ]
+            elif len(number_cols) >= 2:
+                # Scatter
+                chart_columns = [
+                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]},
+                    {"type": "number", "label": number_cols[1].replace('_', ' ').title(), "data": number_cols[1]}
+                ]
+            else:
+                can_create_chart = False
+            
+            if can_create_chart and chart_columns:
+                # Validate chart data
+                try:
+                    # Check if we have valid data for charting
+                    sample_row = processed_data[0]
+                    required_cols = [col["data"] for col in chart_columns]
+                    
+                    if all(col in sample_row for col in required_cols):
+                        chart_structure = {
+                            "template_type": "chart",
+                            "structure": {
+                                "chartType": chart_type,
+                                "options": {
+                                    "title": description[:100],  # Limit title length
+                                    "legend": {"position": "bottom"},
+                                    "animation": {
+                                        "startup": True,
+                                        "duration": 1000,
+                                        "easing": "out"
+                                    },
+                                    "width": "100%",
+                                    "height": 400,
+                                    "backgroundColor": "transparent"
+                                },
+                                "columns": chart_columns,
+                                "chart_data": processed_data,
+                                "column_types": column_types
+                            }
+                        }
+                        
+                        # Add axis labels for appropriate chart types
+                        if chart_type in ["BarChart", "LineChart", "ScatterChart", "ColumnChart"]:
+                            chart_structure["structure"]["options"]["hAxis"] = {"title": chart_columns[0]["label"]}
+                            chart_structure["structure"]["options"]["vAxis"] = {"title": chart_columns[1]["label"]}
+                        
+                        return chart_structure
+                except Exception as chart_error:
+                    logger.warning(f"Chart creation failed, falling back to table: {chart_error}")
+        
+        # Fallback to table
+        return {
             "template_type": "table",
             "structure": {
                 "columns": [{"data": col, "title": col.replace('_', ' ').title()} for col in columns],
@@ -322,85 +441,17 @@ def create_safe_template_structure(processed_data, column_types, description, te
             }
         }
         
-        # Try to create chart if conditions are met
-        can_create_chart = False
-        chart_structure = None
-        
-        if len(processed_data) > 1 and len(columns) >= 2:
-            chart_columns = []
-            chart_type = "BarChart"  # Safe default
-            
-            # Determine best chart setup
-            if date_cols and number_cols:
-                # Time series
-                chart_type = "LineChart"
-                chart_columns = [
-                    {"type": "date", "label": date_cols[0].replace('_', ' ').title(), "data": date_cols[0]},
-                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
-                ]
-                can_create_chart = True
-                
-            elif string_cols and number_cols:
-                # Categorical data
-                chart_type = "PieChart" if len(processed_data) <= 10 else "BarChart"
-                chart_columns = [
-                    {"type": "string", "label": string_cols[0].replace('_', ' ').title(), "data": string_cols[0]},
-                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]}
-                ]
-                can_create_chart = True
-                
-            elif len(number_cols) >= 2:
-                # Scatter plot
-                chart_type = "ScatterChart"
-                chart_columns = [
-                    {"type": "number", "label": number_cols[0].replace('_', ' ').title(), "data": number_cols[0]},
-                    {"type": "number", "label": number_cols[1].replace('_', ' ').title(), "data": number_cols[1]}
-                ]
-                can_create_chart = True
-            
-            if can_create_chart and chart_columns:
-                chart_structure = {
-                    "template_type": "chart",
-                    "structure": {
-                        "chartType": chart_type,
-                        "options": {
-                            "title": description,
-                            "legend": {"position": "bottom"},
-                            "animation": {
-                                "startup": True,
-                                "duration": 1000,
-                                "easing": "out"
-                            },
-                            "width": "100%",
-                            "height": 400,
-                            "backgroundColor": "transparent"
-                        },
-                        "columns": chart_columns,
-                        "chart_data": processed_data,
-                        "column_types": column_types
-                    }
-                }
-                
-                # Add axis labels for applicable chart types
-                if chart_type in ["BarChart", "LineChart", "ScatterChart"]:
-                    chart_structure["structure"]["options"]["hAxis"] = {"title": chart_columns[0]["label"]}
-                    chart_structure["structure"]["options"]["vAxis"] = {"title": chart_columns[1]["label"]}
-        
-        # Return chart if possible, otherwise table
-        return chart_structure if chart_structure else table_structure
-        
     except Exception as e:
         logger.error(f"Error creating template structure: {str(e)}")
-        # Ultimate fallback
         return {
             "template_type": "table",
             "structure": {
-                "message": "Data structure error - showing raw data",
+                "message": f"Data processing error: {str(e)}",
                 "columns": [{"data": "error", "title": "Error"}],
                 "data": [{"error": str(e)}]
             }
         }
-        
+           
 # Add this function to fix chart template generation
 def create_chart_template_structure(processed_data, column_types, description, suggested_chart_type):
     """Enhanced chart template creation with better column handling"""
@@ -561,26 +612,17 @@ def save_template_to_db(template_data, template_id, chat_id):
         logger.error(f"Error saving template to database: {str(e)}")
         return False
 
-# NEW: Enhanced data preprocessing function
 def preprocess_data_for_google_charts(data):
-    """Enhanced data preprocessing with bulletproof error handling"""
-    if not data:
+    """Bulletproof data preprocessing with intelligent type detection"""
+    if not data or not isinstance(data, list) or len(data) == 0:
         return [], {}
     
-    # Ensure data is a list of dictionaries
-    if not isinstance(data, list):
-        return [], {}
-    
-    # Filter out non-dict items and ensure we have valid data
-    valid_data = []
-    for item in data:
-        if isinstance(item, dict) and item:  # Non-empty dict
-            valid_data.append(item)
-    
+    # Filter valid rows
+    valid_data = [item for item in data if isinstance(item, dict) and item]
     if not valid_data:
         return [], {}
     
-    # Get all possible columns from all rows
+    # Get all columns
     all_columns = set()
     for row in valid_data:
         all_columns.update(row.keys())
@@ -588,141 +630,124 @@ def preprocess_data_for_google_charts(data):
     if not all_columns:
         return [], {}
     
-    # Initialize column type detection
-    column_types = {}
+    # Enhanced type detection
+    column_analysis = {}
     for col in all_columns:
-        column_types[col] = {'types': set(), 'samples': []}
-    
-    # Analyze column types with safer access
-    for row in valid_data:
-        for col in all_columns:
-            # Safely get value with default None
-            value = row.get(col, None)
-            column_types[col]['samples'].append(value)
+        values = [row.get(col) for row in valid_data if row.get(col) is not None]
+        
+        if not values:
+            column_analysis[col] = 'string'
+            continue
             
-            if value is None:
-                continue
-            elif isinstance(value, (int, float, Decimal)):
-                column_types[col]['types'].add('number')
+        # Count different types
+        number_count = 0
+        date_count = 0
+        string_count = 0
+        
+        for value in values:
+            if isinstance(value, (int, float, Decimal)):
+                number_count += 1
             elif isinstance(value, (datetime, date)):
-                column_types[col]['types'].add('date')
+                date_count += 1
             elif isinstance(value, str):
-                value_clean = value.strip()
-                if not value_clean:
-                    column_types[col]['types'].add('string')
-                    continue
+                value_clean = str(value).strip()
                 
-                # Check for date strings
+                # Check if it's a number string
+                try:
+                    # Remove common number formatting
+                    clean_num = re.sub(r'[,$%\s]', '', value_clean)
+                    if clean_num and clean_num.replace('.', '').replace('-', '').isdigit():
+                        float(clean_num)
+                        number_count += 1
+                        continue
+                except (ValueError, AttributeError):
+                    pass
+                
+                # Check if it's a date string
                 date_patterns = [
-                    r'^\d{4}-\d{2}-\d{2}',
-                    r'^\d{2}/\d{2}/\d{4}',
-                    r'^\d{2}-\d{2}-\d{4}',
+                    r'^\d{4}-\d{1,2}-\d{1,2}',
+                    r'^\d{1,2}[-/]\d{1,2}[-/]\d{4}',
+                    r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}',
                 ]
                 
-                is_date = any(re.match(pattern, value_clean, re.IGNORECASE) for pattern in date_patterns)
-                if is_date:
-                    column_types[col]['types'].add('date')
-                    continue
+                if any(re.match(pattern, value_clean) for pattern in date_patterns):
+                    try:
+                        from dateutil import parser
+                        parser.parse(value_clean)
+                        date_count += 1
+                        continue
+                    except:
+                        pass
                 
-                # Check if string represents a number
-                try:
-                    clean_val = re.sub(r'[,$%\s]', '', value_clean)
-                    if clean_val:  # Not empty after cleaning
-                        float(clean_val)
-                        column_types[col]['types'].add('number')
-                    else:
-                        column_types[col]['types'].add('string')
-                except (ValueError, AttributeError):
-                    column_types[col]['types'].add('string')
+                string_count += 1
             else:
-                column_types[col]['types'].add('string')
-    
-    # Determine final types with safer logic
-    final_column_types = {}
-    for column, info in column_types.items():
-        types = info['types']
-        samples = [s for s in info['samples'] if s is not None]
+                string_count += 1
         
-        if not samples:  # All values are None
-            final_column_types[column] = 'string'
-            continue
-        
-        # Prioritize: date > number > string
-        if 'date' in types:
-            date_count = sum(1 for s in samples if isinstance(s, (datetime, date)) or 
-                           (isinstance(s, str) and s.strip() and 
-                            any(re.match(p, str(s).strip(), re.IGNORECASE) 
-                                for p in [r'^\d{4}-\d{2}-\d{2}', r'^\d{2}/\d{2}/\d{4}'])))
-            if len(samples) > 0 and date_count / len(samples) > 0.7:
-                final_column_types[column] = 'date'
-            else:
-                final_column_types[column] = 'string'
-        elif 'number' in types and 'string' not in types:
-            final_column_types[column] = 'number'
-        elif 'number' in types and 'string' in types:
-            number_count = sum(1 for s in samples if isinstance(s, (int, float, Decimal)) or
-                             (isinstance(s, str) and s.strip() and 
-                              re.match(r'^[\d,.$%\s-]+$', s.strip())))
-            if len(samples) > 0 and number_count / len(samples) > 0.8:
-                final_column_types[column] = 'number'
-            else:
-                final_column_types[column] = 'string'
+        # Determine type based on majority (80% threshold)
+        total = len(values)
+        if date_count > 0 and date_count / total >= 0.6:
+            column_analysis[col] = 'date'
+        elif number_count > 0 and number_count / total >= 0.8:
+            column_analysis[col] = 'number'
         else:
-            final_column_types[column] = 'string'
+            column_analysis[col] = 'string'
     
-    # Process all data with consistent structure
+    # Process data according to determined types
     processed_data = []
     for row in valid_data:
         processed_row = {}
-        # Ensure all columns exist in every row
         for col in all_columns:
-            value = row.get(col, None)  # Safe access
-            target_type = final_column_types.get(col, 'string')
+            value = row.get(col)
+            target_type = column_analysis[col]
             
             if value is None:
-                processed_row[col] = None if target_type == 'string' else (0 if target_type == 'number' else None)
-            elif target_type == 'string':
-                processed_row[col] = str(value)
-            elif target_type == 'number':
-                try:
-                    if isinstance(value, (Decimal, int, float)):
+                processed_row[col] = None
+                continue
+                
+            try:
+                if target_type == 'number':
+                    if isinstance(value, (int, float, Decimal)):
                         processed_row[col] = float(value)
                     elif isinstance(value, str):
-                        clean_val = re.sub(r'[,$%\s]', '', value.strip())
+                        clean_val = re.sub(r'[,$%\s]', '', str(value).strip())
                         processed_row[col] = float(clean_val) if clean_val else 0.0
                     else:
                         processed_row[col] = 0.0
-                except (ValueError, AttributeError):
-                    processed_row[col] = 0.0
-            elif target_type == 'date':
-                if isinstance(value, datetime):
-                    processed_row[col] = f"Date({value.year}, {value.month-1}, {value.day})"
-                elif isinstance(value, date):
-                    processed_row[col] = f"Date({value.year}, {value.month-1}, {value.day})"
-                elif isinstance(value, str):
-                    try:
-                        from dateutil import parser
-                        parsed_date = parser.parse(value)
-                        processed_row[col] = f"Date({parsed_date.year}, {parsed_date.month-1}, {parsed_date.day})"
-                    except:
+                        
+                elif target_type == 'date':
+                    if isinstance(value, datetime):
+                        processed_row[col] = value.isoformat()
+                    elif isinstance(value, date):
+                        processed_row[col] = value.isoformat()
+                    elif isinstance(value, str):
+                        try:
+                            from dateutil import parser
+                            parsed_date = parser.parse(str(value))
+                            processed_row[col] = parsed_date.isoformat()
+                        except:
+                            processed_row[col] = str(value)
+                            column_analysis[col] = 'string'  # Fallback to string
+                    else:
                         processed_row[col] = str(value)
-                        final_column_types[col] = 'string'
-                else:
+                        
+                else:  # string
                     processed_row[col] = str(value)
-            else:
+                    
+            except Exception as e:
+                logger.warning(f"Error processing value {value} for column {col}: {e}")
                 processed_row[col] = str(value) if value is not None else ''
         
         processed_data.append(processed_row)
     
-    # Final safety conversion
+    # Convert Decimals to floats for JSON serialization
     processed_data = convert_decimal_to_float(processed_data)
-    final_column_types = convert_decimal_to_float(final_column_types)
+    column_analysis = convert_decimal_to_float(column_analysis)
     
-    return processed_data, final_column_types
+    return processed_data, column_analysis
 
-# NEW: Smart chart type selection based on data
+# Enhanced chart type determination
 def determine_optimal_chart_type(data, column_types):
-    """Enhanced chart type selection with better logic"""
+    """Smarter chart type selection based on data characteristics"""
     if not data or not column_types:
         return "BarChart"
     
@@ -730,55 +755,33 @@ def determine_optimal_chart_type(data, column_types):
     number_cols = [col for col, dtype in column_types.items() if dtype == 'number']
     date_cols = [col for col, dtype in column_types.items() if dtype == 'date']
     
-    total_cols = len(column_types)
     data_count = len(data)
     
-    # Enhanced decision logic
-    
-    # Time series data (dates + numbers)
+    # Time series: dates + numbers = LineChart
     if date_cols and number_cols:
         return "LineChart"
     
-    # Single categorical with single numeric - good for pie charts (small datasets)
-    if len(string_cols) == 1 and len(number_cols) == 1 and data_count <= 12:
-        # Check if the string column has reasonable categories (not too many unique values)
-        unique_categories = len(set(str(row[string_cols[0]]) for row in data))
-        if unique_categories <= 8:
+    # Categorical with numbers
+    if string_cols and number_cols:
+        # Check unique categories in string column
+        unique_categories = len(set(str(row[string_cols[0]]) for row in data if row.get(string_cols[0])))
+        
+        # PieChart for small categorical data
+        if unique_categories <= 7 and data_count <= 15:
             return "PieChart"
         else:
             return "BarChart"
     
-    # Multiple numbers, no strings - scatter plot for correlation analysis
-    if len(number_cols) >= 2 and len(string_cols) == 0:
+    # Two or more numeric columns = ScatterChart
+    if len(number_cols) >= 2:
         return "ScatterChart"
     
-    # Categorical data with numbers - bar charts are best
-    if string_cols and number_cols:
-        # For many categories or large datasets, use BarChart
-        if data_count > 12:
-            return "BarChart"
-        
-        # Check category distribution
-        if string_cols:
-            unique_categories = len(set(str(row[string_cols[0]]) for row in data))
-            if unique_categories > 8:
-                return "BarChart"
-            elif unique_categories <= 5 and data_count <= 10:
-                return "PieChart"
-            else:
-                return "BarChart"
-    
-    # Only strings - create a count chart
+    # Only strings = count chart (BarChart)
     if string_cols and not number_cols:
         return "BarChart"
     
-    # Only numbers - not ideal for charts, but use bar chart with indices
-    if number_cols and not string_cols:
-        return "BarChart"
-    
-    # Default fallback
+    # Fallback
     return "BarChart"
-
 # SQL Optimization Prompt
 
 # Enhanced SQL optimization prompt with better error prevention
@@ -854,6 +857,13 @@ template_analyzer_prompt = PromptTemplate.from_template("""
 You are a JSON generator that creates Google Charts configuration templates and you give 100% accurate responses. You must return ONLY valid JSON with no extra text, explanations, or formatting.
 
 
+CRITICAL VALIDATION:
+- If description mentions "table", "list", "show data" → use "table"
+- If description mentions "chart", "graph", "visualization" → use "chart" 
+- Match the title to the template type:
+  * Table titles: "Table showing...", "List of...", "Data for..."
+  * Chart titles: "Chart showing...", "Graph of...", "Distribution of..."
+  
 IMPORTANT: Analyze the data structure and content to determine the BEST chart type automatically.
  - always label the platform the data is from, either trello or linear or jira
  - note you have trello and linear as source, so make sure you know what you're doing, so your response should be splitted across these platform
@@ -941,6 +951,18 @@ def getTableTemplate(temp_data, owner_id):
         
         logger.info(f"Generating TABLE template for owner_id {owner_id}, template_id {template_id}")
         
+        all_data = db_manager.execute_query(optimized_sql)
+        
+        logger.info(f"Retrieved {len(all_data)} rows from optimized query")
+        
+        # Use the new empty data response function
+        if not all_data:
+            return create_empty_data_response(
+                template_id=template_id,
+                sql_query=optimized_sql,
+                description=description,
+                owner_id=owner_id
+            )
         # Get chat history for context
         chat_history = get_chat_history(chat_id) if chat_id else ""
         
@@ -1114,6 +1136,12 @@ Based on the database schema, user query, and staff email, write a SQL query to 
 
 PULL MOST FROM tasks TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPONSE
 
+
+CRITICAL: ONLY use columns that exist in the schema provided. Common mistakes to avoid:
+- p.estimate (doesn't exist - use p.estimated_time or similar)
+- task_name (doesn't exist - use t.title or t.name)
+- full_name (doesn't exist in users - use name)
+
 CONTEXT AWARENESS:
 - on the users table i dont have anything like full_name only name
 - use only the schema provided avoid suggesting please, thats more important
@@ -1168,6 +1196,11 @@ Based on the database schema, user query, and staff email, write a SQL query to 
 PULL MOST FROM tasks TABLE OR IF YOU WANNA JOIN FROM IT, TO GET ACCURATE RESPONSE
 
 NOTE: you're  chatting with a manager these users 
+
+CRITICAL: ONLY use columns that exist in the schema provided. Common mistakes to avoid:
+- p.estimate (doesn't exist - use p.estimated_time or similar)
+- task_name (doesn't exist - use t.title or t.name)
+- full_name (doesn't exist in users - use name)
 
 CONTEXT AWARENESS:
 - on the users table i dont have anything like full_name only name
@@ -1278,7 +1311,39 @@ Return only the SQL query:
                 all_data = []
         except Exception as e:
             logger.error(f"Database query error: {str(e)}")
-            return jsonify({"error": "Database query failed"}), 500
+            
+            
+            # Return error response instead of 500 - this stops the skeleton loader
+            error_response = {
+                "template_type": "table",
+                "id": template_id,
+                "data_count": 0,
+                "sql_query": optimized_sql,
+                "error": f"Query failed: {str(e)}",
+                "structure": {
+                    "message": "Database query failed. Please try a different question.",
+                    "columns": [],
+                    "data": []
+                }
+            }
+            return jsonify(error_response)  # Don't return 500, return 200 with error info
+        
+        logger.info(f"Retrieved {len(all_data)} rows from query")
+        
+        # Handle empty data - USE THE NEW FUNCTION
+        if not all_data:
+            template_config = create_empty_data_response(
+                template_id=template_id,
+                sql_query=optimized_sql,
+                description=description,
+                request_type=request_type,
+                owner_id=owner_id if request_type == 'default' else None,
+                staff_email=user_email if request_type == 'invited' else None,
+                manager_id=manager_id if request_type == 'manager' else None
+            )
+            
+            save_template_to_db(template_config, template_id, chat_id)
+            return jsonify(template_config)
         
         logger.info(f"Retrieved {len(all_data)} rows from query")
         
@@ -1360,9 +1425,11 @@ Return only the SQL query:
         logger.error(f"Critical error in generate_template: {str(e)}")
         return jsonify({
             "error": "Internal server error",
-            "template_type": "table",
+            "template_type": "table", 
+            "id": template_id if 'template_id' in locals() else "unknown",
+            "data_count": 0,
             "structure": {
-                "message": "Service temporarily unavailable",
+                "message": "Service temporarily unavailable. Please try again.",
                 "columns": [],
                 "data": []
             }

@@ -15,6 +15,178 @@
             border-radius: 8px;
         }
     </style>
+ 
+<style>
+/* Modal animation classes */
+.modal-panel {
+    transform: translateX(100%);
+}
+
+.modal-panel.show {
+    transform: translateX(0);
+}
+
+.modal-backdrop {
+    opacity: 0;
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+}
+</style>
+
+<div id="addManagerModal" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title"
+    role="dialog" aria-modal="true">
+    <!-- Background backdrop -->
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Background overlay -->
+        <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity modal-backdrop"></div>
+
+        <!-- Sidebar panel -->
+        <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
+            <div class="w-screen max-w-md transform transition ease-in-out duration-300 modal-panel translate-x-full">
+                <div class="h-full flex flex-col bg-white shadow-xl">
+                    <!-- Header -->
+                    <div class="px-6 py-6 bg-[#F4F7FC] border-b">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900" id="slide-over-title">
+                                Add Manager for {{ $data->name }}
+                            </h2>
+                            <button type="button"
+                                class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-2"
+                                onclick="closeAddManagerModal()">
+                                <span class="sr-only">Close panel</span>
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Create a new manager and assign to this user.
+                        </p>
+                    </div>
+
+                    <!-- Form Content -->
+                    <div class="flex-1 overflow-y-auto">
+                        <form id="addManagerForm" class="h-full">
+                            <input type="hidden" name="user_id" value="{{ $data->id }}">
+                            <input type="hidden" name="assign" value="1">
+                                @csrf
+                            <div class="px-6 py-6 space-y-6">
+
+                                <!-- Profile Picture Upload -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Profile Picture
+                                    </label>
+                                    <div class="flex items-center space-x-4">
+                                        <div
+                                            class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                                            <img id="profilePreview" src="" alt="Profile preview"
+                                                class="w-full h-full object-cover hidden">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <input type="file" id="profilePicture" name="profile_picture"
+                                                accept="image/*" class="hidden">
+                                            <button type="button"
+                                                onclick="document.getElementById('profilePicture').click()"
+                                                class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                Upload Photo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Full Name -->
+                                <div>
+                                    <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Full Name <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="fullName" name="name" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Enter full name">
+                                </div>
+
+                                <!-- Email Address -->
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Email Address <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="email" id="email" name="email" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="manager@example.com">
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Phone Number (Optional)
+                                    </label>
+                                    <input type="tel" id="phone" name="phone"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="+234 8012345678">
+                                </div>
+
+                                <!-- Department/Role -->
+                                <div>
+                                    <label for="department" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Department/Role
+                                    </label>
+                                    <select id="department" name="department"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select Department</option>
+                                        <option value="sales">Sales Manager</option>
+                                        <option value="marketing">Marketing Manager</option>
+                                        <option value="operations">Operations Manager</option>
+                                        <option value="hr">HR Manager</option>
+                                        <option value="finance">Finance Manager</option>
+                                        <option value="it">IT Manager</option>
+                                        <option value="customer_service">Customer Service Manager</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <!-- Notes/Comments -->
+                                <div>
+                                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Notes (Optional)
+                                    </label>
+                                    <textarea id="notes" name="note" rows="3"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Add any additional notes about this manager..."></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="flex-shrink-0 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="closeAddManagerModal()"
+                                class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Cancel
+                            </button>
+                            <button type="submit" form="addManagerForm"
+                                class="bg-[#CB964F] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-[#B8854A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CB964F] flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Add Manager
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="p-9 flex flex-col">
         <div class="bg-[#1E2875] w-full h-[300px] rounded-lg p-5 relative">
             <h3 class="text-white text-xl font-semibold">User Details</h3>
@@ -67,7 +239,7 @@
                         View Manager
                     </button>
                     @else
-                    <button onclick="openManagers()"
+                    <button onclick="openAddManagerModal()"
                         class="bg-[#F0EFFA] flex gap-3 items-center hover:bg-[#E8E7F5] px-4 py-2 rounded-full text-xs font-medium text-gray-700 transition-colors">
                         <i class="fa fa-plus"></i>
                         Add Manager
@@ -329,6 +501,26 @@
                     <label class="text-sm text-gray-500">Department</label>
                     <p id="manager-department" class="font-medium text-gray-900">{{$manager->department}}</p>
                 </div>
+
+               @if($manager->status == "pending")
+    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-lg">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-amber-800">
+                    This manager has a pending invite
+                </p>
+                <p class="text-xs text-amber-700 mt-1">
+                    They will receive access once they accept the invitation
+                </p>
+            </div>
+        </div>
+    </div>
+@endif
             </div>
 
             <!-- Remove Button -->
@@ -1299,4 +1491,122 @@
         }
     }
     @endif
+
+    function openAddManagerModal() {
+    const modal = document.getElementById('addManagerModal');
+    const panel = modal.querySelector('.modal-panel');
+    const backdrop = modal.querySelector('.modal-backdrop');
+
+    modal.classList.remove('hidden');
+
+    // Trigger animation
+    setTimeout(() => {
+        panel.classList.add('show');
+        backdrop.classList.add('show');
+    }, 10);
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close the modal
+function closeAddManagerModal() {
+    const modal = document.getElementById('addManagerModal');
+    const panel = modal.querySelector('.modal-panel');
+    const backdrop = modal.querySelector('.modal-backdrop');
+
+    panel.classList.remove('show');
+    backdrop.classList.remove('show');
+
+    // Hide modal after animation
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        // Reset form
+        document.getElementById('addManagerForm').reset();
+        document.getElementById('profilePreview').classList.add('hidden');
+        document.getElementById('profilePreview').src = '';
+    }, 300);
+}
+
+// Profile picture preview
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('profilePicture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('profilePreview');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+
+                // Prepare FormData for AJAX upload
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+                formData.append('_token', "{{ csrf_token() }}");
+                $("button").attr("disabled", true);
+
+                // Use jQuery AJAX to upload the file
+                $.ajax({
+                    url: '{{ route('user.upload_file') }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        preview.src = response.url;
+                        $("button").attr("disabled", false);
+                    },
+                    error: function(xhr, status, error) {
+                        $("button").attr("disabled", false);
+                        console.error('Upload failed:', error);
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form submission
+    $("#addManagerForm").submit((e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData($("#addManagerForm")[0]);
+        formData.append("image", $("#profilePreview").attr("src"));
+        $("button").attr("disabled", true);
+
+        $.ajax({
+            url: '{{ route('user.add_manager') }}',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                toastr.success(response.message);
+                location.reload();
+                $("button").attr("disabled", false);
+            },
+            error: function(xhr, status, error) {
+                toastr.error(xhr.responseJSON.message);
+                console.error('Upload failed:', error);
+                $("button").attr("disabled", false);
+            }
+        });
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('addManagerModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAddManagerModal();
+        }
+    });
+
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('addManagerModal').classList.contains('hidden')) {
+            closeAddManagerModal();
+        }
+    });
+});
 </script>

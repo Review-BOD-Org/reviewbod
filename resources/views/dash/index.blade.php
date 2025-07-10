@@ -5,12 +5,242 @@
 
 @section('content')
     <style>
+        /* Transform paragraphs with strong tags into catchy headers */
+div[id^="msg-"] p:has(strong) {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    color: white;
+    padding: 20px 28px;
+    border-radius: 12px;
+    margin: 24px 0 16px 0;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+ 
+
+div[id^="msg-"] p:has(strong)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #CB964F, #E6B673, #CB964F);
+}
+
+div[id^="msg-"] p:has(strong):hover {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
+}
+
+div[id^="msg-"] p:has(strong) strong {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+}
+
+/* Style regular text paragraphs with more appeal */
+div[id^="msg-"] p:not(:has(strong)) {
+    line-height: 1.7;
+    color: #2d3748;
+    margin-bottom: 18px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    border-radius: 10px;
+    border-left: 4px solid #e2e8f0;
+    font-size: 15px;
+    position: relative;
+    
+}
+
+div[id^="msg-"] p:not(:has(strong)):hover {
+    border-left-color: #CB964F;
+    background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+    transform: translateX(4px);
+    transition: all 0.3s ease;
+}
+
+/* Enhanced list styling */
+div[id^="msg-"] ul {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+    position: relative;
+}
+
+div[id^="msg-"] ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #CB964F, #E6B673);
+    border-radius: 12px 12px 0 0;
+}
+
+div[id^="msg-"] ul li {
+    position: relative;
+    padding: 12px 0 12px 32px;
+    color: #2d3748;
+    line-height: 1.7;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+div[id^="msg-"] ul li:last-child {
+    border-bottom: none;
+}
+
+div[id^="msg-"] ul li::before {
+    content: '▶';
+    position: absolute;
+    left: 8px;
+    color: #CB964F;
+    font-weight: bold;
+    font-size: 12px;
+    top: 14px;
+}
+
+div[id^="msg-"] ul li:hover {
+    color: #1a202c;
+    background: linear-gradient(135deg, rgba(203, 150, 79, 0.1), rgba(230, 182, 115, 0.1));
+    margin: 0 -12px;
+    padding-left: 44px;
+    border-radius: 8px;
+    transform: translateX(8px);
+}
+
+/* Modern ordered list */
+div[id^="msg-"] ol {
+    counter-reset: item-counter;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    border: 1px solid #e2e8f0;
+    position: relative;
+}
+
+div[id^="msg-"] ol::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #CB964F, #E6B673);
+    border-radius: 12px 12px 0 0;
+}
+
+div[id^="msg-"] ol li {
+    counter-increment: item-counter;
+    position: relative;
+    padding: 16px 0 16px 56px;
+    margin-bottom: 12px;
+    color: #2d3748;
+    line-height: 1.7;
+    background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+div[id^="msg-"] ol li::before {
+    content: counter(item-counter);
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #CB964F, #D4A866);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+div[id^="msg-"] ol li:hover {
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+}
+
+/* Enhanced strong text highlighting */
+div[id^="msg-"] li strong {
+    color: #CB964F;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(203, 150, 79, 0.1), rgba(212, 168, 102, 0.1));
+    padding: 2px 8px;
+    border-radius: 6px;
+    border-left: 2px solid #CB964F;
+    
+}
+
+/* Improved typography with better spacing */
+div[id^="msg-"] {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+div[id^="msg-"] * {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Highlight important statistics with subtle accent */
+div[id^="msg-"] p:not(:has(strong)) {
+    position: relative;
+}
+
+div[id^="msg-"] p:not(:has(strong))::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(135deg, #CB964F, #D4A866);
+    transition: width 0.3s ease;
+    border-radius: 10px 0 0 10px;
+}
+
+div[id^="msg-"] p:not(:has(strong)):hover::before {
+    width: 4px;
+}
         .text-reviewbod-yellow {
             color: #CB964F !important;
             fill: #CB964F;
             /* or any color */
 
         }
+
+        @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.template-placeholder {
+    min-height: 100px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
 
           .snap-animation {
             animation: snapOut 0.6s ease-out forwards;
@@ -647,78 +877,77 @@
     }
 
     // Initialize Google Charts with multiple fallback strategies
+ 
     function initializeGoogleCharts() {
-        // If already loaded or loading, return existing promise
-        if (googleChartsLoaded || chartsLoadPromise) {
-            return chartsLoadPromise || Promise.resolve();
-        }
-
-        // Check if already loaded
-        if (checkExistingGoogleCharts()) {
-            console.log('Google Charts already loaded');
-            return Promise.resolve();
-        }
-
-        // Check if Google Charts script is available
-        if (typeof google === 'undefined' || !google.charts) {
-            return Promise.reject(new Error('Google Charts library not found'));
-        }
-
-        console.log('Loading Google Charts...');
-
-        chartsLoadPromise = new Promise((resolve, reject) => {
-            let resolved = false;
-
-            const onSuccess = () => {
-                if (!resolved) {
-                    resolved = true;
-                    googleChartsLoaded = true;
-                    console.log('Google Charts loaded successfully');
-
-                    // Process any pending charts
-                    processPendingCharts();
-                    resolve();
-                }
-            };
-
-            const onError = (error) => {
-                if (!resolved) {
-                    resolved = true;
-                    console.error('Google Charts loading failed:', error);
-                    reject(error);
-                }
-            };
-
-            try {
-                // Primary loading method
-                google.charts.load('current', {
-                    'packages': ['corechart', 'bar', 'line', 'scatter', 'area', 'histogram', 'combo'],
-                    'callback': onSuccess
-                });
-
-                // Backup callback
-                google.charts.setOnLoadCallback(onSuccess);
-
-                // Timeout fallback
-                setTimeout(() => {
-                    if (!resolved) {
-                        // Check one more time if it loaded without callback
-                        if (checkExistingGoogleCharts()) {
-                            onSuccess();
-                        } else {
-                            onError(new Error('Google Charts loading timeout'));
-                        }
-                    }
-                }, 15000); // 15 second timeout
-
-            } catch (error) {
-                onError(error);
-            }
-        });
-
-        return chartsLoadPromise;
+    if (googleChartsLoaded || chartsLoadPromise) {
+        return chartsLoadPromise || Promise.resolve();
     }
 
+    if (checkExistingGoogleCharts()) {
+        console.log('Google Charts already loaded');
+        return Promise.resolve();
+    }
+
+    if (typeof google === 'undefined' || !google.charts) {
+        return Promise.reject(new Error('Google Charts library not found'));
+    }
+
+    console.log('Loading Google Charts...');
+
+    chartsLoadPromise = new Promise((resolve, reject) => {
+        let resolved = false;
+        let retryCount = 0;
+        const maxRetries = 3;
+
+        const onSuccess = () => {
+            if (!resolved) {
+                resolved = true;
+                googleChartsLoaded = true;
+                console.log('Google Charts loaded successfully');
+                processPendingCharts();
+                resolve();
+            }
+        };
+
+        const onError = (error) => {
+            if (!resolved) {
+                resolved = true;
+                console.error('Google Charts loading failed:', error);
+                reject(error);
+            }
+        };
+
+     const attemptLoad = () => {
+    try {
+        google.charts.load('current', {
+            'packages': ['corechart'],
+            'callback': onSuccess
+        });
+
+        setTimeout(() => {
+            if (!resolved) {
+                retryCount++;
+                if (retryCount < 2) { // Change from 3 to 2
+                    console.log(`Retrying Google Charts load (${retryCount}/2)`);
+                    attemptLoad();
+                } else {
+                    if (checkExistingGoogleCharts()) {
+                        onSuccess();
+                    } else {
+                        onError(new Error('Google Charts loading failed'));
+                    }
+                }
+            }
+        }, 2000); // Change from 5000 to 2000 (faster retry)
+    } catch (error) {
+        onError(error);
+    }
+};
+        attemptLoad();
+    });
+
+    return chartsLoadPromise;
+}
     // Process pending charts after Google Charts loads
     function processPendingCharts() {
         while (pendingCharts.length > 0) {
@@ -952,51 +1181,124 @@
     }
 
     // Update the renderTable function to handle errors better
-    function renderTable(res, containerId) {
-        if (!res || res.template_type !== 'table' || !res.structure) {
-            const templateData = storedTemplates.get(containerId);
-            if (templateData) {
-                showTemplateError(containerId, templateData, 'Invalid table data received');
-            }
+function renderTable(res, containerId) {
+    if (!res || res.template_type !== 'table' || !res.structure) {
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, 'Invalid table data received');
+        }
+        return;
+    }
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.log("Container not found for table");
+        return;
+    }
+
+    try {
+        console.log("Rendering table with structure:", res.structure);
+
+        const { columns, data, message } = res.structure;
+        
+        // Handle empty data case with message
+        if (message && (!data || data.length === 0)) {
+            console.log("Handle empty data case with message",container)
+            tempres = `
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+                            <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">No Data Found</h3>
+                        <p class="text-sm text-gray-500">${message}</p>
+                        
+                    </div>
+                </div>
+            `;
+              $(`#${containerId}`).removeClass()
+            $(`#${containerId}`).html(tempres)
+const $container = $(`#${containerId}`);
+if ($container.length) {
+    $container.addClass("overflow-x-auto");
+}            
+            return;
+        }
+        
+        // Validate table data for non-empty case
+        if (!columns || !Array.isArray(columns) || columns.length === 0) {
+            throw new Error('Invalid table columns');
+        }
+        
+        if (!data || !Array.isArray(data)) {
+            throw new Error('Invalid table data');
+        }
+
+        // Handle case where we have columns but no data
+        if (data.length === 0) {
+           tempres = `
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+                            <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">Table Structure Ready</h3>
+                        <p class="text-sm text-gray-500">The table is set up but contains no records matching your criteria.</p>
+                        <div class="mt-4 text-xs text-gray-400">
+                            Expected columns: ${columns.map(col => col.title || col.data).join(', ')}
+                        </div>
+                    </div>
+                </div>
+            `;
+              $(`#${containerId}`).html(tempres)
+              const $container = $(`#${containerId}`);
+if ($container.length) {
+    $container.addClass("overflow-x-auto");
+}
+
             return;
         }
 
-        const container = document.getElementById(containerId);
-        if (!container) {
-            console.log("Container not found for table");
-            return;
-        }
+        // Normal table rendering for data with records
+        const tableId = `table-${res.id}`;
+        console.log(`Rendering table ${tableId} with ${data.length} rows and ${columns.length} columns`);
 
-        try {
-            console.log("Rendering table with structure:", res.structure);
-
-            const {
-                columns,
-                data
-            } = res.structure;
-            const tableId = `table-${res.id}`;
-            console.log(`Rendering table ${tableId} with ${data.length} rows and ${columns.length} columns`);
-
-            const tableHTML = `
-            <div class="bg-white">
+        const tableHTML = `
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div class="px-4 py-2 bg-gray-50 border-b border-gray-200">
+                    <h4 class="text-sm font-medium text-gray-900">${data.length} records found</h4>
+                </div>
                 <table id="${tableId}" class="min-w-full divide-y divide-gray-200 table-auto">
                     <thead class="bg-gray-50">
                         <tr>
                             ${columns.map(col => `
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ${col.title}
+                                    ${col.title || col.data || 'Column'}
                                 </th>
                             `).join('')}
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        ${data.map(row => `
-                            <tr class="hover:bg-gray-50">
-                                ${columns.map(col => `
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        ${row[col.data] || 'No Data'}
-                                    </td>
-                                `).join('')}
+                        ${data.map((row, index) => `
+                            <tr class="hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}">
+                                ${columns.map(col => {
+                                    const value = row[col.data];
+                                    let displayValue = 'No Data';
+                                    
+                                    if (value !== null && value !== undefined && value !== '') {
+                                        displayValue = String(value);
+                                    }
+                                    
+                                    return `
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            ${displayValue}
+                                        </td>
+                                    `;
+                                }).join('')}
                             </tr>
                         `).join('')}
                     </tbody>
@@ -1004,84 +1306,110 @@
             </div>
         `;
 
-            container.innerHTML = tableHTML;
-            $(`#${containerId}`).removeClass('template-placeholder');
-            container.className = "overflow-x-auto";
+         $(`#${containerId}`).html(tableHTML) 
+        container.className = "overflow-x-auto";
 
-            if (typeof $ !== 'undefined' && $.fn.DataTable) {
+        // Initialize DataTable if available
+        if (typeof $ !== 'undefined' && $.fn.DataTable) {
+            try {
                 $(`#${tableId}`).DataTable({
                     responsive: true,
+                    pageLength: 10,
+                    destroy: true,
+                    language: {
+                        emptyTable: "No records found",
+                        zeroRecords: "No matching records found"
+                    }
                 });
-            }
-        } catch (error) {
-            console.error('Error rendering table:', error);
-            const templateData = storedTemplates.get(containerId);
-            if (templateData) {
-                showTemplateError(containerId, templateData, `Table error: ${error.message}`);
+            } catch (e) {
+                console.warn('DataTable initialization failed:', e);
             }
         }
-    }
-
-    // Safe render function for charts
-
-    function safeRenderChart(res, containerId) {
-        console.log(`Initiating safe render for chart ${containerId}`);
-
-        const container = document.getElementById(containerId);
-        if (!container) {
-            console.error(`Container ${containerId} not found, aborting render`);
-            return showChartError(containerId, `Container ${containerId} not found`);
-        }
-
-        // Show loading spinner if container is empty or has placeholder
-        if (!container.innerHTML || container.innerHTML.includes('template-placeholder')) {
-            container.innerHTML = `
-            <div class="p-4 text-gray-600 flex items-center justify-center">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
-                <span>Loading chart...</span>
-            </div>
-        `;
-        }
-
-        // Set a timeout to detect stuck charts
-        const renderTimeout = setTimeout(() => {
-            console.error(`Chart rendering timed out for ${containerId}`);
-            showChartError(containerId, 'Chart rendering timed out. Please try again.');
-        }, 10000); // 10-second timeout
-
-        if (googleChartsLoaded) {
-            console.log(`Google Charts loaded, rendering chart ${containerId} immediately`);
-            clearTimeout(renderTimeout);
-            renderChart(res, containerId);
+    } catch (error) {
+        console.error('Error rendering table:', error);
+        const templateData = storedTemplates.get(containerId);
+        if (templateData) {
+            showTemplateError(containerId, templateData, `Table error: ${error.message}`);
         } else {
-            console.log(`Google Charts not loaded, queuing chart ${containerId}`);
-            initializeGoogleCharts()
-                .then(() => {
-                    console.log(`Google Charts loaded, processing chart ${containerId}`);
-                    clearTimeout(renderTimeout);
-                    renderChart(res, containerId);
-                })
-                .catch((error) => {
-                    console.error(`Failed to load Google Charts for ${containerId}:`, error);
-                    clearTimeout(renderTimeout);
-                    showChartError(containerId, `Failed to load chart: ${error.message}`);
-                });
-
-            // Add to pending queue with timeout check
-            pendingCharts.push({
-                res,
-                containerId
-            });
-            // Ensure queue doesn't grow indefinitely
-            if (pendingCharts.length > 10) {
-                const oldChart = pendingCharts.shift();
-                console.warn(`Removed old pending chart ${oldChart.containerId} from queue`);
-                showChartError(oldChart.containerId, 'Chart rendering queue overflow');
-            }
+            // Fallback error display
+            container.innerHTML = `
+                <div class="p-4 border border-red-200 rounded bg-red-50">
+                    <div class="flex items-center mb-2">
+                        <svg class="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <p class="font-semibold text-red-800">Table Rendering Error</p>
+                    </div>
+                    <p class="text-red-700 text-sm">${error.message}</p>
+                </div>
+            `;
+            container.className = "";
         }
-
-        container.className = "";
     }
+}
+    // Safe render function for charts
+ function safeRenderChart(res, containerId) {
+    console.log("safeRenderChart: ",res)
+    console.log(`Initiating safe render for chart ${containerId}`);
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container ${containerId} not found`);
+        return;
+    }
+
+    // Fix: Handle both structure formats
+    let chartData, chartType, options, columns, columnTypes;
+    
+    if (res.structure) {
+        // Old format: data inside structure
+        chartData = res.structure.chart_data;
+        chartType = res.structure.chartType;
+        options = res.structure.options;
+        columns = res.structure.columns;
+        columnTypes = res.structure.column_types;
+    } else {
+        // New format: data at root level
+        chartData = res.chart_data;
+        chartType = res.chartType;
+        options = res.options;
+        columns = res.columns;
+        columnTypes = res.column_types;
+    }
+
+    // Check for empty data
+ // Check for empty data
+if (!chartData || !Array.isArray(chartData) || chartData.length === 0) {
+    showChartError(containerId, 'No valid chart data available');
+    return;
+}
+
+// Add this debug line:
+console.log("Chart data found:", chartData.length, "rows");
+
+    // Continue with existing chart rendering logic...
+    container.innerHTML = `
+        <div class="p-4 text-gray-600 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+            <span>Loading chart...</span>
+        </div>
+    `;
+
+    // Pass the extracted data to renderChart
+  const chartRes = {
+    template_type: "chart",  // Add this line
+    structure: {
+        chartType: chartType,
+        chart_data: chartData,
+        options: options,
+        columns: columns,
+        column_types: columnTypes
+    }
+};
+console.log("rendered charttt")
+ renderChart(chartRes, containerId);
+
+}
     // Legacy function with retry mechanism (kept for backward compatibility)
     function safeRenderChartLegacy(res, containerId, retryCount = 0) {
         if (typeof google !== 'undefined' && google.charts && googleChartsLoaded) {
@@ -1101,69 +1429,118 @@
 
     // Updated main function
     // Replace the existing gettemplate function with this updated version
-    function gettemplate(temp, regenerate = false) {
-        const pathParts = window.location.pathname.split('/');
-        const chatIdFromPath = pathParts[pathParts.length - 1];
+  function gettemplate(temp, regenerate = false) {
+    const pathParts = window.location.pathname.split('/');
+    const chatIdFromPath = pathParts[pathParts.length - 1];
+    
+    const container = document.getElementById(temp.id);
+    if (!container) {
+        console.warn(`Container ${temp.id} not found`);
+        return;
+    }
 
-        // Show loading state
-        const container = document.getElementById(temp.id);
-        if (container) {
-            container.innerHTML = `
+    // Clear any existing timeout
+    if (temp._timeoutId) {
+        clearTimeout(temp._timeoutId);
+    }
+
+    // Show loading state
+    container.innerHTML = `
+        <div class="bg-white p-4 rounded-lg border border-gray-200">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <div style="width: 20px; height: 20px; background: #ddd; border-radius: 50%;"></div>
+                <div style="width: 20px; height: 20px; background: #ddd; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
                 <span style="color: #666;">Generating template...</span>
             </div>
-        `;
-        }
+        </div>
+    `;
 
-        $.post('{{ route('user.get_template') }}', {
-            'des': regenerate ?
-                `The template generatoin failed , regenerate another template using this description - ${temp.description}` :
-                temp.description,
-            'id': temp.id,
-            'sql': temp.sql,
-            'chat_id': chatIdFromPath,
-            '_token': '{{ csrf_token() }}'
-        }).done((res) => {
+    const requestData = {
+        'des': regenerate ? 
+            `The template generation failed, regenerate another template using this description - ${temp.description}` : 
+            temp.description,
+        'id': temp.id,
+        'sql': temp.sql,
+        'chat_id': chatIdFromPath,
+        '_token': '{{ csrf_token() }}'
+    };
+
+    $.ajax({
+        url: '{{ route('user.get_template') }}',
+        method: 'POST',
+        data: requestData,
+        timeout: 20000,
+        success: function(res) {
             console.log('Template response:', res);
+            
+    const currentContainer = document.getElementById(temp.id);
+            if (!currentContainer) {
+                console.warn(`Container ${temp.id} no longer exists, skipping render`);
+                return;
+            }
+
             if (res.error) {
                 showTemplateError(temp.id, temp, res.error);
                 return;
             }
 
-            // Double-check that container still exists before rendering
-            const container = document.getElementById(temp.id);
-            if (!container) {
-                console.warn(`Container ${temp.id} no longer exists, skipping render`);
-                return;
+            // Handle responses based on data availability
+            if (res.data_count === 0 || 
+                (res.structure && res.structure.message && res.structure.message.includes("No data"))) {
+                // Handle empty data case
+                if (res.template_type === 'table') {
+                    renderTable(res, temp.id);
+                } else {
+                    // Convert empty chart to table
+                    const emptyTableRes = {
+                        ...res,
+                        template_type: 'table'
+                    };
+                    renderTable(emptyTableRes, temp.id);
+                }
+            } else {
+                // Handle normal data case
+                if (res.template_type === 'table') {
+                    console.log("Rendering table with data");
+                    renderTable(res, temp.id);
+                } else if (res.template_type === 'chart') {
+                    console.log("Rendering chart with data");
+                    safeRenderChart(res, temp.id);
+                } else {
+                    showTemplateError(temp.id, temp, 'Unknown template type received');
+                }
             }
-
-            if (res.template_type == 'table') {
-                console.log("Rendering table");
-                renderTable(res, temp.id);
-            } else if (res.template_type == 'chart') {
-                console.log("Rendering chart-------");
-                forceRenderChart(res, temp.id);
+        },
+        error: function(xhr, status, error) {
+            console.error('Template request failed:', {xhr, status, error});
+            
+            let errorMessage = 'Failed to load template. ';
+            if (status === 'timeout') {
+                errorMessage += 'Request timed out.';
+            } else if (xhr.status === 500) {
+                errorMessage += 'Server error occurred.';
+            } else if (xhr.status === 0) {
+                errorMessage += 'Network connection failed.';
+            } else {
+                errorMessage += `Error: ${error}`;
             }
-        }).fail((error) => {
-            console.error('Error fetching template:', error);
-            showTemplateError(temp.id, temp, 'Failed to load template. Please try again.');
-        });
-    }
-
-    // Add this new function to show template errors with regenerate button
-    function showTemplateError(containerId, templateData, errorMessage) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            container.innerHTML = `
+            
+            showTemplateError(temp.id, temp, errorMessage);
+        }
+    });
+}
+// Add this new function to show template errors with regenerate button
+  function showTemplateError(containerId, templateData, errorMessage) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `
             <div class="p-4 border border-red-200 rounded bg-red-50">
                 <div class="flex items-center mb-3">
                     <svg class="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
-                    <p class="font-semibold text-red-800">Something went wrong</p>
+                    <p class="font-semibold text-red-800">Template Error</p>
                 </div>
-               
+                <p class="text-red-700 text-sm mb-3">${errorMessage}</p>
                 <button 
                     onclick="regenerateTemplate('${containerId}', ${JSON.stringify(templateData).replace(/"/g, '&quot;')})" 
                     class="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors">
@@ -1171,10 +1548,14 @@
                 </button>
             </div>
         `;
-            container.className = "";
-        }
+        container.className = "";
     }
+}
+    
 
+
+
+     
     // Add this new function to handle template regeneration
     function regenerateTemplate(containerId, templateData) {
         console.log('Regenerating template:', templateData);
@@ -1223,41 +1604,107 @@
     // Add a Set to track processed templates
 
 
-    function processNewTemplates(matches) {
-        console.log(matches)
-        matches.forEach((match) => {
-            try {
-                const jsonContent = match[1];
-                const templateData = JSON.parse(jsonContent);
-                const templateId = templateData.id;
-                const randomId = () => crypto.randomUUID().replace(/-/g, '');
-
-
-                // Only process if this is a truly new template
-                if (!processedTemplates.has(templateId)) {
-                    console.log("Processing new template:", templateId);
-
-                    // Mark as processed immediately to prevent duplicates
-                    processedTemplates.add(templateId);
-
-                    // Create new placeholder with the actual template ID
-                    const placeholder =
-                        `<div class="template-placeholder simple" id='${templateId}' data-template-id="${templateId}"></div>`;
-
-                    // Store both the placeholder and template data
-                    templatePlaceholders.set(templateId, placeholder);
-                    storedTemplates.set(templateId, templateData);
-
-                    // Process the template
-                    setTimeout(() => gettemplate(templateData), 500);
-                }
-            } catch (error) {
-                console.error('Failed to parse template JSON:', error);
+// 1. IMPROVED DATA TYPE DETECTION FOR BACKEND
+function intelligentTypeDetection(data) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        return {};
+    }
+    
+    const columnTypes = {};
+    const allKeys = new Set();
+    
+    // Collect all possible keys
+    data.forEach(row => {
+        if (row && typeof row === 'object') {
+            Object.keys(row).forEach(key => allKeys.add(key));
+        }
+    });
+    
+    // Analyze each column
+    allKeys.forEach(column => {
+        const values = data.map(row => row[column]).filter(val => val !== null && val !== undefined && val !== '');
+        
+        if (values.length === 0) {
+            columnTypes[column] = 'string';
+            return;
+        }
+        
+        let numberCount = 0;
+        let dateCount = 0;
+        let stringCount = 0;
+        
+        values.forEach(value => {
+            // Check for numbers (including formatted numbers)
+            if (typeof value === 'number' || 
+                (typeof value === 'string' && /^\s*[\d,.$%-]+\s*$/.test(value.replace(/,/g, '')))) {
+                numberCount++;
+            }
+            // Check for dates
+            else if (value instanceof Date || 
+                     (typeof value === 'string' && !isNaN(Date.parse(value)) && 
+                      /\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4}/.test(value))) {
+                dateCount++;
+            }
+            else {
+                stringCount++;
             }
         });
-        console.log(matches)
-    }
+        
+        const total = values.length;
+        // Use 80% threshold for type determination
+        if (numberCount / total >= 0.8) columnTypes[column] = 'number';
+        else if (dateCount / total >= 0.8) columnTypes[column] = 'date';
+        else columnTypes[column] = 'string';
+    });
+    
+    return columnTypes;
+}
+ 
+// 2. BETTER TEMPLATE PROCESSING WITH TIMEOUT HANDLING
+function processNewTemplates(matches) {
+    console.log("Processing templates:", matches);
+    
+    matches.forEach((match) => {
+        try {
+            const jsonContent = match[1];
+            const templateData = JSON.parse(jsonContent);
+            const templateId = templateData.id;
 
+            // Only process if this is a truly new template
+            if (!processedTemplates.has(templateId)) {
+                console.log("Processing new template:", templateId);
+                
+                // Mark as processed immediately
+                processedTemplates.add(templateId);
+
+                // Create placeholder with loading state
+                const placeholder = `<div class="template-placeholder" id='${templateId}' data-template-id="${templateId}">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <div style="width: 20px; height: 20px; background: #ddd; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                        <span style="color: #666;">Generating template...</span>
+                    </div>
+                </div>`;
+
+                templatePlaceholders.set(templateId, placeholder);
+                storedTemplates.set(templateId, templateData);
+
+                // Process template with timeout protection
+                const timeoutId = setTimeout(() => {
+                    console.warn(`Template ${templateId} timed out`);
+                    showTemplateError(templateId, templateData, 'Template generation timed out. Please try again.');
+                }, 1500); // 15 second timeout
+
+                // Store timeout ID for cleanup
+                templateData._timeoutId = timeoutId;
+                
+                // Process the template
+                setTimeout(() => gettemplate(templateData), 500);
+            }
+        } catch (error) {
+            console.error('Failed to parse template JSON:', error);
+        }
+    });
+}
     // Separate function to replace templates with placeholders
     function replaceTemplatesWithPlaceholders(content, regex) {
         return content.replace(regex, (match, jsonContent) => {

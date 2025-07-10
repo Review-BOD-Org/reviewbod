@@ -23,4 +23,8 @@ class FrontController extends Controller
         public function faq(){
         return view("front.faq");
     }
+
+         public function support(){
+        return view("front.support");
+    }
 }

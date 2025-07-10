@@ -30,7 +30,8 @@ class Manager extends Controller
         $confirm_password = request()->input("password_confirmation");
    
         DB::table("managers")->where(["manager_id" =>$request->id])->update([
-            "password" => Hash::make($password)
+            "password" => Hash::make($password),
+            "status"=>"active"
         ]);
         return response()->json(["message" => "Updated"]);
 

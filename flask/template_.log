@@ -1,563 +1,947 @@
-2025-07-03 16:03:30,712 - INFO - Generating template for type: manager, template_id: uid_4f8e2d0c1234567890abcdef12345678
-2025-07-03 16:03:30,717 - INFO - Database connection established
-2025-07-03 16:03:30,821 - ERROR - SQL optimization error for invited type: cannot access local variable 'user_email' where it is not associated with a value
-2025-07-03 16:03:30,838 - ERROR - Fallback SQL error: cannot access local variable 'user_email' where it is not associated with a value
-2025-07-03 16:05:45,236 - INFO - Generating template for type: manager, template_id: uid_4f8e2d0c1234567890abcdef12345678
-2025-07-03 16:05:45,238 - INFO - Database connection established
-2025-07-03 16:05:47,016 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:05:47,049 - INFO - AI-Optimized SQL Query for invited type:
-SELECT SOURCE,
-       COUNT(*) AS task_count
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-WHERE platform_users.manager_id = 'allphonesblog@gmail.com'
-  AND tasks.is_deleted IS NULL
-GROUP BY SOURCE
-2025-07-03 16:05:47,050 - WARNING - Database connection error (attempt 1): (1052, "Column 'SOURCE' in field list is ambiguous")
-2025-07-03 16:05:48,052 - INFO - Database connection established
-2025-07-03 16:05:48,054 - WARNING - Database connection error (attempt 2): (1052, "Column 'SOURCE' in field list is ambiguous")
-2025-07-03 16:05:49,056 - INFO - Database connection established
-2025-07-03 16:05:49,057 - WARNING - Database connection error (attempt 3): (1052, "Column 'SOURCE' in field list is ambiguous")
-2025-07-03 16:05:49,058 - ERROR - Database query error: (1052, "Column 'SOURCE' in field list is ambiguous")
-2025-07-03 16:07:10,893 - INFO - Generating template for type: manager, template_id: uid_4f8e2d0c1234567890abcdef12345678
-2025-07-03 16:07:10,896 - INFO - Database connection established
-2025-07-03 16:07:12,856 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:07:12,898 - INFO - AI-Optimized SQL Query for invited type:
-SELECT platform_users.source AS platform,
-       COUNT(*) AS task_count
-FROM tasks
-JOIN platform_users ON platform_users.user_id = tasks.user_id
-WHERE platform_users.manager_id = 'allphonesblog@gmail.com'
-  AND tasks.is_deleted IS NULL
-GROUP BY platform_users.source
-2025-07-03 16:07:12,900 - INFO - Retrieved 0 rows from query
-2025-07-03 16:07:12,907 - INFO - Template uid_4f8e2d0c1234567890abcdef12345678 saved to database successfully
-2025-07-03 16:07:45,497 - INFO - Generating template for type: manager, template_id: uid_4f8e2d0c1234567890abcdef12345678
-2025-07-03 16:07:51,713 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:07:51,725 - INFO - AI-Optimized SQL Query for invited type:
-SELECT platform_users.name AS user_name,
-       tasks.title AS task_title,
-       tasks.source AS task_source,
-       projects.name AS project_name,
-       teams.name AS team_name
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-LEFT JOIN teams ON teams.id = tasks.team_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-2025-07-03 16:07:51,728 - INFO - Retrieved 58 rows from query
-2025-07-03 16:07:51,737 - INFO - Template uid_4f8e2d0c1234567890abcdef12345678 saved to database successfully
-2025-07-03 16:07:51,738 - INFO - Successfully generated template for template_id uid_4f8e2d0c1234567890abcdef12345678, type: manager
-2025-07-03 16:11:35,329 - INFO - Generating template for type: manager, template_id: uid_4f8e2d0c1234567890abcdef12345679
-2025-07-03 16:11:35,333 - INFO - Database connection established
-2025-07-03 16:11:39,737 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:11:39,781 - INFO - AI-Optimized SQL Query for invited type:
-SELECT DAYNAME(tasks.created_at) AS day_of_week,
-       COUNT(*) AS task_count
-FROM tasks
-JOIN platform_users ON platform_users.user_id = tasks.user_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-GROUP BY day_of_week
-2025-07-03 16:11:39,791 - INFO - Retrieved 1 rows from query
-2025-07-03 16:11:39,801 - INFO - Template uid_4f8e2d0c1234567890abcdef12345679 saved to database successfully
-2025-07-03 16:11:39,802 - INFO - Successfully generated template for template_id uid_4f8e2d0c1234567890abcdef12345679, type: manager
-2025-07-03 16:15:00,727 - INFO - Generating template for type: manager, template_id: uid_3a2f4e5b6789abcdef1234567890abcd
-2025-07-03 16:15:00,730 - INFO - Database connection established
-2025-07-03 16:15:07,933 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:15:07,990 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.id,
-       tasks.title,
-       tasks.status,
-       DATEDIFF(CURDATE(), tasks.created_at) AS days_in_progress,
-       platform_users.name AS user_name,
-       projects.name AS project_name,
-       teams.name AS team_name
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-LEFT JOIN teams ON teams.id = tasks.team_id
-WHERE tasks.status = 'In Progress'
-  AND platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-ORDER BY days_in_progress DESC
-2025-07-03 16:15:07,995 - INFO - Retrieved 9 rows from query
-2025-07-03 16:15:08,007 - INFO - Template uid_3a2f4e5b6789abcdef1234567890abcd saved to database successfully
-2025-07-03 16:15:08,008 - INFO - Successfully generated template for template_id uid_3a2f4e5b6789abcdef1234567890abcd, type: manager
-2025-07-03 16:16:39,883 - INFO - Generating template for type: manager, template_id: uid_4f2b7e8d9a4f4b8a9f4e2d8a7b9c8d7e
-2025-07-03 16:16:39,886 - INFO - Database connection established
-2025-07-03 16:16:43,707 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:16:43,738 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.title AS Task_Name,
-       projects.name AS Project_Name,
-       tasks.status AS Status,
-       tasks.due_date AS Due_Date,
-       platform_users.name AS User_Name,
-       tasks.source AS SOURCE
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL;
-2025-07-03 16:16:43,741 - INFO - Retrieved 58 rows from query
-2025-07-03 16:16:43,750 - INFO - Template uid_4f2b7e8d9a4f4b8a9f4e2d8a7b9c8d7e saved to database successfully
-2025-07-03 16:16:43,751 - INFO - Successfully generated template for template_id uid_4f2b7e8d9a4f4b8a9f4e2d8a7b9c8d7e, type: manager
-2025-07-03 16:18:17,465 - INFO - Generating template for type: manager, template_id: uid_e8f4b2c9d3f4a1b2c3d4e5f6a7b8c9d0
-2025-07-03 16:18:17,471 - INFO - Database connection established
-2025-07-03 16:18:21,882 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:18:21,927 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.title AS "Task Name",
-       platform_users.name AS "Assignee",
-       projects.name AS "Project",
-       tasks.updated_at AS "Moved to 'Done' Date",
-       tasks.source AS "Source"
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.platform_id = tasks.project_id
-WHERE tasks.status = 'Done'
-  AND WEEK(tasks.updated_at) = WEEK(CURDATE())
-  AND YEAR(tasks.updated_at) = YEAR(CURDATE())
-  AND platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL;
-2025-07-03 16:18:21,929 - INFO - Retrieved 0 rows from query
-2025-07-03 16:18:21,934 - INFO - Template uid_e8f4b2c9d3f4a1b2c3d4e5f6a7b8c9d0 saved to database successfully
-2025-07-03 16:18:40,262 - INFO - Generating template for type: manager, template_id: uid_7a9b8c6d4e3f2a1b0c9d8e7f6a5b4c3d
-2025-07-03 16:18:43,893 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:18:43,909 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.title AS "Task Name",
-       tasks.priority AS "Priority",
-       tasks.status AS "Status",
-       platform_users.name AS "Assignee",
-       tasks.due_date AS "Due Date"
-FROM tasks
-JOIN platform_users ON platform_users.user_id = tasks.user_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-  AND tasks.priority = 'High'
-  AND tasks.status != 'Done'
-  AND tasks.source = 'linear'
-2025-07-03 16:18:43,916 - INFO - Retrieved 0 rows from query
-2025-07-03 16:18:43,922 - INFO - Template uid_7a9b8c6d4e3f2a1b0c9d8e7f6a5b4c3d saved to database successfully
-2025-07-03 16:18:59,070 - INFO - Generating template for type: manager, template_id: uid_e8f4b2c9d3f4a1b2c3d4e5f6a7b8c9d0
-2025-07-03 16:19:01,646 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:19:01,670 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.title AS "Task Name",
-       platform_users.name AS "Assignee",
-       projects.name AS "Project",
-       tasks.updated_at AS "Moved to 'Done' Date"
-FROM tasks
-JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-WHERE tasks.status = 'Done'
-  AND tasks.source = 'linear'
-  AND tasks.is_deleted IS NULL
-  AND platform_users.manager_id = '8'
-  AND YEARWEEK(tasks.updated_at, 1) = YEARWEEK(CURDATE(), 1);
-2025-07-03 16:19:01,677 - INFO - Retrieved 0 rows from query
-2025-07-03 16:19:01,698 - INFO - Template uid_e8f4b2c9d3f4a1b2c3d4e5f6a7b8c9d0 saved to database successfully
-2025-07-03 16:20:11,762 - INFO - Generating template for type: manager, template_id: uid_1234567890abcdef
-2025-07-03 16:20:16,999 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:20:17,036 - INFO - AI-Optimized SQL Query for invited type:
-SELECT COUNT(DISTINCT platform_users.user_id) AS Total_Users,
-       COUNT(DISTINCT CASE
-                          WHEN tasks.status = 'Done' THEN platform_users.user_id
-                      END) AS Active_Users,
-       AVG(CASE
-               WHEN tasks.status = 'Done' THEN 1
-               ELSE 0
-           END) AS Average_Tasks_Completed_Per_User,
-       platform_users.name AS Lagging_Users
-FROM platform_users
-LEFT JOIN tasks ON platform_users.user_id = tasks.user_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-GROUP BY platform_users.name
-HAVING COUNT(CASE
-                 WHEN tasks.status = 'Done' THEN 1
-                 ELSE NULL
-             END) <
-  (SELECT AVG(task_count)
-   FROM
-     (SELECT COUNT(*) AS task_count
-      FROM tasks
-      WHERE tasks.is_deleted IS NULL
-      GROUP BY tasks.user_id) AS user_task_counts)
-2025-07-03 16:20:17,041 - INFO - Retrieved 1 rows from query
-2025-07-03 16:20:17,050 - INFO - Template uid_1234567890abcdef saved to database successfully
-2025-07-03 16:20:17,050 - INFO - Successfully generated template for template_id uid_1234567890abcdef, type: manager
-2025-07-03 16:20:21,555 - INFO - Generating template for type: manager, template_id: uid_a1b2c3d4e5f6g7h8i9j0
-2025-07-03 16:20:30,057 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:20:30,095 - INFO - AI-Optimized SQL Query for invited type:
+2025-07-09 18:24:44,959 - INFO - Generating template for type: default, template_id: uid_0b2d2177d88e48caba2e37e63a941df7_069822d36ff1c587_1752085474080
+2025-07-09 18:24:44,962 - INFO - Database connection established
+2025-07-09 18:24:46,853 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:24:46,892 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.priority,
+       COUNT(t.id) AS task_count
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.owner_id = 1
+GROUP BY t.source,
+         t.priority
+ORDER BY t.source,
+         t.priority;
+2025-07-09 18:24:46,897 - INFO - Retrieved 6 rows from query
+2025-07-09 18:24:46,898 - INFO - Retrieved 6 rows from query
+2025-07-09 18:24:46,899 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 18:24:46,905 - INFO - Template uid_0b2d2177d88e48caba2e37e63a941df7_069822d36ff1c587_1752085474080 saved to database successfully
+2025-07-09 18:24:46,905 - INFO - Successfully generated template for template_id uid_0b2d2177d88e48caba2e37e63a941df7_069822d36ff1c587_1752085474080, type: default
+2025-07-09 18:28:57,087 - INFO - Generating template for type: default, template_id: uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472
+2025-07-09 18:29:11,690 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:29:11,708 - INFO - AI-Optimized SQL Query for default type:
 SELECT p.name AS project_name,
-       p.source AS project_source,
-       COUNT(t.id) AS total_tasks,
-       SUM(CASE
-               WHEN t.status = 'Done' THEN 1
-               ELSE 0
-           END) AS completed_tasks,
-       SUM(CASE
-               WHEN t.status IN ('In Progress', 'Backlog', 'Todo') THEN 1
-               ELSE 0
-           END) AS ongoing_tasks,
-       SUM(CASE
-               WHEN t.due_date < CURDATE()
-                    AND t.status <> 'Done' THEN 1
-               ELSE 0
-           END) AS delayed_tasks
-FROM projects p
-LEFT JOIN tasks t ON p.id = t.project_id
-JOIN platform_users pu ON pu.user_id = t.user_id
-WHERE pu.manager_id = '8'
-  AND t.is_deleted IS NULL
-GROUP BY p.name,
-         p.source
-2025-07-03 16:20:30,100 - INFO - Retrieved 6 rows from query
-2025-07-03 16:20:30,121 - INFO - Template uid_a1b2c3d4e5f6g7h8i9j0 saved to database successfully
-2025-07-03 16:20:30,121 - INFO - Successfully generated template for template_id uid_a1b2c3d4e5f6g7h8i9j0, type: manager
-2025-07-03 16:29:00,090 - INFO - Generating template for type: manager, template_id: uid_abcdef1234567890
-2025-07-03 16:29:03,905 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:29:03,923 - INFO - AI-Optimized SQL Query for invited type:
-SELECT projects.name AS project_name,
-       platform_users.name AS team_member,
-       COUNT(tasks.id) AS tasks_completed,
-       MAX(tasks.updated_at) AS last_activity_date
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-GROUP BY projects.name,
-         platform_users.name
-ORDER BY last_activity_date DESC;
-2025-07-03 16:29:03,927 - INFO - Retrieved 7 rows from query
-2025-07-03 16:29:03,934 - INFO - Template uid_abcdef1234567890 saved to database successfully
-2025-07-03 16:29:03,934 - INFO - Successfully generated template for template_id uid_abcdef1234567890, type: manager
-2025-07-03 16:29:45,050 - INFO - Generating template for type: manager, template_id: uid_53d8b7364a444c8a94588f50b6a93003_8d02cb149f424e31_1751560178787
-2025-07-03 16:29:47,499 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:29:47,508 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.id AS task_id,
-       tasks.title,
-       projects.name AS source_project
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-WHERE platform_users.manager_id = '8'
-  AND tasks.is_deleted IS NULL
-  AND tasks.status IS NULL;
-2025-07-03 16:29:47,510 - INFO - Retrieved 0 rows from query
-2025-07-03 16:29:47,514 - INFO - Template uid_53d8b7364a444c8a94588f50b6a93003_8d02cb149f424e31_1751560178787 saved to database successfully
-2025-07-03 16:32:47,995 - INFO - Generating template for type: manager, template_id: uid_1d2200e5dc874cbf964bc8f7ed93f5c4_8683c8937eaa3ade_1751560363097_1
-2025-07-03 16:32:57,929 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:32:57,939 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.title AS "Task Name",
-       projects.name AS "Project",
-       platform_users.name AS "Assigned User",
-       tasks.created_at AS "Creation Date"
-FROM tasks
-LEFT JOIN projects ON tasks.project_id = projects.platform_id
-JOIN platform_users ON platform_users.user_id = tasks.user_id
-WHERE tasks.due_date IS NULL
-  AND tasks.is_deleted IS NULL
-  AND platform_users.manager_id = '8'
-2025-07-03 16:32:57,943 - INFO - Retrieved 58 rows from query
-2025-07-03 16:32:57,952 - INFO - Template uid_1d2200e5dc874cbf964bc8f7ed93f5c4_8683c8937eaa3ade_1751560363097_1 saved to database successfully
-2025-07-03 16:32:57,953 - INFO - Successfully generated template for template_id uid_1d2200e5dc874cbf964bc8f7ed93f5c4_8683c8937eaa3ade_1751560363097_1, type: manager
-2025-07-03 16:46:26,911 - INFO - Generating template for type: manager, template_id: uid_4f8a9b2c1d3e4f5g6h7i8j9k0l_1234567890
-2025-07-03 16:46:30,174 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-03 16:46:30,191 - INFO - AI-Optimized SQL Query for invited type:
-SELECT tasks.id AS task_id,
-       tasks.title,
-       tasks.status,
-       tasks.created_at,
-       tasks.updated_at,
-       platform_users.name AS user_name,
-       projects.name AS project_name,
-       teams.name AS team_name
-FROM tasks
-LEFT JOIN platform_users ON platform_users.user_id = tasks.user_id
-LEFT JOIN projects ON projects.id = tasks.project_id
-LEFT JOIN teams ON teams.id = tasks.team_id
-WHERE platform_users.manager_id = 8
-  AND tasks.is_deleted IS NULL
-  AND tasks.created_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-  AND tasks.created_at <= LAST_DAY(CURDATE());
-2025-07-03 16:46:30,193 - INFO - Retrieved 0 rows from query
-2025-07-03 16:46:30,198 - INFO - Template uid_4f8a9b2c1d3e4f5g6h7i8j9k0l_1234567890 saved to database successfully
-2025-07-05 10:22:54,529 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:22:54,554 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:22:54,555 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:22:54,555 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:22:54,555 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:22:57,479 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:22:57,482 - INFO - Database connection established
-2025-07-05 10:22:57,537 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:22:57,546 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:22:57,547 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:22:57,547 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:22:58,882 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:22:58,903 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:22:58,904 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:22:58,904 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:22:58,904 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:23:05,222 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:23:05,252 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:23:05,253 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:23:05,253 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:23:05,253 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:28:45,806 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:28:45,830 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:28:45,831 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:28:45,831 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:28:45,831 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:28:48,536 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:28:48,553 - ERROR - SQL optimization error: Missing some input keys: {'workspace', 'user_email'}
-2025-07-05 10:28:48,554 - ERROR - SQL parsing error: SQL must start with SELECT
-2025-07-05 10:28:48,554 - ERROR - SQL cleaning error: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:28:48,554 - ERROR - Fallback SQL error: Failed to clean SQL: Invalid SQL syntax: SQL must start with SELECT
-2025-07-05 10:29:10,954 - INFO - Generating template for type: default, template_id: uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1
-2025-07-05 10:29:10,957 - INFO - Database connection established
-2025-07-05 10:29:13,153 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:29:13,212 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       p.description AS project_description,
-       p.state AS project_state,
-       p.source AS platform_source,
-       SUM(t.estimate) AS total_estimated_workload
-FROM projects p
-LEFT JOIN tasks t ON p.id = t.project_id
-WHERE p.owner_id = 1
-GROUP BY p.name,
-         p.description,
-         p.state,
-         p.source
-ORDER BY total_estimated_workload DESC
-LIMIT 1;
-2025-07-05 10:29:13,216 - INFO - Retrieved 1 rows from query
-2025-07-05 10:29:13,228 - INFO - Template uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1 saved to database successfully
-2025-07-05 10:29:13,229 - INFO - Successfully generated template for template_id uid_4a9c178e76dc4f6897305a21cf228796_767baf83aac9b728_1751710968365_1, type: default
-2025-07-05 10:31:59,059 - INFO - Generating template for type: default, template_id: uid_92d8b0db8b92475480be9917b905529c_c41502e82bbe68a8_1751711514202
-2025-07-05 10:31:59,062 - INFO - Database connection established
-2025-07-05 10:32:00,965 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:32:01,023 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       t.title AS task_title,
-       t.due_date,
-       t.source AS platform
+       COUNT(t.id) AS overdue_tasks_count,
+       p.source
 FROM tasks t
 LEFT JOIN projects p ON t.project_id = p.project_key
 WHERE t.due_date < CURDATE()
   AND t.status != 'Done'
   AND t.owner_id = 1
-  AND t.source IN ('linear',
-                   'trello')
-ORDER BY t.due_date DESC;
-2025-07-05 10:32:01,026 - INFO - Retrieved 18 rows from query
-2025-07-05 10:32:01,054 - INFO - Template uid_92d8b0db8b92475480be9917b905529c_c41502e82bbe68a8_1751711514202 saved to database successfully
-2025-07-05 10:32:01,054 - INFO - Successfully generated template for template_id uid_92d8b0db8b92475480be9917b905529c_c41502e82bbe68a8_1751711514202, type: default
-2025-07-05 10:32:09,603 - INFO - Generating template for type: default, template_id: uid_7f4d2e1b9a8e4f3a8b2c1d6e9f0a1234_4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e_1751711523001
-2025-07-05 10:32:09,607 - INFO - Database connection established
-2025-07-05 10:32:11,859 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:32:11,898 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       COUNT(t.id) AS deleted_tasks_count,
-       p.source AS platform
-FROM projects p
-LEFT JOIN tasks t ON p.platform_id = t.platform_id
-AND p.owner_id = t.owner_id
-WHERE t.is_deleted = 1
-  AND p.owner_id = 1
 GROUP BY p.name,
          p.source
-ORDER BY deleted_tasks_count DESC
-LIMIT 1;
-2025-07-05 10:32:11,899 - INFO - Retrieved 0 rows from query
-2025-07-05 10:32:11,904 - INFO - Template uid_7f4d2e1b9a8e4f3a8b2c1d6e9f0a1234_4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e_1751711523001 saved to database successfully
-2025-07-05 10:32:28,204 - INFO - Generating template for type: default, template_id: uid_8a66e743911441e695854c94da73e158_445ee6093e9a93da_1751711543007
-2025-07-05 10:32:30,300 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:32:30,322 - INFO - AI-Optimized SQL Query for default type:
-SELECT t.id AS task_id,
-       t.title AS task_title,
-       t.source AS platform,
-       t.created_at AS creation_date,
-       t.due_date,
-       DATEDIFF(STR_TO_DATE(t.due_date, '%Y-%m-%d'), t.created_at) AS days_between
+ORDER BY overdue_tasks_count DESC
+LIMIT 10;
+2025-07-09 18:29:11,711 - INFO - Retrieved 2 rows from query
+2025-07-09 18:29:11,711 - INFO - Retrieved 2 rows from query
+2025-07-09 18:29:11,719 - INFO - Template uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472 saved to database successfully
+2025-07-09 18:29:11,719 - INFO - Successfully generated template for template_id uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472, type: default
+2025-07-09 18:33:35,829 - INFO - Generating template for type: default, template_id: uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472
+2025-07-09 18:33:35,833 - INFO - Database connection established
+2025-07-09 18:33:37,356 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:33:37,396 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       COUNT(t.id) AS overdue_tasks_count,
+       t.source
 FROM tasks t
 LEFT JOIN projects p ON t.project_id = p.project_key
-WHERE t.owner_id = 1
-  AND t.due_date IS NOT NULL
+WHERE t.due_date < CURDATE()
+  AND t.status != 'Done'
+  AND t.owner_id = 1
+GROUP BY p.name,
+         t.source
+HAVING overdue_tasks_count > 0;
+2025-07-09 18:33:37,399 - INFO - Retrieved 2 rows from query
+2025-07-09 18:33:37,399 - INFO - Retrieved 2 rows from query
+2025-07-09 18:33:37,406 - INFO - Template uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472 saved to database successfully
+2025-07-09 18:33:37,406 - INFO - Successfully generated template for template_id uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472, type: default
+2025-07-09 18:35:17,300 - INFO - Generating template for type: default, template_id: uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472
+2025-07-09 18:35:17,305 - INFO - Database connection established
+2025-07-09 18:35:19,437 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:35:19,485 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.title AS task_title,
+       t.status AS task_status,
+       t.source AS platform,
+       p.name AS project_name,
+       pu.full_name AS user_full_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.status = 'Duplicate'
+  AND t.owner_id = 1
+  AND t.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
   AND t.source IN ('linear',
                    'trello')
-GROUP BY t.id,
-         t.title,
+GROUP BY t.title,
+         t.status,
          t.source,
-         t.created_at,
-         t.due_date
+         p.name,
+         pu.full_name
 LIMIT 100;
-2025-07-05 10:32:30,340 - INFO - Retrieved 8 rows from query
-2025-07-05 10:32:30,399 - INFO - Template uid_8a66e743911441e695854c94da73e158_445ee6093e9a93da_1751711543007 saved to database successfully
-2025-07-05 10:32:30,400 - INFO - Successfully generated template for template_id uid_8a66e743911441e695854c94da73e158_445ee6093e9a93da_1751711543007, type: default
-2025-07-05 10:33:24,648 - INFO - Generating template for type: default, template_id: uid_9732fa0ce5eb478680de11925207249d_b49439e232228466_1751711600739
-2025-07-05 10:33:26,553 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:33:26,573 - INFO - AI-Optimized SQL Query for default type:
-SELECT t.id AS Task_ID,
-       t.title AS Task_Title,
-       t.source AS Platform_Source,
-       p.name AS Project_Name,
-       p.source AS Project_Platform,
-       t.created_at AS Task_Created_At,
-       t.updated_at AS Task_Updated_At
-FROM tasks t
-LEFT JOIN projects p ON t.project_id = p.project_key
-WHERE t.owner_id = 1
-  AND (t.source = 'linear'
-       OR t.source = 'trello')
-ORDER BY t.created_at DESC
-LIMIT 100;
-2025-07-05 10:33:26,581 - INFO - Retrieved 100 rows from query
-2025-07-05 10:33:26,598 - INFO - Template uid_9732fa0ce5eb478680de11925207249d_b49439e232228466_1751711600739 saved to database successfully
-2025-07-05 10:33:26,598 - INFO - Successfully generated template for template_id uid_9732fa0ce5eb478680de11925207249d_b49439e232228466_1751711600739, type: default
-2025-07-05 10:35:07,440 - INFO - Generating template for type: default, template_id: uid_7f4a9b3e2c8a4b7f9d2e5f6a7b8c9d0e
-2025-07-05 10:35:09,371 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:35:09,391 - INFO - AI-Optimized SQL Query for default type:
+2025-07-09 18:35:19,490 - INFO - Retrieved 35 rows from query
+2025-07-09 18:35:19,491 - INFO - Retrieved 35 rows from query
+2025-07-09 18:35:19,503 - INFO - Template uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472 saved to database successfully
+2025-07-09 18:35:19,503 - INFO - Successfully generated template for template_id uid_445fd0645fda4c239394aa156bfb3061_6b3fb64e1cf9f13e_1752085720472, type: default
+2025-07-09 18:36:09,508 - INFO - Generating template for type: default, template_id: uid_751e2eade21648af937160ecfc8b7343_91d5a9485a0eb927_1752086158316_1
+2025-07-09 18:36:13,035 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:36:13,066 - INFO - AI-Optimized SQL Query for default type:
 SELECT tasks.id AS task_id,
-       tasks.title AS task_name,
-       platform_users.name AS assigned_user,
-       tasks.created_at AS creation_date,
+       tasks.title AS task_title,
+       tasks.status AS task_status,
+       tasks.updated_at AS last_updated,
+       platform_users.full_name AS user_name,
+       projects.name AS project_name,
        tasks.source AS platform
 FROM tasks
 LEFT JOIN platform_users ON tasks.user_id = platform_users.user_id
-WHERE tasks.due_date IS NULL
+AND tasks.owner_id = platform_users.owner_id
+LEFT JOIN projects ON tasks.project_id = projects.project_key
+AND tasks.owner_id = projects.owner_id
+WHERE tasks.updated_at < DATE_SUB(CURDATE(), INTERVAL 30 DAY)
   AND tasks.owner_id = 1
   AND tasks.source IN ('linear',
                        'trello')
 GROUP BY tasks.id,
-         platform_users.name,
-         tasks.created_at,
-         tasks.source
-LIMIT 100;
-2025-07-05 10:35:09,397 - INFO - Retrieved 100 rows from query
-2025-07-05 10:35:09,409 - INFO - Template uid_7f4a9b3e2c8a4b7f9d2e5f6a7b8c9d0e saved to database successfully
-2025-07-05 10:35:09,409 - INFO - Successfully generated template for template_id uid_7f4a9b3e2c8a4b7f9d2e5f6a7b8c9d0e, type: default
-2025-07-05 10:39:47,644 - INFO - Generating template for type: default, template_id: uid_b6f380624404492594a2b190c0df24e1_38c3d252ac57f848_1751711983572
-2025-07-05 10:39:49,978 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:39:49,986 - INFO - AI-Optimized SQL Query for default type:
-SELECT t.source AS platform,
-       t.platform_id,
-       AVG(t.estimate) AS average_estimate
-FROM tasks t
-WHERE t.owner_id = 1
-GROUP BY t.source,
-         t.platform_id;
-2025-07-05 10:39:49,988 - INFO - Retrieved 4 rows from query
-2025-07-05 10:39:49,994 - INFO - Template uid_b6f380624404492594a2b190c0df24e1_38c3d252ac57f848_1751711983572 saved to database successfully
-2025-07-05 10:39:49,994 - INFO - Successfully generated template for template_id uid_b6f380624404492594a2b190c0df24e1_38c3d252ac57f848_1751711983572, type: default
-2025-07-05 10:40:53,249 - INFO - Generating template for type: default, template_id: uid_4c644cef023b4f8a82f65e31058f3a95_aa7fc20255a7bd13_1751712046119
-2025-07-05 10:40:54,741 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:40:54,751 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       p.source AS project_platform,
-       COUNT(CASE
-                 WHEN t.status = 'Done' THEN 1
-             END) / COUNT(t.id) AS completion_ratio
-FROM projects p
-LEFT JOIN tasks t ON p.id = t.project_id
-WHERE p.owner_id = 1
-GROUP BY p.id,
-         p.name,
-         p.source;
-2025-07-05 10:40:54,754 - INFO - Retrieved 45 rows from query
-2025-07-05 10:40:54,761 - INFO - Template uid_4c644cef023b4f8a82f65e31058f3a95_aa7fc20255a7bd13_1751712046119 saved to database successfully
-2025-07-05 10:40:54,761 - INFO - Successfully generated template for template_id uid_4c644cef023b4f8a82f65e31058f3a95_aa7fc20255a7bd13_1751712046119, type: default
-2025-07-05 10:44:28,961 - INFO - Generating template for type: default, template_id: uid_503f3caba4954156a2482520b04e4e3a_04740053ee02eb34_1751712261621_1
-2025-07-05 10:44:31,067 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:44:31,084 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
+         platform_users.full_name,
+         projects.name;
+2025-07-09 18:36:13,073 - INFO - Retrieved 116 rows from query
+2025-07-09 18:36:13,073 - INFO - Retrieved 116 rows from query
+2025-07-09 18:36:13,088 - INFO - Template uid_751e2eade21648af937160ecfc8b7343_91d5a9485a0eb927_1752086158316_1 saved to database successfully
+2025-07-09 18:36:13,088 - INFO - Successfully generated template for template_id uid_751e2eade21648af937160ecfc8b7343_91d5a9485a0eb927_1752086158316_1, type: default
+2025-07-09 18:37:42,460 - INFO - Generating template for type: default, template_id: uid_9d012c8d600b4bb8af84e10784f24e3e_b75fa6412e6fe653_1752086251524_1
+2025-07-09 18:37:49,440 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:37:49,458 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.id AS task_id,
        t.title AS task_title,
        t.status AS task_status,
-       t.source AS platform_source
-FROM tasks t
-LEFT JOIN projects p ON t.project_id = p.project_key
-WHERE t.owner_id = 1
-  AND (t.source = 'linear'
-       OR t.source = 'trello')
-  AND YEAR(t.created_at) = YEAR(CURDATE())
-GROUP BY p.name,
-         t.title,
-         t.status,
-         t.source
-ORDER BY p.name,
-         t.title;
-2025-07-05 10:44:31,089 - INFO - Retrieved 186 rows from query
-2025-07-05 10:44:31,101 - INFO - Template uid_503f3caba4954156a2482520b04e4e3a_04740053ee02eb34_1751712261621_1 saved to database successfully
-2025-07-05 10:44:31,101 - INFO - Successfully generated template for template_id uid_503f3caba4954156a2482520b04e4e3a_04740053ee02eb34_1751712261621_1, type: default
-2025-07-05 10:44:40,653 - INFO - Generating template for type: default, template_id: uid_a81a3ea6fa714b088b80df957594b1fd_455e7d203403427e_1751712274826_1
-2025-07-05 10:44:42,714 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:44:42,725 - INFO - AI-Optimized SQL Query for default type:
-SELECT t.source AS platform,
-       pu.full_name AS assigned_member,
-       t.title AS task_title,
-       t.priority
-FROM tasks t
-LEFT JOIN platform_users pu ON t.user_id = pu.user_id
-AND t.owner_id = pu.owner_id
-WHERE t.priority = 'High'
-  AND t.owner_id = 1
-GROUP BY t.source,
-         pu.full_name,
-         t.title,
-         t.priority;
-2025-07-05 10:44:42,728 - INFO - Retrieved 0 rows from query
-2025-07-05 10:44:42,732 - INFO - Template uid_a81a3ea6fa714b088b80df957594b1fd_455e7d203403427e_1751712274826_1 saved to database successfully
-2025-07-05 10:45:14,796 - INFO - Generating template for type: default, template_id: uid_851fb825d40041589e86a3dac7833c25_ecb81bd4871aa0e2_1751712307740
-2025-07-05 10:45:14,799 - INFO - Database connection established
-2025-07-05 10:45:16,601 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:45:16,644 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       AVG(t.priority) AS average_priority,
+       t.due_date AS task_due_date,
+       pu.name AS user_name,
+       p.name AS project_name,
        t.source AS platform
 FROM tasks t
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
 LEFT JOIN projects p ON t.project_id = p.project_key
-WHERE t.owner_id = 1
-GROUP BY p.name,
-         t.source;
-2025-07-05 10:45:16,650 - INFO - Retrieved 32 rows from query
-2025-07-05 10:45:16,658 - INFO - Template uid_851fb825d40041589e86a3dac7833c25_ecb81bd4871aa0e2_1751712307740 saved to database successfully
-2025-07-05 10:45:16,658 - INFO - Successfully generated template for template_id uid_851fb825d40041589e86a3dac7833c25_ecb81bd4871aa0e2_1751712307740, type: default
-2025-07-05 10:45:41,117 - INFO - Generating template for type: default, template_id: uid_a5944c19cd7c455aa994cf52d25a79e7_4a0e626fb2c5e81f_1751712334780
-2025-07-05 10:45:42,740 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-05 10:45:42,750 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       t.source AS platform,
-       AVG(t.priority) AS average_priority
-FROM projects p
-LEFT JOIN tasks t ON p.id = t.project_id
-WHERE p.owner_id = 1
-GROUP BY p.name,
-         t.source;
-2025-07-05 10:45:42,753 - INFO - Retrieved 39 rows from query
-2025-07-05 10:45:42,759 - INFO - Template uid_a5944c19cd7c455aa994cf52d25a79e7_4a0e626fb2c5e81f_1751712334780 saved to database successfully
-2025-07-05 10:45:42,759 - INFO - Successfully generated template for template_id uid_a5944c19cd7c455aa994cf52d25a79e7_4a0e626fb2c5e81f_1751712334780, type: default
-2025-07-08 10:13:12,646 - INFO - Generating template for type: default, template_id: uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869
-2025-07-08 10:13:15,716 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
-2025-07-08 10:13:15,737 - INFO - AI-Optimized SQL Query for default type:
-SELECT p.name AS project_name,
-       t.title AS task_title,
+WHERE t.due_date < CURDATE()
+  AND t.status != 'completed'
+  AND t.owner_id = 1;
+2025-07-09 18:37:49,461 - INFO - Retrieved 32 rows from query
+2025-07-09 18:37:49,461 - INFO - Retrieved 32 rows from query
+2025-07-09 18:37:49,483 - INFO - Template uid_9d012c8d600b4bb8af84e10784f24e3e_b75fa6412e6fe653_1752086251524_1 saved to database successfully
+2025-07-09 18:37:49,483 - INFO - Successfully generated template for template_id uid_9d012c8d600b4bb8af84e10784f24e3e_b75fa6412e6fe653_1752086251524_1, type: default
+2025-07-09 18:38:09,407 - INFO - Generating template for type: default, template_id: uid_c7279972dfaa4d3bb5928ef3f40373e8_fe072fe2505b15c6_1752086280363_1
+2025-07-09 18:38:09,412 - INFO - Database connection established
+2025-07-09 18:38:10,639 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:38:10,689 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.labels,
+       COUNT(t.id) AS task_count
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+WHERE t.priority = 'high'
+  AND t.owner_id = 1
+GROUP BY t.source,
+         t.labels
+ORDER BY task_count DESC;
+2025-07-09 18:38:10,692 - INFO - Retrieved 0 rows from query
+2025-07-09 18:38:10,696 - INFO - Template uid_c7279972dfaa4d3bb5928ef3f40373e8_fe072fe2505b15c6_1752086280363_1 saved to database successfully
+2025-07-09 18:41:54,431 - INFO - Generating template for type: default, template_id: uid_23a7e7d6924b4caa83faba0b8efa4b3e_d3fdfdb34891dc6f_1752086505586_1
+2025-07-09 18:42:11,652 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:42:11,676 - INFO - AI-Optimized SQL Query for default type:
+SELECT tasks.id AS task_id,
+       tasks.title AS task_title,
+       tasks.created_at AS creation_date,
+       tasks.due_date,
+       platform_users.name AS user_name,
+       projects.name AS project_name,
+       tasks.source
+FROM tasks
+LEFT JOIN platform_users ON tasks.user_id = platform_users.user_id
+AND tasks.owner_id = platform_users.owner_id
+LEFT JOIN projects ON tasks.project_id = projects.platform_id
+AND tasks.owner_id = projects.owner_id
+WHERE tasks.owner_id = 1
+  AND DATEDIFF(tasks.due_date, tasks.created_at) < 0
+GROUP BY tasks.id,
+         tasks.title,
+         tasks.created_at,
+         tasks.due_date,
+         platform_users.name,
+         projects.name,
+         tasks.source;
+2025-07-09 18:42:11,679 - INFO - Retrieved 4 rows from query
+2025-07-09 18:42:11,680 - INFO - Retrieved 4 rows from query
+2025-07-09 18:42:11,705 - INFO - Template uid_23a7e7d6924b4caa83faba0b8efa4b3e_d3fdfdb34891dc6f_1752086505586_1 saved to database successfully
+2025-07-09 18:42:11,706 - INFO - Successfully generated template for template_id uid_23a7e7d6924b4caa83faba0b8efa4b3e_d3fdfdb34891dc6f_1752086505586_1, type: default
+2025-07-09 18:46:26,109 - INFO - Generating template for type: default, template_id: uid_9d22ccdeceb248b991e19ab6e7430209_07810aaf8a1d209a_1752086773828
+2025-07-09 18:46:29,237 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:46:29,278 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.title AS task_title,
        t.status AS task_status,
-       t.source AS platform,
+       t.due_date AS task_due_date,
+       t.source AS platform_source,
+       p.name AS project_name,
        u.full_name AS user_full_name
 FROM tasks t
 LEFT JOIN projects p ON t.project_id = p.project_key
 LEFT JOIN platform_users u ON t.user_id = u.user_id
-WHERE t.owner_id = 7
+WHERE t.status = 'overdue'
+  AND t.owner_id = 1
+  AND t.due_date < CURDATE()
+ORDER BY t.due_date DESC;
+2025-07-09 18:46:29,281 - INFO - Retrieved 0 rows from query
+2025-07-09 18:46:29,301 - INFO - Template uid_9d22ccdeceb248b991e19ab6e7430209_07810aaf8a1d209a_1752086773828 saved to database successfully
+2025-07-09 18:47:44,417 - INFO - Generating template for type: default, template_id: uid_5113db5ff6e542dab1e1300325caad44_7d96c58b683059b5_1752086854341_1
+2025-07-09 18:47:46,260 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:47:46,277 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS ProjectName,
+       COUNT(t.id) AS ReassignmentFrequency,
+       t.source AS Platform
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.owner_id = 1
+  AND t.is_deleted = 0
+  AND t.status = 'In Progress'
+GROUP BY p.name,
+         t.source
+ORDER BY ReassignmentFrequency DESC
+LIMIT 10;
+2025-07-09 18:47:46,279 - INFO - Retrieved 0 rows from query
+2025-07-09 18:47:46,285 - INFO - Template uid_5113db5ff6e542dab1e1300325caad44_7d96c58b683059b5_1752086854341_1 saved to database successfully
+2025-07-09 18:52:24,697 - INFO - Generating template for type: default, template_id: uid_8f5e9a0d6a9b4c5b8e7f2b1c3d4e5f6a_1234567890abcdef_1752087137271_2
+2025-07-09 18:52:27,048 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:52:27,068 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.source AS Platform,
+       COUNT(*) AS CompletedProjects
+FROM projects p
+LEFT JOIN platform_users pu ON p.owner_id = pu.owner_id
+WHERE p.state = 'Done'
+GROUP BY p.source
+ORDER BY CompletedProjects DESC;
+2025-07-09 18:52:27,069 - INFO - Retrieved 0 rows from query
+2025-07-09 18:52:27,073 - INFO - Template uid_8f5e9a0d6a9b4c5b8e7f2b1c3d4e5f6a_1234567890abcdef_1752087137271_2 saved to database successfully
+2025-07-09 18:55:13,856 - INFO - Generating template for type: default, template_id: uid_8f5e9a0d6a9b4c5b8e7f2b1c3d4e5f6a_1234567890abcdef_1752087137271_3
+2025-07-09 18:55:15,212 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:55:15,221 - INFO - AI-Optimized SQL Query for default type:
+SELECT projects.source AS SOURCE,
+       COUNT(*) AS CompletedProjects
+FROM projects
+LEFT JOIN platform_users ON projects.user_id = platform_users.id
+WHERE projects.state = 'Done'
+  AND projects.owner_id = 1
+GROUP BY projects.source
+ORDER BY CompletedProjects DESC;
+2025-07-09 18:55:15,223 - INFO - Retrieved 0 rows from query
+2025-07-09 18:55:15,232 - INFO - Template uid_8f5e9a0d6a9b4c5b8e7f2b1c3d4e5f6a_1234567890abcdef_1752087137271_3 saved to database successfully
+2025-07-09 18:55:33,174 - INFO - Generating template for type: default, template_id: uid_3e7a9b8c2d4e5f6a7b8e9f0a1b2c3d4e_0987654321fedcba_1752087326356_1
+2025-07-09 18:55:34,440 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:55:34,448 - INFO - AI-Optimized SQL Query for default type:
+SELECT tasks.source AS Platform,
+       COUNT(*) AS DeletedOrCancelledTasks
+FROM tasks
+WHERE tasks.status IN ('deleted',
+                       'Canceled')
+  AND tasks.owner_id = 1
+GROUP BY tasks.source
+ORDER BY DeletedOrCancelledTasks DESC;
+2025-07-09 18:55:34,449 - INFO - Retrieved 1 rows from query
+2025-07-09 18:55:34,450 - INFO - Retrieved 1 rows from query
+2025-07-09 18:55:34,453 - INFO - Template uid_3e7a9b8c2d4e5f6a7b8e9f0a1b2c3d4e_0987654321fedcba_1752087326356_1 saved to database successfully
+2025-07-09 18:55:34,454 - INFO - Successfully generated template for template_id uid_3e7a9b8c2d4e5f6a7b8e9f0a1b2c3d4e_0987654321fedcba_1752087326356_1, type: default
+2025-07-09 18:58:11,406 - INFO - Generating template for type: default, template_id: uid_4f6a7b8e9f0a1b2c3d4e5f6a7b8e9f0a_abcdef1234567890_1752087512345_1
+2025-07-09 18:58:12,463 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 18:58:12,473 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS Platform,
+       t.labels,
+       COUNT(*) AS LabelFrequency
+FROM tasks t
+WHERE t.priority = 'high'
+  AND t.owner_id = 1
+GROUP BY t.source,
+         t.labels
+ORDER BY LabelFrequency DESC;
+2025-07-09 18:58:12,475 - INFO - Retrieved 0 rows from query
+2025-07-09 18:58:12,481 - INFO - Template uid_4f6a7b8e9f0a1b2c3d4e5f6a7b8e9f0a_abcdef1234567890_1752087512345_1 saved to database successfully
+2025-07-09 19:00:25,402 - INFO - Generating template for type: default, template_id: uid_4f6a7b8e9f0a1b2c3d4e5f6a7b8e9f0a_abcdef1234567890_1752087512345_2
+2025-07-09 19:00:26,706 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:00:26,722 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS Platform,
+       t.labels,
+       COUNT(*) AS Frequency
+FROM tasks t
+WHERE t.priority = 'high'
+GROUP BY t.source,
+         t.labels
+ORDER BY Frequency DESC;
+2025-07-09 19:00:26,725 - INFO - Retrieved 0 rows from query
+2025-07-09 19:00:26,730 - INFO - Template uid_4f6a7b8e9f0a1b2c3d4e5f6a7b8e9f0a_abcdef1234567890_1752087512345_2 saved to database successfully
+2025-07-09 19:01:27,716 - INFO - Generating template for type: default, template_id: uid_cbfa3fe3ab7e47baaf05d0dddc40e275_07a8e6105dd9247c_1752087661063
+2025-07-09 19:01:30,190 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:01:30,212 - INFO - AI-Optimized SQL Query for default type:
+SELECT pu.full_name AS user_name,
+       t.title AS task_title,
+       t.estimate AS task_estimate,
+       t.source AS platform
+FROM tasks t
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.owner_id = 1
+  AND t.source IN ('linear',
+                   'trello')
+  AND YEAR(t.created_at) = YEAR(CURDATE())
+ORDER BY t.estimate DESC
+LIMIT 10;
+2025-07-09 19:01:30,215 - INFO - Retrieved 10 rows from query
+2025-07-09 19:01:30,216 - INFO - Retrieved 10 rows from query
+2025-07-09 19:01:30,220 - INFO - Template uid_cbfa3fe3ab7e47baaf05d0dddc40e275_07a8e6105dd9247c_1752087661063 saved to database successfully
+2025-07-09 19:01:30,221 - INFO - Successfully generated template for template_id uid_cbfa3fe3ab7e47baaf05d0dddc40e275_07a8e6105dd9247c_1752087661063, type: default
+2025-07-09 19:08:04,215 - INFO - Generating template for type: default, template_id: uid_f427bbfd65e143d18d53ee427ae16525_f2bfe6dc0f41f11a_1752088067061_1
+2025-07-09 19:08:04,219 - INFO - Database connection established
+2025-07-09 19:08:06,451 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:08:06,498 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       AVG(t.priority) AS average_priority,
+       t.source
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.owner_id = 1
+GROUP BY p.name,
+         t.source;
+2025-07-09 19:08:06,504 - INFO - Retrieved 32 rows from query
+2025-07-09 19:08:06,504 - INFO - Retrieved 32 rows from query
+2025-07-09 19:08:06,512 - INFO - Template uid_f427bbfd65e143d18d53ee427ae16525_f2bfe6dc0f41f11a_1752088067061_1 saved to database successfully
+2025-07-09 19:08:06,513 - INFO - Successfully generated template for template_id uid_f427bbfd65e143d18d53ee427ae16525_f2bfe6dc0f41f11a_1752088067061_1, type: default
+2025-07-09 19:09:44,919 - INFO - Generating template for type: default, template_id: uid_9c4b3e1f8e6f4b8f8d9f7a8e9c4b3e1f_2f4b3e1f8e6f4b8f_1752088171929_1
+2025-07-09 19:09:44,922 - INFO - Database connection established
+2025-07-09 19:09:46,385 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:09:46,431 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.name AS team_name,
+       COUNT(ts.id) AS in_progress_tasks_count,
+       ts.source
+FROM teams t
+LEFT JOIN tasks ts ON t.id = ts.team_id
+AND ts.status = 'In Progress'
+WHERE t.owner_id = 1
+GROUP BY t.name,
+         ts.source;
+2025-07-09 19:09:46,434 - INFO - Retrieved 6 rows from query
+2025-07-09 19:09:46,435 - INFO - Retrieved 6 rows from query
+2025-07-09 19:09:46,446 - INFO - Template uid_9c4b3e1f8e6f4b8f8d9f7a8e9c4b3e1f_2f4b3e1f8e6f4b8f_1752088171929_1 saved to database successfully
+2025-07-09 19:09:46,447 - INFO - Successfully generated template for template_id uid_9c4b3e1f8e6f4b8f8d9f7a8e9c4b3e1f_2f4b3e1f8e6f4b8f_1752088171929_1, type: default
+2025-07-09 19:11:06,775 - INFO - Generating template for type: default, template_id: uid_ae3f2b4c5d6e7f8a9b0c1d2e3f4g5h6i_3f4g5h6i7j8k9l0m_1752088273645
+2025-07-09 19:11:08,544 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:11:08,561 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.source AS platform,
+       p.name AS project_name,
+       COUNT(t.id) AS completed_tasks_count
+FROM projects p
+LEFT JOIN tasks t ON p.id = t.project_id
+WHERE t.status = 'Done'
+  AND p.owner_id = 1
+GROUP BY p.source,
+         p.name
+ORDER BY completed_tasks_count DESC
+LIMIT 10;
+2025-07-09 19:11:08,564 - INFO - Retrieved 5 rows from query
+2025-07-09 19:11:08,564 - INFO - Retrieved 5 rows from query
+2025-07-09 19:11:08,569 - INFO - Template uid_ae3f2b4c5d6e7f8a9b0c1d2e3f4g5h6i_3f4g5h6i7j8k9l0m_1752088273645 saved to database successfully
+2025-07-09 19:11:08,570 - INFO - Successfully generated template for template_id uid_ae3f2b4c5d6e7f8a9b0c1d2e3f4g5h6i_3f4g5h6i7j8k9l0m_1752088273645, type: default
+2025-07-09 19:12:34,169 - INFO - Generating template for type: default, template_id: uid_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p_4n5o6p7q8r9s0t1u_1752088374852
+2025-07-09 19:12:37,590 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:12:37,602 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.end_date,
+       p.state AS status,
+       p.source
+FROM projects p
+LEFT JOIN platform_users pu ON p.user_id = pu.id
+WHERE p.end_date < CURDATE()
+  AND p.state != 'complete'
+  AND p.owner_id = 1;
+2025-07-09 19:12:37,604 - INFO - Retrieved 1 rows from query
+2025-07-09 19:12:37,604 - INFO - Retrieved 1 rows from query
+2025-07-09 19:12:37,620 - INFO - Template uid_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p_4n5o6p7q8r9s0t1u_1752088374852 saved to database successfully
+2025-07-09 19:12:37,620 - INFO - Successfully generated template for template_id uid_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p_4n5o6p7q8r9s0t1u_1752088374852, type: default
+2025-07-09 19:13:04,993 - INFO - Generating template for type: default, template_id: uid_1234567890abcdef1234567890abcdef_abcdef1234567890_1752088473645
+2025-07-09 19:13:06,485 - INFO - Generating template for type: default, template_id: uid_abcdef1234567890abcdef1234567890_1234567890abcdef_1752088573645
+2025-07-09 19:13:06,490 - INFO - Database connection established
+2025-07-09 19:13:06,493 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:06,529 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.name AS team_name,
+       COUNT(ts.id) AS total_tasks,
+       SUM(CASE
+               WHEN ts.status = 'Done' THEN 1
+               ELSE 0
+           END) / COUNT(ts.id) * 100 AS completion_percentage,
+       ts.source
+FROM teams t
+LEFT JOIN tasks ts ON t.platform_id = ts.platform_id
+WHERE ts.owner_id = 1
+GROUP BY t.name,
+         ts.source;
+2025-07-09 19:13:06,541 - INFO - Retrieved 6 rows from query
+2025-07-09 19:13:06,541 - INFO - Retrieved 6 rows from query
+2025-07-09 19:13:06,545 - INFO - Template uid_1234567890abcdef1234567890abcdef_abcdef1234567890_1752088473645 saved to database successfully
+2025-07-09 19:13:06,546 - INFO - Successfully generated template for template_id uid_1234567890abcdef1234567890abcdef_abcdef1234567890_1752088473645, type: default
+2025-07-09 19:13:07,656 - INFO - Generating template for type: default, template_id: uid_7890abcdef1234567890abcdef123456_1234567890abcdef_1752088673645
+2025-07-09 19:13:10,163 - INFO - Generating template for type: default, template_id: uid_abcdef78901234567890abcdef123456_abcdef1234567890_1752088773645
+2025-07-09 19:13:12,910 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:12,950 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       t.priority,
+       t.source
+FROM projects p
+LEFT JOIN tasks t ON p.platform_id = t.platform_id
+WHERE t.owner_id = 1
   AND (t.source = 'linear'
        OR t.source = 'trello')
   AND YEAR(t.created_at) = YEAR(CURDATE())
 GROUP BY p.name,
+         t.priority,
+         t.source
+LIMIT 10;
+2025-07-09 19:13:12,965 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:12,965 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:12,971 - INFO - Template uid_abcdef1234567890abcdef1234567890_1234567890abcdef_1752088573645 saved to database successfully
+2025-07-09 19:13:12,971 - INFO - Successfully generated template for template_id uid_abcdef1234567890abcdef1234567890_1234567890abcdef_1752088573645, type: default
+2025-07-09 19:13:14,232 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:14,258 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.name AS team_name,
+       COUNT(ts.id) AS in_progress_tasks_count,
+       ts.source
+FROM teams t
+LEFT JOIN tasks ts ON t.id = ts.team_id
+WHERE ts.status = 'In Progress'
+  AND ts.owner_id = 1
+GROUP BY t.name,
+         ts.source
+LIMIT 100;
+2025-07-09 19:13:14,260 - INFO - Retrieved 1 rows from query
+2025-07-09 19:13:14,261 - INFO - Retrieved 1 rows from query
+2025-07-09 19:13:14,265 - INFO - Template uid_7890abcdef1234567890abcdef123456_1234567890abcdef_1752088673645 saved to database successfully
+2025-07-09 19:13:14,266 - INFO - Successfully generated template for template_id uid_7890abcdef1234567890abcdef123456_1234567890abcdef_1752088673645, type: default
+2025-07-09 19:13:14,787 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:14,802 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.end_date,
+       p.state AS status,
+       p.source AS platform
+FROM projects p
+LEFT JOIN platform_users pu ON p.user_id = pu.id
+WHERE p.end_date < CURDATE()
+  AND p.state != 'Done'
+  AND p.owner_id = 1
+  AND (p.source = 'linear'
+       OR p.source = 'trello');
+2025-07-09 19:13:14,808 - INFO - Retrieved 1 rows from query
+2025-07-09 19:13:14,809 - INFO - Retrieved 1 rows from query
+2025-07-09 19:13:14,815 - INFO - Template uid_abcdef78901234567890abcdef123456_abcdef1234567890_1752088773645 saved to database successfully
+2025-07-09 19:13:14,816 - INFO - Successfully generated template for template_id uid_abcdef78901234567890abcdef123456_abcdef1234567890_1752088773645, type: default
+2025-07-09 19:13:44,623 - INFO - Generating template for type: default, template_id: uid_abcdef1234567890abcdef1234567890_7890abcdef123456_1752088873645
+2025-07-09 19:13:48,648 - INFO - Generating template for type: default, template_id: uid_1234567890abcdef1234567890abcdef_abcdef7890123456_1752088973645
+2025-07-09 19:13:50,731 - INFO - Generating template for type: default, template_id: uid_7890abcdef1234567890abcdef123456_abcdef1234567890_1752089073645
+2025-07-09 19:13:50,735 - INFO - Database connection established
+2025-07-09 19:13:52,527 - INFO - Generating template for type: default, template_id: uid_abcdef78901234567890abcdef123456_1234567890abcdef_1752089173645
+2025-07-09 19:13:54,837 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:54,857 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.description AS project_description,
+       p.state AS project_state,
+       p.source AS platform
+FROM projects p
+LEFT JOIN platform_users pu ON p.user_id = pu.id
+WHERE p.owner_id = 1
+  AND YEAR(p.created_at) = YEAR(CURDATE())
+  AND p.source IN ('linear',
+                   'trello')
+GROUP BY p.id,
+         p.name,
+         p.description,
+         p.state,
+         p.source
+LIMIT 10;
+2025-07-09 19:13:54,859 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:54,859 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:54,866 - INFO - Template uid_abcdef1234567890abcdef1234567890_7890abcdef123456_1752088873645 saved to database successfully
+2025-07-09 19:13:54,866 - INFO - Successfully generated template for template_id uid_abcdef1234567890abcdef1234567890_7890abcdef123456_1752088873645, type: default
+2025-07-09 19:13:55,195 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:55,206 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.end_date AS planned_end_date,
+       p.updated_at AS actual_end_date,
+       p.source AS platform
+FROM projects p
+LEFT JOIN platform_users pu ON p.user_id = pu.id
+WHERE p.owner_id = 1
+  AND YEAR(p.created_at) = YEAR(CURDATE());
+2025-07-09 19:13:55,209 - INFO - Retrieved 39 rows from query
+2025-07-09 19:13:55,209 - INFO - Retrieved 39 rows from query
+2025-07-09 19:13:55,225 - INFO - Template uid_abcdef78901234567890abcdef123456_1234567890abcdef_1752089173645 saved to database successfully
+2025-07-09 19:13:55,225 - INFO - Successfully generated template for template_id uid_abcdef78901234567890abcdef123456_1234567890abcdef_1752089173645, type: default
+2025-07-09 19:13:55,310 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:55,356 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.title,
+       t.status,
+       t.priority,
+       p.name AS project_name,
+       u.full_name AS user_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users u ON t.user_id = u.user_id
+WHERE t.owner_id = 1
+  AND (t.source = 'linear'
+       OR t.source = 'trello')
+  AND YEAR(t.created_at) = YEAR(CURDATE());
+2025-07-09 19:13:55,390 - INFO - Retrieved 2788 rows from query
+2025-07-09 19:13:55,390 - INFO - Retrieved 2788 rows from query
+2025-07-09 19:13:55,537 - INFO - Template uid_7890abcdef1234567890abcdef123456_abcdef1234567890_1752089073645 saved to database successfully
+2025-07-09 19:13:55,538 - INFO - Successfully generated template for template_id uid_7890abcdef1234567890abcdef123456_abcdef1234567890_1752089073645, type: default
+2025-07-09 19:13:55,713 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:13:55,775 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       pu.name AS user_name,
+       pu.email,
+       p.source AS platform,
+       t.title AS task_title,
+       t.status,
+       t.priority,
+       t.created_at
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE YEAR(t.created_at) = YEAR(CURDATE())
+  AND t.owner_id = 1
+  AND (p.source = 'linear'
+       OR p.source = 'trello')
+GROUP BY p.name,
+         pu.name,
+         pu.email,
+         p.source,
          t.title,
          t.status,
-         t.source,
+         t.priority,
+         t.created_at
+LIMIT 10;
+2025-07-09 19:13:55,810 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:55,811 - INFO - Retrieved 10 rows from query
+2025-07-09 19:13:55,817 - INFO - Template uid_1234567890abcdef1234567890abcdef_abcdef7890123456_1752088973645 saved to database successfully
+2025-07-09 19:13:55,818 - INFO - Successfully generated template for template_id uid_1234567890abcdef1234567890abcdef_abcdef7890123456_1752088973645, type: default
+2025-07-09 19:19:39,221 - INFO - Generating template for type: default, template_id: uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_1
+2025-07-09 19:19:40,896 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:19:40,906 - INFO - AI-Optimized SQL Query for default type:
+SELECT teams.name AS Team_Name,
+       COUNT(tasks.id) AS Task_Throughput,
+       tasks.source
+FROM tasks
+LEFT JOIN teams ON tasks.team_id = teams.team_key
+WHERE tasks.owner_id = 1
+GROUP BY teams.name,
+         tasks.source
+ORDER BY Task_Throughput DESC;
+2025-07-09 19:19:40,911 - INFO - Retrieved 7 rows from query
+2025-07-09 19:19:40,912 - INFO - Retrieved 7 rows from query
+2025-07-09 19:19:40,917 - INFO - Template uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_1 saved to database successfully
+2025-07-09 19:19:40,917 - INFO - Successfully generated template for template_id uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_1, type: default
+2025-07-09 19:21:25,766 - INFO - Generating template for type: default, template_id: uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_2
+2025-07-09 19:21:26,979 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:21:26,987 - INFO - AI-Optimized SQL Query for default type:
+SELECT teams.name AS TeamName,
+       COUNT(tasks.id) AS TaskThroughput,
+       tasks.source
+FROM tasks
+LEFT JOIN teams ON tasks.team_id = teams.team_key
+WHERE tasks.owner_id = 1
+GROUP BY teams.name,
+         tasks.source
+ORDER BY TaskThroughput DESC;
+2025-07-09 19:21:26,994 - INFO - Retrieved 7 rows from query
+2025-07-09 19:21:26,994 - INFO - Retrieved 7 rows from query
+2025-07-09 19:21:27,003 - INFO - Template uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_2 saved to database successfully
+2025-07-09 19:21:27,004 - INFO - Successfully generated template for template_id uid_70681b874cb7423abfe167f9b837386d_393e6f9bbc37df40_1752088770776_2, type: default
+2025-07-09 19:22:43,171 - INFO - Generating template for type: default, template_id: uid_83a01e7028444a49a5f34d828f4cdb99_9e0130f6d84ad5f1_1752088952250
+2025-07-09 19:22:44,634 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:22:44,654 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       COUNT(t.id) AS open_tasks_count,
+       p.source
+FROM projects p
+LEFT JOIN tasks t ON p.id = t.project_id
+WHERE t.status NOT IN ('Done')
+  AND p.owner_id = 1
+GROUP BY p.id,
+         p.name,
+         p.source
+ORDER BY open_tasks_count DESC
+LIMIT 10;
+2025-07-09 19:22:44,657 - INFO - Retrieved 7 rows from query
+2025-07-09 19:22:44,657 - INFO - Retrieved 7 rows from query
+2025-07-09 19:22:44,664 - INFO - Template uid_83a01e7028444a49a5f34d828f4cdb99_9e0130f6d84ad5f1_1752088952250 saved to database successfully
+2025-07-09 19:22:44,665 - INFO - Successfully generated template for template_id uid_83a01e7028444a49a5f34d828f4cdb99_9e0130f6d84ad5f1_1752088952250, type: default
+2025-07-09 19:24:20,304 - INFO - Generating template for type: default, template_id: uid_7c6b2f1a8c9f4e5b9a2d8f3c5e7b4d2b_1b2c3d4e5f6g7h8i_1752089051801_1
+2025-07-09 19:24:22,598 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:24:22,612 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.title AS task_title,
+       t.due_date,
+       t.source AS platform,
+       p.name AS project_name,
+       pu.full_name AS user_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.due_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+  AND t.owner_id = 1
+  AND t.is_deleted = 0
+ORDER BY t.due_date ASC;
+2025-07-09 19:24:22,615 - INFO - Retrieved 0 rows from query
+2025-07-09 19:24:22,618 - INFO - Template uid_7c6b2f1a8c9f4e5b9a2d8f3c5e7b4d2b_1b2c3d4e5f6g7h8i_1752089051801_1 saved to database successfully
+2025-07-09 19:26:15,227 - INFO - Generating template for type: default, template_id: uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2
+2025-07-09 19:26:16,716 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:26:16,734 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.id AS task_id,
+       t.title,
+       t.created_at,
+       t.due_date,
+       DATEDIFF(t.due_date, t.created_at) AS days_between
+FROM tasks t
+WHERE t.owner_id = 1
+  AND t.due_date IS NOT NULL
+ORDER BY t.created_at;
+2025-07-09 19:26:16,739 - INFO - Retrieved 8 rows from query
+2025-07-09 19:26:16,739 - INFO - Retrieved 8 rows from query
+2025-07-09 19:26:16,765 - INFO - Template uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2 saved to database successfully
+2025-07-09 19:26:16,766 - INFO - Successfully generated template for template_id uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2, type: default
+2025-07-09 19:27:38,968 - INFO - Generating template for type: default, template_id: uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2
+2025-07-09 19:27:40,261 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:27:40,275 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.id AS task_id,
+       t.created_at AS creation_date,
+       t.due_date,
+       DATEDIFF(t.due_date, t.created_at) AS days_between,
+       t.source AS platform
+FROM tasks t
+WHERE t.owner_id = 1
+  AND t.source IN ('linear',
+                   'trello')
+ORDER BY t.created_at;
+2025-07-09 19:27:40,283 - INFO - Retrieved 285 rows from query
+2025-07-09 19:27:40,283 - INFO - Retrieved 285 rows from query
+2025-07-09 19:27:40,300 - INFO - Template uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2 saved to database successfully
+2025-07-09 19:27:40,301 - INFO - Successfully generated template for template_id uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2, type: default
+2025-07-09 19:28:06,290 - INFO - Generating template for type: default, template_id: uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2
+2025-07-09 19:28:08,309 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:28:08,338 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.id AS task_id,
+       t.title AS task_title,
+       p.name AS project_name,
+       pu.full_name AS user_full_name,
+       t.source AS platform_source,
+       t.created_at AS task_creation_date,
+       t.due_date AS task_due_date
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.owner_id = 1
+  AND (t.source = 'linear'
+       OR t.source = 'trello')
+  AND YEAR(t.created_at) = YEAR(CURDATE())
+ORDER BY t.created_at
+LIMIT 100;
+2025-07-09 19:28:08,354 - INFO - Retrieved 100 rows from query
+2025-07-09 19:28:08,354 - INFO - Retrieved 100 rows from query
+2025-07-09 19:28:08,370 - INFO - Template uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2 saved to database successfully
+2025-07-09 19:28:08,370 - INFO - Successfully generated template for template_id uid_5f7e2a1b9c8d4f6a9b3c2d1e0f8g7h6i_2a3b4c5d6e7f8g9h_1752089157160_2, type: default
+2025-07-09 19:29:16,107 - INFO - Generating template for type: default, template_id: uid_6c7d8e9f0a1b2c3d4e5f6g7h8i9j0k1l_3m4n5o6p7q8r9s0t_1752089258320_3
+2025-07-09 19:29:18,022 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 19:29:18,035 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       JSON_UNQUOTE(JSON_EXTRACT(t.labels, '$[0]')) AS label_name,
+       COUNT(*) AS frequency
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.status = 'overdue'
+  AND t.owner_id = 1
+GROUP BY t.source,
+         label_name
+ORDER BY frequency DESC
+LIMIT 1;
+2025-07-09 19:29:18,037 - INFO - Retrieved 0 rows from query
+2025-07-09 19:29:18,040 - INFO - Template uid_6c7d8e9f0a1b2c3d4e5f6g7h8i9j0k1l_3m4n5o6p7q8r9s0t_1752089258320_3 saved to database successfully
+2025-07-09 20:20:51,215 - INFO - Generating template for type: default, template_id: uid_41fbc653e37a4f2abd4ce4123b27dc5c_caa65b51e6c16a87_1752092441403
+2025-07-09 20:20:51,219 - INFO - Database connection established
+2025-07-09 20:20:52,820 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 20:20:52,857 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source,
+       JSON_UNQUOTE(JSON_EXTRACT(t.labels, '$[0]')) AS label_name,
+       COUNT(*) AS usage_count
+FROM tasks t
+WHERE t.priority = 'high'
+  AND t.owner_id = 1
+  AND t.source IN ('linear',
+                   'trello')
+GROUP BY t.source,
+         label_name;
+2025-07-09 20:20:52,860 - INFO - Retrieved 0 rows from query
+2025-07-09 20:20:52,867 - INFO - Template uid_41fbc653e37a4f2abd4ce4123b27dc5c_caa65b51e6c16a87_1752092441403 saved to database successfully
+2025-07-09 20:26:38,082 - INFO - Generating template for type: default, template_id: uid_126b07e87fbb425ebc373226ee407e4e_a28e28b4cf2d9845_1752092783617_1
+2025-07-09 20:26:38,085 - INFO - Database connection established
+2025-07-09 20:26:39,929 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 20:26:39,968 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.name AS team_name,
+       COUNT(ts.id) AS task_throughput,
+       t.source
+FROM teams t
+LEFT JOIN tasks ts ON t.id = ts.team_id
+WHERE t.owner_id = 1
+GROUP BY t.id,
+         t.name,
+         t.source
+ORDER BY task_throughput DESC
+LIMIT 10;
+2025-07-09 20:26:39,971 - INFO - Retrieved 8 rows from query
+2025-07-09 20:26:39,971 - INFO - Retrieved 8 rows from query
+2025-07-09 20:26:39,979 - INFO - Template uid_126b07e87fbb425ebc373226ee407e4e_a28e28b4cf2d9845_1752092783617_1 saved to database successfully
+2025-07-09 20:26:39,980 - INFO - Successfully generated template for template_id uid_126b07e87fbb425ebc373226ee407e4e_a28e28b4cf2d9845_1752092783617_1, type: default
+2025-07-09 20:27:12,659 - INFO - Generating template for type: default, template_id: uid_7dda0a9403ab445fa1da7ec4a796ade4_fc3fa91b032e5223_1752092824421
+2025-07-09 20:27:16,326 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 20:27:16,344 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       COUNT(t.id) AS overdue_task_count,
+       p.source AS platform
+FROM projects p
+LEFT JOIN tasks t ON p.id = t.project_id
+WHERE t.due_date < CURDATE()
+  AND t.status != 'Done'
+  AND p.owner_id = 1
+GROUP BY p.name,
+         p.source
+HAVING overdue_task_count > 0;
+2025-07-09 20:27:16,347 - INFO - Retrieved 1 rows from query
+2025-07-09 20:27:16,347 - INFO - Retrieved 1 rows from query
+2025-07-09 20:27:16,353 - INFO - Template uid_7dda0a9403ab445fa1da7ec4a796ade4_fc3fa91b032e5223_1752092824421 saved to database successfully
+2025-07-09 20:27:16,353 - INFO - Successfully generated template for template_id uid_7dda0a9403ab445fa1da7ec4a796ade4_fc3fa91b032e5223_1752092824421, type: default
+2025-07-09 21:38:34,310 - INFO - Generating template for type: default, template_id: uid_5539687f6a7843cd837a6cfb2e842c04_f2e96921881623bd_1752097106288
+2025-07-09 21:38:37,460 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:38:37,477 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.title,
+       t.status,
+       p.name AS project_name,
+       tm.name AS team_name,
+       pu.full_name AS user_full_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN teams tm ON t.team_id = tm.team_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.owner_id = 1
+  AND t.status IN ('Cancelled',
+                   'Deleted')
+ORDER BY t.source,
+         t.title;
+2025-07-09 21:38:37,480 - INFO - Retrieved 0 rows from query
+2025-07-09 21:38:37,487 - INFO - Template uid_5539687f6a7843cd837a6cfb2e842c04_f2e96921881623bd_1752097106288 saved to database successfully
+2025-07-09 21:42:13,827 - INFO - Generating template for type: default, template_id: uid_5e5e2f34143e4b9b9b1010a05a8a4dea_b98d371d8031be67_1752097313054
+2025-07-09 21:42:13,830 - INFO - Database connection established
+2025-07-09 21:42:16,459 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:42:16,513 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.name AS team_name,
+       p.name AS project_name,
+       COUNT(CASE
+                 WHEN ta.status = 'Done' THEN 1
+             END) / COUNT(ta.id) * 100 AS completion_rate,
+       ta.source
+FROM teams t
+LEFT JOIN tasks ta ON t.id = ta.team_id
+AND t.owner_id = ta.owner_id
+LEFT JOIN projects p ON ta.project_id = p.project_key
+AND ta.owner_id = p.owner_id
+WHERE t.owner_id = 1
+  AND ta.source IN ('linear',
+                    'trello')
+GROUP BY t.name,
+         p.name,
+         ta.source;
+2025-07-09 21:42:16,518 - INFO - Retrieved 0 rows from query
+2025-07-09 21:42:16,533 - INFO - Template uid_5e5e2f34143e4b9b9b1010a05a8a4dea_b98d371d8031be67_1752097313054 saved to database successfully
+2025-07-09 21:42:41,105 - INFO - Generating template for type: default, template_id: uid_c3df01e1860b4fdd98f16ae8882b2f73_a6b3edad2b5c40f1_1752097354541
+2025-07-09 21:42:42,925 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:42:42,938 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.estimate AS total_estimate,
+       p.source AS platform
+FROM projects p
+LEFT JOIN tasks t ON p.id = t.project_id
+WHERE p.owner_id = 1
+  AND p.source IN ('linear',
+                   'trello')
+GROUP BY p.name,
+         p.estimate,
+         p.source
+ORDER BY total_estimate DESC
+LIMIT 1;
+2025-07-09 21:42:42,939 - WARNING - Database connection error (attempt 1): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:43,941 - INFO - Database connection established
+2025-07-09 21:42:43,943 - WARNING - Database connection error (attempt 2): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:44,945 - INFO - Database connection established
+2025-07-09 21:42:44,946 - WARNING - Database connection error (attempt 3): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:44,947 - ERROR - Database query error: (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:51,831 - INFO - Generating template for type: default, template_id: uid_c3df01e1860b4fdd98f16ae8882b2f73_a6b3edad2b5c40f1_1752097354541
+2025-07-09 21:42:53,026 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:42:53,037 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.estimate,
+       p.source
+FROM projects p
+LEFT JOIN tasks t ON p.id = t.project_id
+WHERE p.owner_id = 1
+GROUP BY p.name,
+         p.source
+ORDER BY SUM(t.estimate) DESC
+LIMIT 1;
+2025-07-09 21:42:53,038 - WARNING - Database connection error (attempt 1): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:54,040 - INFO - Database connection established
+2025-07-09 21:42:54,042 - WARNING - Database connection error (attempt 2): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:55,078 - INFO - Database connection established
+2025-07-09 21:42:55,080 - WARNING - Database connection error (attempt 3): (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:42:55,080 - ERROR - Database query error: (1054, "Unknown column 'p.estimate' in 'field list'")
+2025-07-09 21:44:21,615 - INFO - Generating template for type: default, template_id: uid_1e79341743764d47be736afc8f4629d2_649ebe236fad36af_1752097448799
+2025-07-09 21:44:21,617 - INFO - Database connection established
+2025-07-09 21:44:24,753 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:44:24,774 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.title AS task_title,
+       t.status AS task_status,
+       p.name AS project_name,
+       tm.name AS team_name,
+       u.full_name AS user_full_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN teams tm ON t.team_id = tm.team_key
+LEFT JOIN platform_users u ON t.user_id = u.user_id
+WHERE YEAR(t.created_at) = YEAR(CURDATE())
+  AND MONTH(t.created_at) = MONTH(CURDATE())
+  AND t.owner_id = 1
+  AND t.source IN ('linear',
+                   'trello')
+GROUP BY t.source,
+         t.title,
+         t.status,
+         p.name,
+         tm.name,
          u.full_name;
-2025-07-08 10:13:15,743 - INFO - Retrieved 48 rows from query
-2025-07-08 10:13:15,768 - INFO - Template uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869 saved to database successfully
-2025-07-08 10:13:15,769 - INFO - Successfully generated template for template_id uid_60c1ed66b5c24767b9539d559321e3ad_f668f934e678a61c_1751969578869, type: default
+2025-07-09 21:44:24,776 - INFO - Retrieved 0 rows from query
+2025-07-09 21:44:24,787 - INFO - Template uid_1e79341743764d47be736afc8f4629d2_649ebe236fad36af_1752097448799 saved to database successfully
+2025-07-09 21:45:12,916 - INFO - Generating template for type: default, template_id: uid_fd9e4809dc2c4ea4bf1a26f8f91b36f0_b5561ca1d3f6bb72_1752097503652
+2025-07-09 21:45:14,399 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:45:14,414 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.title AS task_title,
+       t.priority,
+       p.name AS project_name,
+       t.source AS platform_source
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.owner_id = 1
+GROUP BY t.title,
+         t.priority,
+         p.name,
+         t.source;
+2025-07-09 21:45:14,426 - INFO - Retrieved 231 rows from query
+2025-07-09 21:45:14,426 - INFO - Retrieved 231 rows from query
+2025-07-09 21:45:14,435 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 21:45:14,435 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 21:45:14,436 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 21:45:14,436 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 21:45:14,437 - WARNING - Error processing value Medium for column priority: could not convert string to float: 'Medium'
+2025-07-09 21:45:14,453 - INFO - Template uid_fd9e4809dc2c4ea4bf1a26f8f91b36f0_b5561ca1d3f6bb72_1752097503652 saved to database successfully
+2025-07-09 21:45:14,454 - INFO - Successfully generated template for template_id uid_fd9e4809dc2c4ea4bf1a26f8f91b36f0_b5561ca1d3f6bb72_1752097503652, type: default
+2025-07-09 21:46:12,577 - INFO - Generating template for type: default, template_id: uid_8d52ac1bbae246cfac4769b327eb4c13_df60a7a4a6e5cf1d_1752097561444
+2025-07-09 21:46:15,136 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:46:15,158 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.title AS task_title,
+       t.description AS task_description,
+       t.status AS task_status,
+       t.source AS platform,
+       p.name AS project_name,
+       tm.name AS team_name,
+       pu.name AS user_name
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN teams tm ON t.team_id = tm.team_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.owner_id = 1
+  AND t.status = 'overdue'
+  AND t.source IN ('linear',
+                   'trello')
+  AND YEAR(t.created_at) = YEAR(CURDATE());
+2025-07-09 21:46:15,161 - INFO - Retrieved 0 rows from query
+2025-07-09 21:46:15,166 - INFO - Template uid_8d52ac1bbae246cfac4769b327eb4c13_df60a7a4a6e5cf1d_1752097561444 saved to database successfully
+2025-07-09 21:47:18,025 - INFO - Generating template for type: default, template_id: uid_9c2f28a52cd643fe9c06413cad67ac33_0c0ce7f7a8aadb2c_1752097631392_1
+2025-07-09 21:47:19,653 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:47:19,668 - INFO - AI-Optimized SQL Query for default type:
+SELECT t.source AS platform,
+       t.labels,
+       COUNT(*) AS frequency
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+AND t.source = p.source
+WHERE t.status = 'overdue'
+  AND t.owner_id = 1
+GROUP BY t.source,
+         t.labels
+ORDER BY frequency DESC
+LIMIT 10;
+2025-07-09 21:47:19,670 - INFO - Retrieved 0 rows from query
+2025-07-09 21:47:19,676 - INFO - Template uid_9c2f28a52cd643fe9c06413cad67ac33_0c0ce7f7a8aadb2c_1752097631392_1 saved to database successfully
+2025-07-09 21:49:01,998 - INFO - Generating template for type: default, template_id: uid_cc1da2d32ad04d7998a81f5244820647_7c49e7b8b8000192_1752097724875
+2025-07-09 21:49:02,002 - INFO - Database connection established
+2025-07-09 21:49:04,284 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:49:04,298 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       t.title AS task_title,
+       t.due_date,
+       pu.full_name AS assigned_user,
+       t.source AS platform
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+LEFT JOIN platform_users pu ON t.user_id = pu.user_id
+WHERE t.status = 'overdue'
+  AND t.owner_id = 1
+  AND (t.source = 'linear'
+       OR t.source = 'trello')
+ORDER BY p.name,
+         t.due_date;
+2025-07-09 21:49:04,300 - INFO - Retrieved 0 rows from query
+2025-07-09 21:49:04,304 - INFO - Template uid_cc1da2d32ad04d7998a81f5244820647_7c49e7b8b8000192_1752097724875 saved to database successfully
+2025-07-09 21:51:56,879 - INFO - Generating template for type: default, template_id: uid_66dd2ce4018a49119ed4fbe57c4d72ce_c1ea5478f15e0af5_1752097902600
+2025-07-09 21:51:59,571 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-09 21:51:59,591 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       p.state AS project_state,
+       p.source AS platform_source,
+       pu.full_name AS user_full_name,
+       pu.email AS user_email,
+       t.name AS team_name
+FROM projects p
+LEFT JOIN platform_users pu ON p.user_id = pu.id
+LEFT JOIN teams t ON p.platform_id = t.platform_id
+WHERE p.owner_id = 1
+  AND YEAR(p.created_at) = YEAR(CURDATE());
+2025-07-09 21:51:59,596 - INFO - Retrieved 167 rows from query
+2025-07-09 21:51:59,596 - INFO - Retrieved 167 rows from query
+2025-07-09 21:51:59,616 - INFO - Template uid_66dd2ce4018a49119ed4fbe57c4d72ce_c1ea5478f15e0af5_1752097902600 saved to database successfully
+2025-07-09 21:51:59,616 - INFO - Successfully generated template for template_id uid_66dd2ce4018a49119ed4fbe57c4d72ce_c1ea5478f15e0af5_1752097902600, type: default
+2025-07-10 10:18:50,446 - INFO - Generating template for type: default, template_id: uid_0f22f01c106941c7968c3297805ca52b_09afb9993285c5fc_1752142724497
+2025-07-10 10:18:52,850 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-07-10 10:18:52,870 - INFO - AI-Optimized SQL Query for default type:
+SELECT p.name AS project_name,
+       AVG(TIMESTAMPDIFF(SECOND, t.created_at, t.updated_at)) AS average_completion_time_seconds,
+       COUNT(t.id) AS number_of_tasks,
+       p.source AS platform
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.project_key
+WHERE t.owner_id = 1
+GROUP BY p.name,
+         p.source;
+2025-07-10 10:18:52,877 - INFO - Retrieved 32 rows from query
+2025-07-10 10:18:52,877 - INFO - Retrieved 32 rows from query
+2025-07-10 10:18:52,884 - INFO - Template uid_0f22f01c106941c7968c3297805ca52b_09afb9993285c5fc_1752142724497 saved to database successfully
+2025-07-10 10:18:52,884 - INFO - Successfully generated template for template_id uid_0f22f01c106941c7968c3297805ca52b_09afb9993285c5fc_1752142724497, type: default

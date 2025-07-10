@@ -82,7 +82,7 @@ def decrypt(enc_b64):
         return None
 
 # Database setup
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 
 db = SQLDatabase.from_uri(
     "mysql+pymysql://root:50465550@127.0.0.1:3306/db",
@@ -259,6 +259,7 @@ The user has defined these custom metrics for analysis:
 
 
 
+
 When analyzing data, incorporate these user-defined metrics by:
 - Using the title and description to understand what each metric measures
 - Applying the weight (importance factor) when calculating scores
@@ -267,6 +268,7 @@ When analyzing data, incorporate these user-defined metrics by:
 - Referencing these metrics in your analysis and recommendations
 
 ## IMPORTANT
+- please mix emojis with responses , for better user view
 - note you have trello and linear as source, so make sure you know what you're doing
  - mostly mix template with anything data related so make it informative
  - always provide templates for tasks related stuff or project related

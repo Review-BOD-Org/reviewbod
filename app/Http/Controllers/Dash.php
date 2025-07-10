@@ -1071,7 +1071,7 @@ class Dash extends Controller
     private function makeOpenAIRequest($messages)
     {
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer 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',
+            'Authorization' => 'Bearer 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',
             'Content-Type' => 'application/json',
         ])->post('https://api.openai.com/v1/chat/completions', [
                     'model' => 'gpt-4o-mini',
@@ -2883,7 +2883,7 @@ Provide a comprehensive text analysis:";
             return response()->json(["message"=>"please use another email"],400);
         }
         $member = "RB-".rand();
-        DB::table("managers")->insert([
+       $id =  DB::table("managers")->insertGetId([
                 "name"=>$request->name,
                 "email"=>$request->email,
                 "department"=>$request->department,
@@ -2899,6 +2899,10 @@ Provide a comprehensive text analysis:";
             $message->to($request->email)
                 ->subject('Inivitation  to ReviewBod - manager');
         });
+
+        if($request->assign == 1){
+                    DB::table("platform_users")->where(["id"=>$request->user_id,"owner_id"=>Auth::id()])->update(["manager_id"=>$id]);
+        }
 
                     return response()->json(["message"=>"Manager Added"]);
 

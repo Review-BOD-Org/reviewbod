@@ -190,7 +190,7 @@ public function optimize()
     $prompt = "i want to design a dashbooard that analyze data from linear and co even on slack.. list only what i need  on the dashboard";
 
     $openaiResponse = Http::withHeaders([
-        'Authorization' => 'Bearer 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',
+        'Authorization' => 'Bearer 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',
         'Content-Type'  => 'application/json',
     ])->post('https://api.openai.com/v1/chat/completions', [
         'model' => 'gpt-4',
@@ -827,7 +827,7 @@ public function streamChat(Request $request)
         array_unshift($messages, ['role' => 'system', 'content' => $prompt]);
     }
 
-    $apiKey = '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';
+    $apiKey = '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';
 
     $response = new StreamedResponse(function () use ($messages, $functions, $apiKey) {
         $ch = curl_init();
